@@ -1,42 +1,63 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
+use App\Models\Admin;
+use App\Models\Product;
+use Illuminate\Support\Facades\File;
+
+Route::prefix('{locale?}')
+    ->where(['locale' => '[a-zA-Z]{2}'])
+    ->middleware(['localization','cartToken'])
+    ->group(function () {
+
+        Route::controller(HomeController::class)->group(function () {
+            Route::get('/', 'index')->name('home');
+            Route::get('/faq', 'faqs')->name('faqs');
+        });
+
+
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
+        Route::get('/categories/{category}', [CategoryController::class, 'category'])->name('category.single');
+
+        Route::controller(ProductController::class)->group(function () {
+            Route::get('/products', 'index')->name('products');
+            Route::get('/products/{product}', 'show')->name('product.single');
+        });
+
+        Route::controller(CartController::class)->group(function () {
+
+        });
+    });
 
 
 
+route::get('/role', function () {
+    $user = Admin::find(1);
+    $user->assignRole('admin');
+});
 
-Route::get('/', function (Request $request) {
+route::get('/php', function () {
+    return phpinfo();
+});
 
-    // Guest user logic
-    $tempUserId = $request->cookie('temp_user_id');
+route::get('/test', function () {
 
-    if (!$tempUserId) {
-        $tempUserId = Str::uuid()->toString();
-        $cookie = cookie('temp_user_id', $tempUserId, 60 * 24 * 7); // 7 days
+    $storagePath1 = base_path('seeding_images/home/home_decor/1');
+    $files1 = File::files($storagePath1);
+    dd($files1);
+});
 
-        // Add item to cart linked with this tempUserId
-        // Cart::addItem($tempUserId, $productId);
+route::get('/pricehistory', function () {
 
-        return response()->view('index')
-            ->cookie($cookie);
-    } else {
-        return view('index');
+    $products=Product::where('price_history','=','"{}"')->get();
+//    dd($products);
+    foreach ($products as $product) {
+        $product->price_history=[];
+        $product->save();
     }
-
-})->name('home');
-
-Route::get('/product-single', function () {
-    return view('frontend.product-single.index');
-})->name('product-single');
-
-Route::get('/cart', function () {
-    return view('frontend.cart.index');
-})->name('cart');
-
-Route::get('/category', function () {
-    return view('frontend.categories.index');
-})->name('category');
-
+});
 
 

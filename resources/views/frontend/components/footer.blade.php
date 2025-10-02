@@ -4,7 +4,7 @@
     <a href="{{route('home')}}" class="active-nav"><i class="bi bi-house-fill font-16"></i><span>Home</span></a>
     <a href="#" data-bs-toggle="offcanvas" data-bs-target="#categories"><i class="bi bi-layout-text-sidebar font-17"></i><span>Categories</span></a>
 {{--    <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-main"><i class="bi bi-list"></i><span>Menu</span></a>--}}
-    <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-register">
+    <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-cart">
         <i class="bi bi-cart4 font-20"></i>
         <span>Cart</span>
         <em class="badge bg-highlight ms-1 font-10">3</em>

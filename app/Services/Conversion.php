@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Services;
+
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+
+class Conversion
+{
+    /**
+     * Create a new class instance.
+     */
+    public function __construct() {}
+
+    public function convert($file, $format = null)
+    {
+
+        $manager = new ImageManager(new Driver);
+
+        return $manager->read($file)->toWebp(70);
+
+    }
+
+    public function thumbnail($file)
+    {
+
+        $manager = new ImageManager(new Driver);
+        $image = $manager->read($file);
+        $custom = $image->cover(326, 280);
+
+        return $manager->read($custom)->toWebp(70);
+
+    }
+}

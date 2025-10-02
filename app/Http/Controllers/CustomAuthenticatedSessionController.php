@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Auth\StatefulGuard;
@@ -32,7 +31,6 @@ class CustomAuthenticatedSessionController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @param  \Illuminate\Contracts\Auth\StatefulGuard  $guard
      *
      * @return void
      */
@@ -43,10 +41,6 @@ class CustomAuthenticatedSessionController extends Controller
 
     /**
      * Show the login view.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \Laravel\Fortify\Contracts\LoginViewResponse
      */
     public function create(Request $request): LoginViewResponse
     {
@@ -56,14 +50,13 @@ class CustomAuthenticatedSessionController extends Controller
     /**
      * Attempt to authenticate a new session.
      *
-     * @param  \Laravel\Fortify\Http\Requests\LoginRequest  $request
      *
      * @return mixed
      */
     public function store(LoginRequest $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
@@ -73,18 +66,22 @@ class CustomAuthenticatedSessionController extends Controller
             $request->remember,
         )) {
             $request->session()->regenerate();
+
             return app(LoginResponse::class);
         } else {
             return $this->loginPipeline($request)->then(function ($request) {
                 return app(LoginResponse::class);
             });
         }
+
+
+
+
     }
 
     /**
      * Get the authentication pipeline instance.
      *
-     * @param  \Laravel\Fortify\Http\Requests\LoginRequest  $request
      *
      * @return \Illuminate\Pipeline\Pipeline
      */
@@ -113,14 +110,10 @@ class CustomAuthenticatedSessionController extends Controller
 
     /**
      * Destroy an authenticated session.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \Laravel\Fortify\Contracts\LogoutResponse
      */
     public function destroy(Request $request): LogoutResponse
     {
-//        $this->guard->logout();
+        //        $this->guard->logout();
         Auth::guard('admin')->logout();
         Auth::guard('web')->logout();
 

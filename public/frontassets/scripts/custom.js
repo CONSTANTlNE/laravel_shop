@@ -324,26 +324,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         //File Upload
-        const inputArray = document.getElementsByClassName('upload-file');
-        if (inputArray.length) {
-            inputArray[0].addEventListener('change', prepareUpload, false);
-
-            function prepareUpload(event) {
-                if (this.files && this.files[0]) {
-                    var img = document.getElementById('image-data');
-                    img.src = URL.createObjectURL(this.files[0]);
-                    img.classList.add('mt-4', 'mb-3', 'mx-auto');
-                }
-                const files = event.target.files;
-                const fileName = files[0].name;
-                const fileSize = (files[0].size / 1000).toFixed(2) + 'kb';
-                const textBefore = document.getElementsByClassName('upload-file-name')[0].getAttribute('data-text-before');
-                const textAfter = document.getElementsByClassName('upload-file-name')[0].getAttribute('data-text-after');
-                document.getElementsByClassName('upload-file-name')[0].innerHTML = textBefore + ' ' + fileName + ' - ' + fileSize + ' - ' + textAfter;
-                document.getElementsByClassName('upload-file-name')[0].classList.add('pb-3');
-            }
-
-        }
+        // const inputArray = document.getElementsByClassName('upload-file');
+        // if (inputArray.length) {
+        //     inputArray[0].addEventListener('change', prepareUpload, false);
+        //
+        //     function prepareUpload(event) {
+        //         if (this.files && this.files[0]) {
+        //             var img = document.getElementById('image-data');
+        //             img.src = URL.createObjectURL(this.files[0]);
+        //             img.classList.add('mt-4', 'mb-3', 'mx-auto');
+        //         }
+        //         const files = event.target.files;
+        //         const fileName = files[0].name;
+        //         const fileSize = (files[0].size / 1000).toFixed(2) + 'kb';
+        //         const textBefore = document.getElementsByClassName('upload-file-name')[0].getAttribute('data-text-before');
+        //         const textAfter = document.getElementsByClassName('upload-file-name')[0].getAttribute('data-text-after');
+        //         document.getElementsByClassName('upload-file-name')[0].innerHTML = textBefore + ' ' + fileName + ' - ' + fileSize + ' - ' + textAfter;
+        //         document.getElementsByClassName('upload-file-name')[0].classList.add('pb-3');
+        //     }
+        //
+        // }
 
         //Adding Local Storage for Visited Links
         var checkVisited = document.querySelectorAll('.check-visited');
@@ -437,11 +437,14 @@ document.addEventListener('DOMContentLoaded', () => {
         var toastTrigger = document.querySelectorAll('[data-toast]');
         if (toastTrigger.length) {
             toastTrigger.forEach(el => el.addEventListener('click', event => {
-                document.querySelectorAll('.toast, .snackbar, .notification-bar').forEach(el => {
+
+                document.querySelectorAll('.toast, .snackbar, .notification-bar, .snackbar-toast ').forEach(el => {
                     el.classList.remove('show')
                 })
                 var toastData = el.getAttribute('data-toast')
                 var notificationToast = document.getElementById(toastData);
+                console.log(notificationToast)
+
                 var notificationToast = new bootstrap.Toast(notificationToast);
                 notificationToast.show();
             }));
@@ -835,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadHighlight.rel = "stylesheet";
                 loadHighlight.className = "page-highlight";
                 loadHighlight.type = "text/css";
-                loadHighlight.href = 'styles/highlights/' + rememberHighlight + '.css';
+                loadHighlight.href = '/frontassets/styles/highlights/' + rememberHighlight + '.css';
                 if (!document.querySelectorAll('.page-highlight').length) {
                     document.getElementsByTagName("head")[0].appendChild(loadHighlight);
                     document.body.setAttribute('data-highlight', 'highlight-' + rememberHighlight)
@@ -886,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Externally loading Javascript files for better performance.
 
         var plugIdent, plugClass, plugMain, plugCall;
-        var plugLoc = "frontassets/plugins/"
+        var plugLoc = "/frontassets/plugins/"
 
         let plugins = [
             {
@@ -959,6 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             //Load Plugins
             var plugTrigger = document.querySelectorAll(plugins[i].trigger)
+
             if (plugTrigger.length) {
                 var loadScript = document.getElementsByTagName('script')[1],
                     loadScriptJS = document.createElement('script');

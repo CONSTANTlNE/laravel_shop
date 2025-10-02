@@ -13,129 +13,42 @@
         </div>
         <div class="card-overlay bg-gradient-fade rounded-0"></div>
     </div>
-    <div class="menu-content px-3">
-        <div class="card card-style rounded-m p-2 mx-0 bg-theme">
-            <div class="accordion border-0 accordion-s" id="accordion-group-6">
-                <div class="accordion-item">
-                    <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#accordion6-1">
-                        <span class="font-600 font-13">Accordion Item Text</span>
-                        <i class="bi bi-plus font-20"></i>
-                    </button>
-                    <div id="accordion6-1" class="accordion-collapse collapse" data-bs-parent="#accordion-group-6">
-                        <a href="#">
-                            <div class="d-flex">
-                                <div class="align-self-center">
-                                    <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
-                                </div>
-                                <div class="align-self-center">
-                                    <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#">
-                            <div class="d-flex">
-                                <div class="align-self-center">
-                                    <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
-                                </div>
-                                <div class="align-self-center">
-                                    <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#">
-                            <div class="d-flex">
-                                <div class="align-self-center">
-                                    <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
-                                </div>
-                                <div class="align-self-center">
-                                    <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#">
-                            <div class="d-flex">
-                                <div class="align-self-center">
-                                    <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
-                                </div>
-                                <div class="align-self-center">
-                                    <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#accordion6-2">
-                        <span class="font-600 font-13">Accordion Item Image</span>
-                        <i class="bi bi-plus font-20"></i>
-                    </button>
-                    <div id="accordion6-2" class="accordion-collapse collapse" data-bs-parent="#accordion-group-6">
-                        <div><img src="images/pictures/1w.jpg" class="img-fluid rounded-s"></div>
-                        <h5 class="font-700 pt-3">This is an Image</h5>
-                        <p class="pb-3 opacity-60">
-                            This is the accordion body. It can support most content you want without restrictions. You
-                            can
-                            use
-                            images, videos lists or whatever you want.
-                        </p>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <button class="accordion-button collapsed px-0" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#accordion6-3">
-                        <span class="font-600 font-13">Accordion Item Grid</span>
-                        <i class="bi bi-arrow-down-short font-20"></i>
-                    </button>
-                    <div id="accordion6-3" class="accordion-collapse collapse" data-bs-parent="#accordion-group-6">
-                        <div class="row">
-                            <div class="col-4"><img src="images/pictures/1s.jpg" class="img-fluid rounded-xs"></div>
-                            <div class="col-4"><img src="images/pictures/2s.jpg" class="img-fluid rounded-xs"></div>
-                            <div class="col-4"><img src="images/pictures/3s.jpg" class="img-fluid rounded-xs"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="menu-content px-3">
 
-        <div class="card card-style rounded-m p-2 mx-0 bg-theme">
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                    </div>
+    <div class="card card-style bg-23  rounded-m mt-3 list-group list-custom list-group-m mx-3 mb-4">
+        <a class="list-group-item"
+           href="{{route('categories')}}">
+            <i class="bi color-red-dark bi-heart-fill"></i>
+            <div>
+                <strong>All Categories</strong>
+            </div>
+        </a>
+        @foreach($categories as $catmenuindex => $category)
+            <a class="list-group-item" data-bs-toggle="collapse"
+               href="#collapse-list-{{$catmenuindex}}" aria-controls="collapse-list-1"
+               aria-expanded="true">
+                <i class="bi color-red-dark bi-heart-fill"></i>
+                <div><strong>{{$category->name}}</strong>
+                    <span>List item Description</span>
                 </div>
+                @if($category->subcategories->isNotEmpty())
+                    <i class="bi bi-chevron-down"></i>
+                @endif
             </a>
-            <div class="mb-2"></div>
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="images/pictures/5s.jpg" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">PWA Ready</h5>
-                    </div>
+            @if($category->subcategories->isNotEmpty())
+                <div id="collapse-list-{{$catmenuindex}}" class="collapse " style="">
+                    @foreach($category->subcategories as $subcatmenuindex => $subcategory)
+                        <a href="{{route('category.single',['category'=>$subcategory->slug])}}" class="list-group-item">
+                            <div class="ps-1">
+                                <strong class="font-12">{{$subcategory->name}}</strong>
+                            </div>
+                            <i class="bi bi-chevron-right font-9 color-gray-dark ps-4"></i>
+                        </a>
+                    @endforeach
                 </div>
-            </a>
-            <div class="mb-2"></div>
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="images/pictures/11s.jpg" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">Care &amp; Quality</h5>
-                    </div>
-                </div>
-            </a>
-        </div>
+            @endif
+        @endforeach
     </div>
+
 
     <p class="text-center mb-0 mt-n3 pb-3 font-9 text-uppercase font-600 color-theme">Made with <i
             class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i> by Enabled in <span class="copyright-year"></span>.

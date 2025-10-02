@@ -6,9 +6,6 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
-use App\Http\Middleware\GuardAwareAuthenticate;
-use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -16,7 +13,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Contracts\LoginResponse;
-use Laravel\Fortify\Contracts\LoginViewResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Fortify;
@@ -29,13 +25,13 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
 
-//        if (request()->is('admin/*')){
-//            config(['fortify.guard' => 'admin']);
-//        }
+        //        if (request()->is('admin/*')){
+        //            config(['fortify.guard' => 'admin']);
+        //        }
 
         Fortify::loginView(function () {
-//            dd('login');
-            return  to_route('home');
+            //            dd('login');
+            return to_route('home');
         });
 
         Fortify::registerView(function () {
@@ -46,16 +42,13 @@ class FortifyServiceProvider extends ServiceProvider
             return view('frontend.auth.reset-password', ['request' => $request]);
         });
 
-
-
-
-
-        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse
+        {
             public function toResponse($request)
             {
 
                 if (auth('admin')->check()) {
-//                    return redirect(route('admin.dashboard',['locale' => app()->getLocale()]));
+                    //                    return redirect(route('admin.dashboard',['locale' => app()->getLocale()]));
                     return back();
                 }
 
@@ -63,27 +56,24 @@ class FortifyServiceProvider extends ServiceProvider
             }
         });
 
-        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
 
-                return  to_route('home');
+                return to_route('home');
             }
         });
 
-
-        $this->app->instance(RegisterResponse::class, new class implements RegisterResponse {
+        $this->app->instance(RegisterResponse::class, new class implements RegisterResponse
+        {
             public function toResponse($request)
             {
-                return redirect(route('dashboard',['locale' => app()->getLocale()]));
+                return to_route('home');
             }
         });
-
-
 
     }
-
-
 
     /**
      * Bootstrap any application services.
@@ -97,7 +87,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
-
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
@@ -109,5 +98,3 @@ class FortifyServiceProvider extends ServiceProvider
         });
     }
 }
-
-

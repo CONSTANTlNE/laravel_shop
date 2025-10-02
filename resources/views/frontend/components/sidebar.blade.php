@@ -13,14 +13,15 @@
         <div class="card-overlay bg-gradient-fade rounded-0"></div>
     </div>
 
+    @auth()
     <div class="bg-theme mx-3 rounded-m shadow-m mt-3 mb-3">
         <div class="d-flex px-2 pb-2 pt-2">
-            <div>
-                <a href="#"><img src="images/pictures/7s.jpg" width="45" class="rounded-s" alt="img"></a>
-            </div>
+{{--    <div> --}}
+{{--    <a href="#"><img src="images/pictures/7s.jpg" width="45" class="rounded-s" alt="img"></a> --}}
+{{--    </div> --}}
             <div class="ps-2 align-self-center">
-                <h5 class="ps-1 mb-0 line-height-xs pt-1">Karla Black</h5>
-                <h6 class="ps-1 mb-0 font-400 opacity-40">Front End Designer</h6>
+                <h5 class="ps-1 mb-0 line-height-xs pt-1">{{auth('web')->user()?->name}}</h5>
+{{--  <h6 class="ps-1 mb-0 font-400 opacity-40">Front End Designer</h6> --}}
             </div>
             <div class="ms-auto">
                 <a href="#" data-bs-toggle="dropdown" class="icon icon-m ps-3"><i class="bi bi-three-dots-vertical font-18 color-theme"></i></a>
@@ -36,15 +37,26 @@
             </div>
         </div>
     </div>
+    @endauth
 
     <span class="menu-divider">NAVIGATION</span>
     <div class="menu-list">
         <div class="card card-style rounded-m p-3 py-2 mb-0">
             <a href="index.html" id="nav-homes"><i class="gradient-blue shadow-bg shadow-bg-xs bi bi-house-fill"></i><span>Homepage</span><i class="bi bi-chevron-right"></i></a>
-            <a href="index-components.html" id="nav-comps"><i class="gradient-red shadow-bg shadow-bg-xs bi bi-gear-fill"></i><span>Components</span><i class="bi bi-chevron-right"></i></a>
+            <a href="#" id="nav-comps" data-bs-toggle="offcanvas" data-bs-target="#categories"><i class="gradient-red shadow-bg shadow-bg-xs bi bi-gear-fill"></i><span>Categories</span><i class="bi bi-chevron-right"></i></a>
             <a href="index-pages.html" id="nav-pages"><i class="gradient-green shadow-bg shadow-bg-xs bi bi-heart-fill"></i><span>Site Pages</span><i class="bi bi-chevron-right"></i></a>
             <a href="index-media.html" id="nav-media"><i class="gradient-yellow shadow-bg shadow-bg-xs bi bi-image-fill"></i><span>Media Styles</span><i class="bi bi-chevron-right"></i></a>
             <a href="index-contact.html" id="nav-mails"><i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill"></i><span>Contact</span><i class="bi bi-chevron-right"></i></a>
+
+            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-terms" ><i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill">
+                </i><span>Terms & Conditions</span><i class="bi bi-chevron-right"></i>
+            </a>
+            <a href="{{route('faqs')}}" >
+                <i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill">
+                </i><span>F.A.Q</span>
+                <i class="bi bi-chevron-right"></i>
+            </a>
+
         </div>
     </div>
 
@@ -71,9 +83,9 @@
     <div class="menu-content px-3">
         <div class="card card-style rounded-m p-2 mx-0 bg-theme mb-0">
             <div class="menu-list">
-                <a href="#"><img src="images/avatars/6s.png" alt="img" class="gradient-orange"><span class="font-500 color-theme">Olivia Orange</span><em class="badge badge-s bg-red-dark">3</em></a>
-                <a href="#"><img src="images/avatars/2s.png" alt="img" class="gradient-green"><span class="font-500 color-theme">Marcus Green</span><em class="badge badge-s bg-red-dark">5</em></a>
-                <a href="#"><img src="images/avatars/5s.png" alt="img" class="gradient-blue"><span class="font-500 color-theme">Danny Blueish</span><em class="badge badge-s bg-red-dark">1</em></a>
+                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-orange"><span class="font-500 color-theme">Olivia Orange</span><em class="badge badge-s bg-red-dark">3</em></a>
+                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-green"><span class="font-500 color-theme">Marcus Green</span><em class="badge badge-s bg-red-dark">5</em></a>
+                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-blue"><span class="font-500 color-theme">Danny Blueish</span><em class="badge badge-s bg-red-dark">1</em></a>
             </div>
         </div>
     </div>
@@ -84,7 +96,7 @@
             <a href="#">
                 <div class="d-flex">
                     <div class="align-self-center">
-                        <img src="images/pictures/14s.jpg" class="rounded-s me-2" width="60" alt="img">
+                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
                     </div>
                     <div class="align-self-center">
                         <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
@@ -98,7 +110,7 @@
             <a href="#">
                 <div class="d-flex">
                     <div class="align-self-center">
-                        <img src="images/pictures/5s.jpg" class="rounded-s me-2" width="60" alt="img">
+                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
                     </div>
                     <div class="align-self-center">
                         <h5 class="font-14 mb-0 ps-1 pt-1">PWA Ready</h5>
@@ -112,7 +124,7 @@
             <a href="#">
                 <div class="d-flex">
                     <div class="align-self-center">
-                        <img src="images/pictures/11s.jpg" class="rounded-s me-2" width="60" alt="img">
+                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
                     </div>
                     <div class="align-self-center">
                         <h5 class="font-14 mb-0 ps-1 pt-1">Care & Quality</h5>

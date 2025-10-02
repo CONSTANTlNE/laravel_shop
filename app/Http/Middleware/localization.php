@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 class localization
 {
     /**
-     *
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
@@ -19,16 +18,17 @@ class localization
     public function handle(Request $request, Closure $next): Response
     {
 
-        $langs=Language::pluck('abbr')->toArray();
-        $main=Language::where('main',1)->pluck('abbr');
-        $locale=$request->segment(1);
+        $langs = Language::pluck('abbr')->toArray();
+        $main = Language::where('main', 1)->pluck('abbr');
+        $locale = $request->segment(1);
 
         if (in_array($locale, $langs)) {
 
             app()->setLocale($request->segment(1));
             URL::defaults(['locale' => $request->segment(1)]);
-        } else{
-            $countryCode = $request->header('CF-IPCountry',);
+
+        } else {
+            $countryCode = $request->header('CF-IPCountry');
 
             $locale = match ($countryCode) {
                 'GE' => 'ka',
