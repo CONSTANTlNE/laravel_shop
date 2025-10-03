@@ -1,22 +1,23 @@
 <div class="d-flex justify-content-center gap-3 mb-3">
     <button
         data-bs-toggle="offcanvas"
-        data-bs-target="#create-product-modal{{$subcategory->id}}"
+        data-bs-target="#create-subcat_product-modal{{$category->id}}"
+        onclick="document.getElementById('category_sku_{{$category->id}}').value=generateSKU()"
         class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
         Add Product
     </button>
     <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-         style="width:100%;max-width :400px" id="create-product-modal{{$subcategory->id}}">
+         style="width:100%;max-width :400px" id="create-subcat_product-modal{{$category->id}}">
         <form class="content" action="{{route('product.store')}}" method="post"
               enctype="multipart/form-data">
             @csrf
-            <input type="hidden" name="category_id" value="{{$subcategory->id}}">
-            <input type="hidden" name="category_slug" value="{{$subcategory->slug}}">
+            <input type="hidden" name="category_id" value="{{$category->id}}">
+            <input type="hidden" name="category_slug" value="{{$category->slug}}">
             <p class="font-24 font-800 mb-3 text-center">
                 Add Product
             </p>
             <p class="font-24 font-800 mb-3 text-center">
-                ({{$subcategory->name}})
+                ({{$category->name}})
             </p>
             <div class="d-flex gap-3 mb-3">
                 <label for="sku"
@@ -25,7 +26,7 @@
                     <input type="text"
                            name="sku"
                            class="form-control rounded-xs"
-                           id="sku"
+                           id="category_sku_{{$category->id}}"
                            value="{{old('sku')}}"
                            placeholder="SKU"/>
                 </label>
@@ -94,10 +95,11 @@
             </div>
             <div class="">
                 <div id="preview" class="preview mb-2"></div>
-                <label for="fileInput_products{{$subcategory->name}}" type="button"
+                <label for="fileInput_products{{$category->name}}" type="button"
                        class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
                     Upload Images
-                    <input type="file" id="fileInput_products{{$subcategory->name}}" class="upload-file" name="files[]" multiple
+                    <input type="file" id="fileInput_products{{$category->name}}" class="upload-file" name="files[]"
+                           multiple
                            accept="image/*">
                 </label>
             </div>

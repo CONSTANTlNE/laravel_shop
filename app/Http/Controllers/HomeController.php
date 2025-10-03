@@ -15,15 +15,15 @@ class HomeController extends Controller
     {
 
         $formain = CategoryOrder::with([
-            'category.products' => function ($query) {
-                $query->where('show_in_main', 1);
+            'category.products' => function ($q) {
+                $q->where('show_in_main', 1)->with('media');
             },
-            'subcategory.products' => function ($query) {
-                $query->where('show_in_main', 1);
+            'subcategory.products' => function ($q) {
+                $q->where('show_in_main', 1)->with('media');
             },
         ])
-            ->orderBy('order')
             ->where('active', 1)
+            ->orderBy('order')
             ->get();
 
         $featured_products = Product::where('featured', 1)->get();

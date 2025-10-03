@@ -115,6 +115,7 @@ class ProductController extends Controller
         $product->admin_id = auth('admin')->id();
 
         $product->save();
+        $product->categories()->attach($category->id);
 
         $uploadedFile = $request->file('files');
 

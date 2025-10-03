@@ -4,10 +4,9 @@
     <div class="content">
         <div class="form-custom form-label form-icon mb-3">
             <i class="bi bi-search"></i>
-            <input type="text" class="form-control rounded-xs" id="c1"
-
+            <input type="text" class="form-control rounded-xs" id="c1search"
                    pattern="[A-Za-z ]{1,32}">
-            <label for="c1" class="color-theme">Your Name</label>
+            <label for="c1search" class="color-theme">Your Name</label>
             <div class="valid-feedback">Excellent!<!-- text for field valid--></div>
             <div class="invalid-feedback">Name is Missing or Invalid</div>
         </div>

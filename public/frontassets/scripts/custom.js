@@ -855,35 +855,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         //Lazy Loading
-        var lazyLoad = new LazyLoad();
-
-        //Calling Functions Required After External Menus are Loaded
-        var dataMenuLoad = document.querySelectorAll('[data-menu-load]')
-        if (dataMenuLoad[0]) {
-            dataMenuLoad.forEach(function (e) {
-                var menuLoad = e.getAttribute('data-menu-load')
-                fetch(menuLoad)
-                    .then(data => data.text())
-                    .then(html => e.innerHTML = html)
-                    .then(data => {
-                        setTimeout(function () {
-                            if (dataMenuLoad[dataMenuLoad.length - 1] === e) {
-                                activatePage();
-                                darkMode();
-                                card_extender();
-                                setHighlights();
-                            }
-                        }, 100);
-                    }).catch(function () {
-                    e.innerHTML = "<h5 class='font-16 px-4 py-4 mb-0'>Please use a Local Server such as AMPPS or WAMP to see externally loaded menus or put " + pwaName + " files on your server. <br> To load menus from inside your HTML you must remove the data-menu-load=`your-menu.html` and copy what is inside your-menu.html in this div. <br>Using external menus, editing a single menu will show in all pages. <br><br> For more information please read the Documentation -> Menu Chapter.</h5>";
-                });
-            })
-        } else {
-            activatePage();
-            darkMode();
-            card_extender();
-            setHighlights();
-        }
+        // var lazyLoad = new LazyLoad();
+        //
+        // //Calling Functions Required After External Menus are Loaded
+        // var dataMenuLoad = document.querySelectorAll('[data-menu-load]')
+        // if (dataMenuLoad[0]) {
+        //     dataMenuLoad.forEach(function (e) {
+        //         var menuLoad = e.getAttribute('data-menu-load')
+        //         fetch(menuLoad)
+        //             .then(data => data.text())
+        //             .then(html => e.innerHTML = html)
+        //             .then(data => {
+        //                 setTimeout(function () {
+        //                     if (dataMenuLoad[dataMenuLoad.length - 1] === e) {
+        //                         activatePage();
+        //                         darkMode();
+        //                         card_extender();
+        //                         setHighlights();
+        //                     }
+        //                 }, 100);
+        //             }).catch(function () {
+        //             e.innerHTML = "<h5 class='font-16 px-4 py-4 mb-0'>Please use a Local Server such as AMPPS or WAMP to see externally loaded menus or put " + pwaName + " files on your server. <br> To load menus from inside your HTML you must remove the data-menu-load=`your-menu.html` and copy what is inside your-menu.html in this div. <br>Using external menus, editing a single menu will show in all pages. <br><br> For more information please read the Documentation -> Menu Chapter.</h5>";
+        //         });
+        //     })
+        // } else {
+        //     activatePage();
+        //     darkMode();
+        //     card_extender();
+        //     setHighlights();
+        // }
 
         // Check Documentation folder for detailed explanations on
         // Externally loading Javascript files for better performance.

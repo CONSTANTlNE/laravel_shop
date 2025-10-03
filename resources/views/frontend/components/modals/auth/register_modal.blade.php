@@ -8,8 +8,8 @@
             @csrf
             <div class="form-custom form-label form-border form-icon mb-3 bg-transparent">
                 <i class="bi bi-person-circle font-13"></i>
-                <input type="text" name="name" class="form-control rounded-xs" id="c1" value="{{old('name')}}" placeholder="Username"/>
-                <label for="c1" class="color-theme">Username</label>
+                <input type="text" name="name" class="form-control rounded-xs" id="c1name" value="{{old('name')}}" placeholder="Username"/>
+                <label for="c1name" class="color-theme">Username</label>
                 <span>(required)</span>
             </div>
             <div class="form-custom form-label form-border form-icon mb-3 bg-transparent">
@@ -20,8 +20,8 @@
             </div>
             <div class="form-custom form-label form-border form-icon mb-4 bg-transparent">
                 <i class="bi bi-asterisk font-13"></i>
-                <input type="password" name="password" class="form-control rounded-xs" id="c2" placeholder="Password"/>
-                <label for="c2" class="color-theme">Password</label>
+                <input type="password" name="password" class="form-control rounded-xs" id="c2email" placeholder="Password"/>
+                <label for="c2email" class="color-theme">Password</label>
                 <span>(required)</span>
                 @error('password')
                 {{$message}}

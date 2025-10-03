@@ -5,8 +5,8 @@
         <h1 class="font-24 font-800 mb-3">Forgot</h1>
         <div class="form-custom form-label form-border form-icon mb-3 bg-transparent">
             <i class="bi bi-at font-14"></i>
-            <input type="text" class="form-control rounded-xs" id="c1" placeholder="Email Address">
-            <label for="c1" class="color-theme">Email Address</label>
+            <input type="text" class="form-control rounded-xs" id="c1forgot" placeholder="Email Address">
+            <label for="c1forgot" class="color-theme">Email Address</label>
             <span>(required)</span>
         </div>
         <a href="#" class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-4">SIGN IN</a>

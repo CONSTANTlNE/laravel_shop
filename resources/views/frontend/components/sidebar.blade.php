@@ -68,12 +68,12 @@
                 <span>Highlights</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="#" data-toggle-theme data-trigger-switch="switch-1">
+            <a href="#" data-toggle-theme data-trigger-switch="switch-2">
                 <i class="gradient-dark shadow-bg shadow-bg-xs bi bi-moon-fill font-13"></i>
                 <span>Dark Mode</span>
                 <div class="form-switch ios-switch switch-green switch-s me-2">
-                    <input type="checkbox" data-toggle-theme class="ios-input" id="switch-1">
-                    <label class="custom-control-label" for="switch-1"></label>
+                    <input type="checkbox" data-toggle-theme class="ios-input" id="switch-2">
+                    <label class="custom-control-label" for="switch-2"></label>
                 </div>
             </a>
         </div>

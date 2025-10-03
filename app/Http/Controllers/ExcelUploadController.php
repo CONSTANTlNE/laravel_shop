@@ -31,9 +31,9 @@ class ExcelUploadController extends Controller
         $data = Excel::toArray([], $file);
         $categories = $data[0];
         $subcategories = $data[1];
-        $dishes = $data[2];
+        $products = $data[2];
 
-        DB::transaction(function () use ($categories, $subcategories, $dishes) {
+        DB::transaction(function () use ($categories, $subcategories, $products) {
             $loop = 0;
             foreach ($categories as $index => $value) {
                 if ($loop++ === 0) {
@@ -81,7 +81,7 @@ class ExcelUploadController extends Controller
             }
 
             $loop = 0;
-            foreach ($dishes as $index => $value) {
+            foreach ($products as $index => $value) {
                 if ($loop++ === 0) {
                     continue;
                 }

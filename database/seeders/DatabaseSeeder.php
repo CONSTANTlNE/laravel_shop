@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CategoryOrder;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,8 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(AdminSeeder::class);
         $this->call(SettingsSeeder::class);
+        $this->call(CategoryOrder::class);
+
         //        $this->call(ProductsSeeder::class);
     }
 }

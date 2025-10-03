@@ -5,14 +5,14 @@
         <p class="font-24 font-800 mb-3">Login</p>
         <div class="form-custom form-label form-border form-icon mb-3 bg-transparent">
             <i class="bi bi-person-circle font-13"></i>
-            <input type="text" name="email" class="form-control rounded-xs" id="c1" placeholder="Username" />
-            <label for="c1"  class="color-theme">Username</label>
+            <input type="text" name="email" class="form-control rounded-xs" id="c1login" placeholder="Username" />
+            <label for="c1login"  class="color-theme">Username</label>
             <span>(required)</span>
         </div>
         <div class="form-custom form-label form-border form-icon mb-4 bg-transparent">
             <i class="bi bi-asterisk font-13"></i>
-            <input type="password" name="password" class="form-control rounded-xs" id="c2" placeholder="Password" />
-            <label for="c2" class="color-theme">Password</label>
+            <input type="password" name="password" class="form-control rounded-xs" id="c2login" placeholder="Password" />
+            <label for="c2login" class="color-theme">Password</label>
             <span>(required)</span>
         </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Product;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
 class DiscountController extends Controller
@@ -47,8 +48,27 @@ class DiscountController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        $category = Category::with('products')->find($request->category_id);
+
+        $findcategory = Category::where('id', $request->input('category_id'))
+            ->where('slug', $request->input('category_slug'))
+            ->first();
+
+        if ($findcategory) {
+            $category = $findcategory;
+        } else {
+            $findsubcategory = Subcategory::where('id', $request->input('category_id'))
+                ->where('slug', $request->input('category_slug'))
+                ->first();
+            if ($findsubcategory) {
+                $category = $findsubcategory;
+            } else {
+                return back()->with('alert_error', 'Category or Subcategory not found');
+            }
+        }
+
         $products = $category->products;
+
+
         $discount = Discount::find($request->discount_id);
 
         foreach ($products as $product) {

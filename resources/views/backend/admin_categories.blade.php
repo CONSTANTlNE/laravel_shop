@@ -91,6 +91,11 @@
                         };
                     @endphp
                     <tr>
+                        @if(auth('admin')->user()->email==='gmta.constantine@gmail.com')
+                            <th>
+                                ID
+                            </th>
+                        @endif
                         <th scope="col">
                             <a href="{{  $sortLink('created_at') }}"
                                class="text-decoration-none">
@@ -136,6 +141,11 @@
                     <tbody>
                     @foreach($categories as $category)
                         <tr>
+                            @if(auth('admin')->user()->email==='gmta.constantine@gmail.com')
+                                <th>
+                                    {{$category->id}}
+                                </th>
+                            @endif
                             <td>{{$category->created_at->format('d/m/Y')}}</td>
                             <td>{{$category->name}}</td>
                             <td>
@@ -143,8 +153,8 @@
                                      src="{{$category->getMedia('category_thumbnail')->first()?->getUrl()}}" alt="">
                             </td>
                             <td>
-                                @if(!$category->subcategories->isNotEmpty())
-                                    @include('backend.components.admin_categories.add_product_categories_modal')
+                                @if($category->subcategories->isEmpty())
+                                    @include('backend.components.admin_categories.add_product_subcategories_modal')
                                 @endif
                             </td>
                             <td class="text-center">
@@ -179,7 +189,9 @@
                             </td>
                             <td>
                                 {{--  apply discount modal --}}
-                                @include('backend.components.admin_categories.discount_modal_categories')
+                                @if($category->subcategories->isEmpty())
+                                    @include('backend.components.admin_categories.discount_modal_categories')
+                                @endif
                             </td>
                             <td class="text-center">
                                 {{--  edit category modal --}}
@@ -190,6 +202,11 @@
                         @if($category->subcategories->isNotEmpty())
                             @foreach($category->subcategories as $subcategory)
                                 <tr>
+                                    @if(auth('admin')->user()->email==='gmta.constantine@gmail.com')
+                                        <th>
+                                            {{$subcategory->id}}
+                                        </th>
+                                    @endif
                                     <td>{{$subcategory->created_at->format('d/m/Y')}}</td>
                                     <td>{{$category->name}} --> {{$subcategory->name}}</td>
                                     <td>
@@ -225,7 +242,9 @@
                                             </div>
                                         </form>
                                     </td>
-                                    <td>discount</td>
+                                    <td>
+                                        @include('backend.components.admin_categories.discount_modal_subcategories')
+                                    </td>
                                     <td class="text-center">
                                         {{--  edit subcategory modal --}}
                                         @include('backend.components.admin_categories.edit_subcategory_modal_categories')
@@ -236,13 +255,24 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{--                @if(method_exists($categories, 'links'))--}}
-                {{--                    <div class="d-flex justify-content-center align-items-center gap-4 mt-3">--}}
-                {{--                        {{ $categories->appends(request()->query())->links() }}--}}
-                {{--                    </div>--}}
-                {{--                @endif--}}
             </div>
         </div>
     </div>
+    <script>
+        @if($settings->use_sku==1)
 
+
+        // generate rantom sku for products
+        function generateSKU(length = 7) {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            // let sku = prefix + "-";
+            let sku = '';
+            for (let i = 0; i < length; i++) {
+                sku += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return sku;
+        }
+
+        @endif
+    </script>
 @endsection

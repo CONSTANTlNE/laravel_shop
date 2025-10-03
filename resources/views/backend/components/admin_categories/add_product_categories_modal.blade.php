@@ -2,6 +2,7 @@
     <button
         data-bs-toggle="offcanvas"
         data-bs-target="#create-product-modal{{$category->id}}"
+        onclick="document.getElementById('category_sku_{{$category->id}}').value=generateSKU()"
         class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
         Add Product
     </button>
@@ -25,7 +26,7 @@
                     <input type="text"
                            name="sku"
                            class="form-control rounded-xs"
-                           id="sku"
+                           id="category_sku_{{$category->id}}"
                            value="{{old('sku')}}"
                            placeholder="SKU"/>
                 </label>
@@ -97,7 +98,8 @@
                 <label for="fileInput_products{{$category->name}}" type="button"
                        class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
                     Upload Images
-                    <input type="file" id="fileInput_products{{$category->name}}" class="upload-file" name="files[]" multiple
+                    <input type="file" id="fileInput_products{{$category->name}}" class="upload-file" name="files[]"
+                           multiple
                            accept="image/*">
                 </label>
             </div>

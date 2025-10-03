@@ -29,11 +29,11 @@ Route::group(['middleware' => config('fortify.middleware', ['auth', 'localizatio
 
         // Authentication...
         if ($enableViews) {
-            Route::prefix('{locale?}')->group(function () {
-                Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
-                    ->middleware(['guest:'.config('fortify.guard')], 'localization')
-                    ->name('login');
-            });
+//            Route::prefix('{locale?}')->group(function () {
+//                Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
+//                    ->middleware(['guest:'.config('fortify.guard')], 'localization')
+//                    ->name('login');
+//            });
 
             Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
                 ->middleware(['guest:'.config('fortify.guard')], 'localization')

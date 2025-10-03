@@ -204,17 +204,22 @@
                 <div class="row mb-0 justify-content-center">
                     @if(!$main->subcategory->isEmpty())
                         @foreach($main->subcategory->first()->products as $product)
+                            @php
+                                $mainImage = $product->media->firstWhere('custom_properties.main', 1);
+                                $just_image=$product->media->first();
+                            @endphp
                             <div
                                 class="col-6 col-sm-6 col-md-4 col-lg-3 text-center mb-3 d-flex flex-column justify-content-between ">
                                 <a href="{{route('product.single',[app()->getLocale(),$product->slug])}}">
                                     <div class="card card-style custom-card m-0 bg-21"
                                          data-card-height="140"
                                          style="height: 140px;
-                                     @if($product->getMedia('product_image')->where('main',1)->first())
-                                         background-image: url({{asset($product->getMedia('product_image')->where('main',1)->first()->getUrl())}})
-                                     @elseif($product->getMedia('product_image')->first())
-                                         background-image: url({{asset($product->getMedia('product_image')->first()->getUrl())}})
-                                      @endif">
+                                     @if($mainImage)
+                                         background-image: url({{asset($mainImage->getUrl())}})
+                                     @elseif($just_image)
+                                         background-image: url({{asset($just_image->getUrl())}})
+                                      @endif"
+                                    >
                                         @if($product->price_before_discount)
                                             <div class="card-top p-2 text-start">
                                                 <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">-{{$product->discount_percentage}}%</span>
