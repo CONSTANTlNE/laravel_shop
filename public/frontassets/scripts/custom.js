@@ -402,23 +402,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         //Stepper
-        var stepperAdd = document.querySelectorAll('.stepper-add');
-        var stepperSub = document.querySelectorAll('.stepper-sub');
-        if (stepperAdd.length) {
-            stepperAdd.forEach(el => el.addEventListener('click', event => {
-                var currentValue = el.parentElement.querySelector('input').value
-                el.parentElement.querySelector('input').value = +currentValue + 1
-            }))
-
-            stepperSub.forEach(el => el.addEventListener('click', event => {
-                var currentValue = el.parentElement.querySelector('input').value
-                if (currentValue >= 1) {
-                    el.parentElement.querySelector('input').value = +currentValue - 1
-                }
-            }))
-        }
+        // var stepperAdd = document.querySelectorAll('.stepper-add');
+        // var stepperSub = document.querySelectorAll('.stepper-sub');
+        // if (stepperAdd.length) {
+        //     stepperAdd.forEach(el => el.addEventListener('click', event => {
+        //         var currentValue = el.parentElement.querySelector('input').value
+        //         el.parentElement.querySelector('input').value = +currentValue + 1
+        //     }))
+        //
+        //     stepperSub.forEach(el => el.addEventListener('click', event => {
+        //         var currentValue = el.parentElement.querySelector('input').value
+        //         if (currentValue >= 1) {
+        //             el.parentElement.querySelector('input').value = +currentValue - 1
+        //         }
+        //     }))
+        // }
 
         //Link List Toggle
+
         var linkListToggle = document.querySelectorAll('[data-trigger-switch]:not([data-toggle-theme])');
         if (linkListToggle.length) {
             linkListToggle.forEach(el => el.addEventListener('click', event => {
@@ -428,7 +429,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.classList.remove('no-click');
                 }, 270)
                 var getCheck = document.getElementById(switchData);
-                getCheck.checked ? getCheck.checked = false : getCheck.checked = true;
+                // getCheck.checked ? getCheck.checked = false : getCheck.checked = true;
+                getCheck.checked = !getCheck.checked;
+                getCheck.dispatchEvent(new Event('change', { bubbles: true }));
             }))
         }
 
@@ -442,10 +445,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.classList.remove('show')
                 })
                 var toastData = el.getAttribute('data-toast')
-                var notificationToast = document.getElementById(toastData);
-                console.log(notificationToast)
-
-                var notificationToast = new bootstrap.Toast(notificationToast);
+                var toastable = document.getElementById(toastData);
+                var notificationToast = new bootstrap.Toast(toastable);
                 notificationToast.show();
             }));
         }
@@ -856,34 +857,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Lazy Loading
         // var lazyLoad = new LazyLoad();
-        //
-        // //Calling Functions Required After External Menus are Loaded
-        // var dataMenuLoad = document.querySelectorAll('[data-menu-load]')
-        // if (dataMenuLoad[0]) {
-        //     dataMenuLoad.forEach(function (e) {
-        //         var menuLoad = e.getAttribute('data-menu-load')
-        //         fetch(menuLoad)
-        //             .then(data => data.text())
-        //             .then(html => e.innerHTML = html)
-        //             .then(data => {
-        //                 setTimeout(function () {
-        //                     if (dataMenuLoad[dataMenuLoad.length - 1] === e) {
-        //                         activatePage();
-        //                         darkMode();
-        //                         card_extender();
-        //                         setHighlights();
-        //                     }
-        //                 }, 100);
-        //             }).catch(function () {
-        //             e.innerHTML = "<h5 class='font-16 px-4 py-4 mb-0'>Please use a Local Server such as AMPPS or WAMP to see externally loaded menus or put " + pwaName + " files on your server. <br> To load menus from inside your HTML you must remove the data-menu-load=`your-menu.html` and copy what is inside your-menu.html in this div. <br>Using external menus, editing a single menu will show in all pages. <br><br> For more information please read the Documentation -> Menu Chapter.</h5>";
-        //         });
-        //     })
-        // } else {
-        //     activatePage();
-        //     darkMode();
-        //     card_extender();
-        //     setHighlights();
-        // }
+
+        //Calling Functions Required After External Menus are Loaded
+
+        var dataMenuLoad = document.querySelectorAll('[data-menu-load]')
+        if (dataMenuLoad[0]) {
+            dataMenuLoad.forEach(function (e) {
+                var menuLoad = e.getAttribute('data-menu-load')
+                fetch(menuLoad)
+                    .then(data => data.text())
+                    .then(html => e.innerHTML = html)
+                    .then(data => {
+                        setTimeout(function () {
+                            if (dataMenuLoad[dataMenuLoad.length - 1] === e) {
+                                activatePage();
+                                darkMode();
+                                card_extender();
+                                setHighlights();
+                            }
+                        }, 100);
+                    }).catch(function () {
+                    e.innerHTML = "<h5 class='font-16 px-4 py-4 mb-0'>Please use a Local Server such as AMPPS or WAMP to see externally loaded menus or put " + pwaName + " files on your server. <br> To load menus from inside your HTML you must remove the data-menu-load=`your-menu.html` and copy what is inside your-menu.html in this div. <br>Using external menus, editing a single menu will show in all pages. <br><br> For more information please read the Documentation -> Menu Chapter.</h5>";
+                });
+            })
+        } else {
+            activatePage();
+            darkMode();
+            card_extender();
+            setHighlights();
+        }
 
         // Check Documentation folder for detailed explanations on
         // Externally loading Javascript files for better performance.

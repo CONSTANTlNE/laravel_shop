@@ -65,6 +65,24 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'ubill' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/ubill.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
+        'bog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/bog.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
+        'socialite' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/socialite.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

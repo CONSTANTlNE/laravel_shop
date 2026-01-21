@@ -9,13 +9,31 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Translatable\HasTranslations;
 
 class Subcategory extends Model implements HasMedia
 {
     use HasTranslations,InteractsWithMedia,SoftDeletes;
 
+    protected $casts = [
+        'category_order_id' => 'integer',
+        'category_id' => 'integer',
+        'active' => 'boolean',
+        'order' => 'integer',
+    ];
+
     public array $translatable = ['name'];
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+
+        $this->addMediaConversion('thumbnail')
+            ->performOnCollections('category_image')
+            ->width(368)
+            ->height(232)
+            ->sharpen(10);
+    }
 
     public function category(): BelongsTo
     {
@@ -27,7 +45,7 @@ class Subcategory extends Model implements HasMedia
         return $this->hasMany(Product::class)->orderBy('order');
     }
 
-    public function categoryOrder()
+    public function categoryOrder(): BelongsTo
     {
         return $this->belongsTo(CategoryOrder::class);
     }
@@ -54,12 +72,12 @@ class Subcategory extends Model implements HasMedia
         $originalSlug = $slug;
 
         // Ensure uniqueness
-        $counter = 1;
-        while (Product::where('slug', $slug)
-            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-            ->exists()) {
-            $slug = $originalSlug.'-'.$counter++;
-        }
+        //        $counter = 1;
+        //        while (Subcategory::where('slug', $slug)
+        //            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+        //            ->exists()) {
+        //            $slug = $originalSlug.'-'.$counter++;
+        //        }
 
         return $slug;
     }
@@ -69,18 +87,44 @@ class Subcategory extends Model implements HasMedia
         parent::boot();
 
         static::creating(function ($subcategory) {
+
             if (! $subcategory->slug) {
-                $subcategory->slug = self::cleanUnicodeAndSlug($subcategory->name).'-sub';
+                $subcategory->slug = self::cleanUnicodeAndSlug($subcategory->name);
             }
 
-            $subcategory->order = Subcategory::max('order') + 1;
+            // ⛔ Skip insert if slug already exists
+            if (
+                Subcategory::where('slug', $subcategory->slug)->exists()
+            ) {
+                return false; // cancels INSERT
+            }
 
+            // auto order
+            $subcategory->order = (Subcategory::max('order') ?? 0) + 1;
         });
 
         static::updating(function ($subcategory) {
 
             if ($subcategory->isDirty('name')) {
-                $subcategory->slug = self::cleanUnicodeAndSlug($subcategory->name).'-sub';
+
+                // get string from translatable name
+                $name = is_array($subcategory->name)
+                    ? $subcategory->getTranslation('name', 'ka')
+                    : $subcategory->name;
+
+                $newSlug = self::cleanUnicodeAndSlug($name, $subcategory->id);
+
+                // ⛔ If slug already exists → DO NOT update slug
+                if (
+                    Subcategory::where('slug', $newSlug)
+                        ->where('id', '!=', $subcategory->id)
+                        ->exists()
+                ) {
+                    // keep old slug, allow update to continue
+                    $subcategory->slug = $subcategory->getOriginal('slug');
+                } else {
+                    $subcategory->slug = $newSlug;
+                }
             }
 
             // If order changes, reorder siblings

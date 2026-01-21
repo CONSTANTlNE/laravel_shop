@@ -6,12 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartItem extends Model
 {
-    public function product(){
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
 
     public function owner()
     {
         return $this->morphTo();
+    }
+
+    public function couponDiscount()
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }

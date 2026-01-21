@@ -1,5 +1,3 @@
-
-
 document.addEventListener('htmx:afterOnLoad', function (event) {
 
     let htmlresponse = event.detail.xhr.response;
@@ -13,7 +11,7 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
     // console.log(xhr.status)
 
 
-    if (xhr.status === 500){
+    if (xhr.status === 500) {
         let errorWindow = window.open("", "_blank", "width=1400,height=800");
 
         if (errorWindow) {
@@ -23,6 +21,10 @@ document.addEventListener('htmx:afterOnLoad', function (event) {
         } else {
             console.error("Popup blocked or could not be opened.");
         }
+    }
+
+    if (xhr.status === 419) {
+        window.location.reload();
     }
 
 

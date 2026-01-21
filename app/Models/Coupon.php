@@ -6,11 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Coupon extends Model
 {
-    public function promoter(){
+    public function promoter()
+    {
         return $this->belongsTo(Promoter::class);
     }
 
-    public function products(){
+    public function products()
+    {
         return $this->hasMany(Product::class);
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
     }
 }

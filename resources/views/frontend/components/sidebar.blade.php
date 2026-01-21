@@ -2,57 +2,115 @@
      {{--         data-menu-load="menu-main.html"--}}
      style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
 
-    <div class="card card-style bg-23 mb-3 rounded-m mt-3" data-card-height="150">
-        <div class="card-top m-3">
-            <a href="#" data-bs-dismiss="offcanvas" class="icon icon-xs bg-theme rounded-s color-theme float-end"><i class="bi bi-caret-left-fill"></i></a>
-        </div>
-        <div class="card-bottom p-3">
-            <h1 class="color-white font-20 font-700 mb-n2">Duo Mobile</h1>
-            <p class="color-white font-12 opacity-70 mb-n1">Bootstrap 5 Mobile PWA</p>
-        </div>
-        <div class="card-overlay bg-gradient-fade rounded-0"></div>
-    </div>
+    {{--    <div class="card card-style bg-23 mb-3 rounded-m mt-3" data-card-height="150">--}}
+    {{--        <div class="card-top m-3">--}}
+    {{--            <a href="#" data-bs-dismiss="offcanvas" class="icon icon-xs bg-theme rounded-s color-theme float-end"><i--}}
+    {{--                    class="bi bi-caret-left-fill"></i></a>--}}
+    {{--        </div>--}}
+    {{--        <div class="card-bottom p-3">--}}
+    {{--            <h1 class="color-white font-20 font-700 mb-n2">Duo Mobile</h1>--}}
+    {{--            <p class="color-white font-12 opacity-70 mb-n1">Bootstrap 5 Mobile PWA</p>--}}
+    {{--        </div>--}}
+    {{--        <div class="card-overlay bg-gradient-fade rounded-0"></div>--}}
+    {{--    </div>--}}
 
-    @auth()
-    <div class="bg-theme mx-3 rounded-m shadow-m mt-3 mb-3">
-        <div class="d-flex px-2 pb-2 pt-2">
-{{--    <div> --}}
-{{--    <a href="#"><img src="images/pictures/7s.jpg" width="45" class="rounded-s" alt="img"></a> --}}
-{{--    </div> --}}
-            <div class="ps-2 align-self-center">
-                <h5 class="ps-1 mb-0 line-height-xs pt-1">{{auth('web')->user()?->name}}</h5>
-{{--  <h6 class="ps-1 mb-0 font-400 opacity-40">Front End Designer</h6> --}}
+    @auth('admin')
+        <div class="card card-style mb-3 rounded-m mt-3" data-card-height="45">
+            <div class="card-top m-3">
+
             </div>
-            <div class="ms-auto">
-                <a href="#" data-bs-toggle="dropdown" class="icon icon-m ps-3"><i class="bi bi-three-dots-vertical font-18 color-theme"></i></a>
-                <div class="dropdown-menu  bg-transparent border-0 mt-n1 ms-3">
-                    <div class="card card-style rounded-m shadow-xl mt-1 me-1">
-                        <div class="list-group list-custom list-group-s list-group-flush rounded-xs px-3 py-1">
-                            <a href="page-profile-admin.html" class="color-theme opacity-70 list-group-item py-1"><strong class="font-500 font-12">Your Profile</strong><i class="bi bi-chevron-right"></i></a>
-                            <a href="page-activity.html" class="color-theme opacity-70 list-group-item py-1"><strong class="font-500 font-12">Notifications</strong><i class="bi bi-chevron-right"></i></a>
-                            <a href="page-login-2.html" class="color-theme opacity-70 list-group-item py-1"><strong class="font-500 font-12">Log Out</strong><i class="bi bi-chevron-right"></i></a>
-                        </div>
-                    </div>
+            <div class="card-bottom p-3">
+                <h1 class="color-black font-20 font-700 mb-n2">{{auth('admin')->user()?->name}}</h1>
+            </div>
+            <div class="card-overlay  rounded-0"></div>
+        </div>
+    @endif
+
+    @auth('web')
+        <div class="bg-theme mx-3 rounded-m shadow-m mt-3 mb-3" >
+            <div class="d-flex px-2 pb-2 pt-2">
+                {{--    <div> --}}
+                {{--    <a href="#"><img src="images/pictures/7s.jpg" width="45" class="rounded-s" alt="img"></a> --}}
+                {{--    </div> --}}
+                <div class="ps-2 align-self-center">
+                    <h5 class=" mb-0 line-height-xs ">{{auth('web')->user()?->name}}</h5>
+                    {{--  <h6 class="ps-1 mb-0 font-400 opacity-40">Front End Designer</h6> --}}
                 </div>
+{{--                <div class="ms-auto">--}}
+{{--                    <a href="#" data-bs-toggle="dropdown" class="icon icon-m ps-3"><i--}}
+{{--                            class="bi bi-three-dots-vertical font-18 color-theme"></i></a>--}}
+{{--                    <div class="dropdown-menu  bg-transparent border-0 mt-n1 ms-3">--}}
+{{--                        <div class="card card-style rounded-m shadow-xl mt-1 me-1">--}}
+{{--                            <div class="list-group list-custom list-group-s list-group-flush rounded-xs px-3 py-1">--}}
+{{--                                <a--}}
+{{--                                    href="#"--}}
+{{--                                    --}}{{--                                    href="{{route('customer.profile')}}"--}}
+{{--                                    data-bs-toggle="offcanvas"--}}
+{{--                                    hx-get="{{route('customer.profile.htmx')}}"--}}
+{{--                                    hx-vals='{"_token": "{{csrf_token()}}"}'--}}
+{{--                                    hx-target="#menu-profile"--}}
+{{--                                    data-bs-target="#menu-profile"--}}
+{{--                                    class="color-theme opacity-70 list-group-item py-1">--}}
+{{--                                    <strong class="font-500 font-12">--}}
+{{--                                        {{__('Profile')}}--}}
+{{--                                    </strong>--}}
+{{--                                    <i class="bi bi-chevron-right"></i>--}}
+{{--                                </a>--}}
+{{--                                <a href="page-activity.html" class="color-theme opacity-70 list-group-item py-1"><strong--}}
+{{--                                        class="font-500 font-12">Notifications</strong><i--}}
+{{--                                        class="bi bi-chevron-right"></i></a>--}}
+{{--                                <a href="page-login-2.html" class="color-theme opacity-70 list-group-item py-1"><strong--}}
+{{--                                        class="font-500 font-12">Log Out</strong><i class="bi bi-chevron-right"></i></a>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
             </div>
         </div>
-    </div>
     @endauth
 
-    <span class="menu-divider">NAVIGATION</span>
-    <div class="menu-list">
+{{--    <span class="menu-divider">{{__('Navigation')}}</span>--}}
+    <div class="menu-list @if(!auth()->check()) mt-3 @endif " >
         <div class="card card-style rounded-m p-3 py-2 mb-0">
-            <a href="index.html" id="nav-homes"><i class="gradient-blue shadow-bg shadow-bg-xs bi bi-house-fill"></i><span>Homepage</span><i class="bi bi-chevron-right"></i></a>
-            <a href="#" id="nav-comps" data-bs-toggle="offcanvas" data-bs-target="#categories"><i class="gradient-red shadow-bg shadow-bg-xs bi bi-gear-fill"></i><span>Categories</span><i class="bi bi-chevron-right"></i></a>
-            <a href="index-pages.html" id="nav-pages"><i class="gradient-green shadow-bg shadow-bg-xs bi bi-heart-fill"></i><span>Site Pages</span><i class="bi bi-chevron-right"></i></a>
-            <a href="index-media.html" id="nav-media"><i class="gradient-yellow shadow-bg shadow-bg-xs bi bi-image-fill"></i><span>Media Styles</span><i class="bi bi-chevron-right"></i></a>
-            <a href="index-contact.html" id="nav-mails"><i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill"></i><span>Contact</span><i class="bi bi-chevron-right"></i></a>
+            @auth('web')
+                <a href="{{route('customer.orders')}}"
+                   data-bs-toggle="offcanvas"
+                   hx-get="{{route('customer.profile.htmx')}}"
+                   hx-vals='{"_token": "{{csrf_token()}}"}'
+                   hx-target="#menu-profile"
+                   data-bs-target="#menu-profile"
 
-            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-terms" ><i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill">
-                </i><span>Terms & Conditions</span><i class="bi bi-chevron-right"></i>
+                ><i
+                        class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
+                    </i><span>{{__('Profile')}}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="{{route('customer.orders')}}" ><i
+                        class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
+                    </i><span>{{__('Purchases')}}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            @endauth
+
+            <a href="#" id="nav-comps" data-bs-toggle="offcanvas" data-bs-target="#categories"><i
+                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i><span>{{__('Categories')}}</span><i
+                    class="bi bi-chevron-right"></i></a>
+            {{--            <a href="index-pages.html" id="nav-pages"><i--}}
+            {{--                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-heart-fill"></i><span>Site Pages</span><i--}}
+            {{--                    class="bi bi-chevron-right"></i></a>--}}
+            {{--            <a href="index-media.html" id="nav-media"><i--}}
+            {{--                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-image-fill"></i><span>Media Styles</span><i--}}
+            {{--                    class="bi bi-chevron-right"></i></a>--}}
+            {{--            <a href="index-contact.html" id="nav-mails"><i--}}
+            {{--                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill"></i><span>Contact</span><i--}}
+            {{--                    class="bi bi-chevron-right"></i></a>--}}
+
+            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-terms"><i
+                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
+                </i><span>{{__('Terms & Conditions')}}</span><i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('faqs')}}" >
-                <i class="gradient-magenta shadow-bg shadow-bg-xs bi bi-envelope-fill">
+            <a href="{{route('faqs')}}">
+                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>F.A.Q</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
@@ -60,83 +118,76 @@
         </div>
     </div>
 
-    <span class="menu-divider mt-4">SETTINGS</span>
-    <div class="menu-list">
-        <div class="card card-style rounded-m p-3 py-2 mb-0">
-            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-color">
-                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-palette-fill"></i>
-                <span>Highlights</span>
-                <i class="bi bi-chevron-right"></i>
-            </a>
-            <a href="#" data-toggle-theme data-trigger-switch="switch-2">
-                <i class="gradient-dark shadow-bg shadow-bg-xs bi bi-moon-fill font-13"></i>
-                <span>Dark Mode</span>
-                <div class="form-switch ios-switch switch-green switch-s me-2">
-                    <input type="checkbox" data-toggle-theme class="ios-input" id="switch-2">
-                    <label class="custom-control-label" for="switch-2"></label>
-                </div>
-            </a>
-        </div>
-    </div>
 
-    <span class="menu-divider mt-4">Messages</span>
-    <div class="menu-content px-3">
-        <div class="card card-style rounded-m p-2 mx-0 bg-theme mb-0">
-            <div class="menu-list">
-                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-orange"><span class="font-500 color-theme">Olivia Orange</span><em class="badge badge-s bg-red-dark">3</em></a>
-                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-green"><span class="font-500 color-theme">Marcus Green</span><em class="badge badge-s bg-red-dark">5</em></a>
-                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img" class="gradient-blue"><span class="font-500 color-theme">Danny Blueish</span><em class="badge badge-s bg-red-dark">1</em></a>
-            </div>
-        </div>
-    </div>
+    {{--    <span class="menu-divider mt-4">Messages</span>--}}
+    {{--    <div class="menu-content px-3">--}}
+    {{--        <div class="card card-style rounded-m p-2 mx-0 bg-theme mb-0">--}}
+    {{--            <div class="menu-list">--}}
+    {{--                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img"--}}
+    {{--                                 class="gradient-orange"><span class="font-500 color-theme">Olivia Orange</span><em--}}
+    {{--                        class="badge badge-s bg-red-dark">3</em></a>--}}
+    {{--                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img"--}}
+    {{--                                 class="gradient-green"><span class="font-500 color-theme">Marcus Green</span><em--}}
+    {{--                        class="badge badge-s bg-red-dark">5</em></a>--}}
+    {{--                <a href="#"><img src="{{asset('defaults/default_placeholder.png')}}" alt="img"--}}
+    {{--                                 class="gradient-blue"><span class="font-500 color-theme">Danny Blueish</span><em--}}
+    {{--                        class="badge badge-s bg-red-dark">1</em></a>--}}
+    {{--            </div>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
 
-    <span class="menu-divider mt-4">Latest Updates</span>
-    <div class="menu-content px-3">
-        <div class="card card-style rounded-m p-2 mx-0 bg-theme">
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>
-                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">
-                            New design, more components. Bootstrap 5 and Vanilla JS.
-                        </p>
-                    </div>
-                </div>
-            </a>
-            <div class="mb-2"></div>
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">PWA Ready</h5>
-                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">
-                            Add Duo to your home screen and enjoy it as you would a native app.
-                        </p>
-                    </div>
-                </div>
-            </a>
-            <div class="mb-2"></div>
-            <a href="#">
-                <div class="d-flex">
-                    <div class="align-self-center">
-                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60" alt="img">
-                    </div>
-                    <div class="align-self-center">
-                        <h5 class="font-14 mb-0 ps-1 pt-1">Care & Quality</h5>
-                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">
-                            We love all our customers, and we're always here to help out.
-                        </p>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
+    {{--    <span class="menu-divider mt-4">Latest Updates</span>--}}
+    {{--    <div class="menu-content px-3">--}}
+    {{--        <div class="card card-style rounded-m p-2 mx-0 bg-theme">--}}
+    {{--            <a href="#">--}}
+    {{--                <div class="d-flex">--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60"--}}
+    {{--                             alt="img">--}}
+    {{--                    </div>--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <h5 class="font-14 mb-0 ps-1 pt-1">Duo 3.0 Released</h5>--}}
+    {{--                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">--}}
+    {{--                            New design, more components. Bootstrap 5 and Vanilla JS.--}}
+    {{--                        </p>--}}
+    {{--                    </div>--}}
+    {{--                </div>--}}
+    {{--            </a>--}}
+    {{--            <div class="mb-2"></div>--}}
+    {{--            <a href="#">--}}
+    {{--                <div class="d-flex">--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60"--}}
+    {{--                             alt="img">--}}
+    {{--                    </div>--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <h5 class="font-14 mb-0 ps-1 pt-1">PWA Ready</h5>--}}
+    {{--                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">--}}
+    {{--                            Add Duo to your home screen and enjoy it as you would a native app.--}}
+    {{--                        </p>--}}
+    {{--                    </div>--}}
+    {{--                </div>--}}
+    {{--            </a>--}}
+    {{--            <div class="mb-2"></div>--}}
+    {{--            <a href="#">--}}
+    {{--                <div class="d-flex">--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <img src="{{asset('defaults/default_placeholder.png')}}" class="rounded-s me-2" width="60"--}}
+    {{--                             alt="img">--}}
+    {{--                    </div>--}}
+    {{--                    <div class="align-self-center">--}}
+    {{--                        <h5 class="font-14 mb-0 ps-1 pt-1">Care & Quality</h5>--}}
+    {{--                        <p class="ps-1 pb-1 mb-0 font-11 line-height-s opacity-70">--}}
+    {{--                            We love all our customers, and we're always here to help out.--}}
+    {{--                        </p>--}}
+    {{--                    </div>--}}
+    {{--                </div>--}}
+    {{--            </a>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
 
-    <p class="text-center mb-0 mt-n3 pb-3 font-9 text-uppercase font-600 color-theme">Made with <i class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i> by Enabled in <span class="copyright-year"></span>.</p>
+    {{--    <p class="text-center mb-0 mt-n3 pb-3 font-9 text-uppercase font-600 color-theme">Made with <i--}}
+    {{--            class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i> by Enabled in <span class="copyright-year"></span>.--}}
+    {{--    </p>--}}
 
 </div>

@@ -29,12 +29,12 @@
                                 <div class="divider mt-4"></div>
                                 <input type="hidden" name="terms{{$locale->abbr}}" id="content_{{$locale->abbr}}">
                                 <div id="editor{{$locale->abbr}}">
-                                   {!! $terms->getTranslation('text',$locale->abbr) !!}
+                                   {!! $terms?->getTranslation('text',$locale->abbr) !!}
                                 </div>
                                 <div class="d-flex justify-content-center">
                                     <button
                                         class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 mt-2">
-                                        Update
+                                        {{__('Update')}}
                                     </button>
                                 </div>
                                 <div class="divider mt-4"></div>
@@ -55,11 +55,39 @@
         <script>
             @foreach($locales as $locale)
                 const quill{{$locale->abbr}} = new Quill('#editor{{$locale->abbr}}', {
-                    theme: 'snow'
+                    theme: 'snow',
+                    placeholder: 'Write description...',
+                    bounds: document.body,
+                    modules: {
+                        toolbar: [
+                            [{ header: [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ color: [] }, { background: [] }],
+                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            [{ align: [] }],
+                            ['blockquote', 'code-block'],
+                            ['link', 'image', 'video'],
+                            ['clean']
+                        ],
+                        history: {
+                            delay: 2000,
+                            maxStack: 500,
+                            userOnly: true
+                        },
+                        clipboard: {
+                            matchVisual: false
+                        }
+                    },
+                    formats: [
+                        'header', 'bold', 'italic', 'underline', 'strike',
+                        'color', 'background',
+                        'list', 'bullet', 'align',
+                        'link', 'image', 'video',
+                        'blockquote', 'code-block'
+                    ]
                 });
             @endforeach
             const form = document.getElementById('terms_form')
-
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault()

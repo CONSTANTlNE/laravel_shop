@@ -2,156 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Language;
+use App\Exports\TotalSalesExport;
 use App\Models\Product;
-use App\Models\Setting;
-use App\Models\Subcategory;
-use App\Services\Conversion;
+use App\Services\CartService;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class ProductController extends Controller
+class ProductController extends BaseController
 {
-    protected $locales;
+    protected $cart;
 
-    protected $mainLocale;
-
-    public $settings;
-
-    public function __construct()
+    public function __construct(CartService $cart)
     {
-        // Initialize the variable once for all methods
-        $this->locales = Language::all();
-        $this->mainLocale = Language::where('main', 1)->first();
-        $this->settings = Setting::first();
+        parent::__construct();
+
+        $this->cart = $cart;
+
     }
 
     public function store(Request $request)
     {
 
-        $request->validate([
-            'product_name_'.$this->mainLocale->abbr => 'required|string|max:255',
-            'description_'.$this->mainLocale->abbr => 'required|string|max:255',
-            'price' => 'required|numeric|min:1',
-            'stock' => 'required|integer|min:1',
-            'category_id' => 'required|integer|min:1',
-            'category_slug' => 'required|string|max:150',
-            //            'subcategory_id' => 'nullable|exists:subcategories,id',
-            'sku' => 'nullable|string|max:150',
-            'files' => 'required|array',
-            'files.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5024',
-        ]);
-
-        if ($request->filled('video')) {
-            $url = $request->video;
-            $host = parse_url($url, PHP_URL_HOST);
-
-            if (! in_array($host, ['www.youtube.com', 'youtube.com', 'youtu.be'])) {
-                return back()->withErrors(['video' => 'The video must be a valid YouTube link.']);
-            }
-
-            // Parse query string from URL
-            parse_str(parse_url($url, PHP_URL_QUERY), $query);
-
-            // Get the video ID
-            $videoId = $query['v'] ?? null;
-        } else {
-            $videoId = null;
-        }
-
-        $findcategory = Category::where('id', $request->input('category_id'))
-            ->where('slug', $request->input('category_slug'))
-            ->first();
-        if ($findcategory) {
-            $category = $findcategory;
-            $subcategory = null;
-        } else {
-            $findsubcategory = Subcategory::where('id', $request->input('category_id'))
-                ->where('slug', $request->input('category_slug'))
-                ->first();
-            if ($findsubcategory) {
-                $category = $findsubcategory->category;
-                $subcategory = $findsubcategory->id;
-            } else {
-                return back()->with('alert_error', 'Category or Subcategory not found');
-            }
-        }
-
-        $product = new Product;
-
-        foreach ($this->locales as $locale) {
-            $cleaned = preg_replace('/\s+/', ' ', $request->input('product_name_'.$locale->abbr));
-            $trimmed = trim($cleaned);
-            $cleaned_descr = preg_replace('/\s+/', ' ', $request->input('description_'.$locale->abbr));
-            $trimmed_descr = trim($cleaned_descr);
-            $product->setTranslation('name', $locale->abbr, $trimmed);
-            $product->setTranslation('description', $locale->abbr, $trimmed_descr);
-        }
-
-        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        $historyEntry = [
-            'id'=>$code,
-            'update_date' => now()->toDateTimeString(),
-            'price' => $request->price,
-            'user_id' => auth()->id(),
-            'discount_id'=> '',
-            'discount%'=> '',
-            'reason'=>'Initial Price'
-        ];
-
-        $history = $product->price_history ?? [];
-        $history[] = $historyEntry;
-
-        $product->price_history = $history;
-        $product->sku = $request->sku;
-        $product->subcategory_id = $subcategory;
-        $product->category_id = $category->id;
-        $product->stock = $request->stock;
-        $product->featured = 0;
-        $product->price = $request->price;
-        $product->embed_video = $videoId;
-        $product->admin_id = auth('admin')->id();
-
-        $product->save();
-        $product->categories()->attach($category->id);
-
-        $uploadedFile = $request->file('files');
-
-        foreach ($uploadedFile as $file) {
-            $thumbnail = new Conversion()->thumbnail($file);
-            $mainImage = new Conversion()->convert($file);
-            // save thumbnail
-            Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
-            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
-            Storage::disk('public')->delete($product->slug.'.webp');
-
-            // save main image
-            Storage::disk('public')->put($product->slug.'.webp', $mainImage);
-            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
-            Storage::disk('public')->delete($product->slug.'.webp');
-        }
+        new ProductService()->store($request, $this->mainLocale, $this->locales);
 
         return back()->with('alert_success', 'Product created successfully.');
     }
 
     public function show($locale, $slug)
     {
-        $product = Product::where('slug', $slug)
+        $query = Product::where('slug', $slug)
             ->with([
                 'features' => function ($query) {
                     $query->orderBy('id'); // order by id ascending
                 },
                 'media', // keep media as usual
-            ])
-            ->first();
+            ])->first();
 
-        if (! $product) {
-            return back()->with('alert_error', 'Product not found');
+        if (!$query) {
+            $product = Product::where('id', $slug)
+                ->with([
+                    'features' => function ($query) {
+                        $query->orderBy('id'); // order by id ascending
+                    },
+                    'media', // keep media as usual
+                ])->first();
         }
 
-        $settings = $this->settings;
+        $product=$query;
+
+        if (!$product) {
+            return back()->with('alert_error', __('Product not found'));
+        }
+
+        $settings = $this->site_settings;
 
         $main_image = Media::where('model_id', $product->id)
             ->where('collection_name', 'product_image')
@@ -163,20 +67,27 @@ class ProductController extends Controller
             ->take(10)
             ->get();
 
+        $cartItems = $this->cart->getCart();
 
-        return view('frontend.product-single.product_single', compact('product', 'settings', 'main_image','similar_products'));
+        if ($cartItems->contains('product_id', $product->id)) {
+            $in_cart = true;
+        } else {
+            $in_cart = false;
+        }
+
+        return view('frontend.product-single.product_single', compact('in_cart', 'product', 'settings', 'main_image', 'similar_products'));
     }
 
     public function mainImage(Request $request)
     {
-        $productmedia = Media::where('model_id', $request->product_id)->get();
+        $productmedia = Media::where('model_id', $request->input('model_id'))->get();
 
         foreach ($productmedia as $media) {
             $media->main = 0;
             $media->save();
         }
 
-        $media = Media::find($request->media_id);
+        $media = Media::find($request->input('media_id'));
 
         if ($media) {
             if ($media->main == 1) {
@@ -195,14 +106,11 @@ class ProductController extends Controller
 
     public function deleteImage(Request $request)
     {
-        // thumbnail
-        $media = Media::find($request->media_id);
-        // main image
-        $media2 = Media::find($request->media_id - 1);
 
-        if ($media && $media2) {
+        $media = Media::find($request->input('media_id'));
+
+        if ($media) {
             $media->delete();
-            $media2->delete();
 
             return back()->with('alert_success', 'Image deleted successfully');
         }
@@ -214,90 +122,24 @@ class ProductController extends Controller
     public function addImage(Request $request)
     {
 
-        $request->validate([
-            'files' => 'required|array',
-            'files.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5024',
-        ]);
+        new ProductService()->addImage($request);
 
-        $product = Product::findOrFail($request->product_id);
-
-        if ($product) {
-            $uploadedFile = $request->file('files');
-            foreach ($uploadedFile as $file) {
-                $thumbnail = new Conversion()->thumbnail($file);
-                $mainImage = new Conversion()->convert($file);
-                // save thumbnail
-                Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
-                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
-                Storage::disk('public')->delete($product->slug.'.webp');
-                // save main image
-                Storage::disk('public')->put($product->slug.'.webp', $mainImage);
-                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
-                Storage::disk('public')->delete($product->slug.'.webp');
-            }
-        }
-
-        return back()->with('alert_success', 'Images added successfully');
+        return back()->with('alert_error', 'Product not found');
 
     }
 
     public function priceUpdate(Request $request)
     {
 
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'price' => 'required|numeric',
-        ]);
-
-        $product = Product::findOrFail($request->product_id);
-
-        // 4-digit numeric, with leading zeros allowed (e.g. "0042")
-        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-
-        // Prepare history entry
-        $historyEntry = [
-            'id'=>$code,
-            'update_date' => now()->toDateTimeString(),
-            'price' => $request->price,
-            'user_id' => auth()->id(),
-            'discount_id'=> '',
-            'discount%'=> '',
-            'reason'=>'manual update'
-        ];
-
-        // Get current history or start with empty array
-        $history = $product->price_history ?? [];
-
-        // Append new entry
-        $history[] = $historyEntry;
-
-        // Update product
-        $product->price = $request->price;
-        $product->price_history = $history;
-        $product->save();
+        new ProductService()->priceUpdate($request);
 
         return back()->with('alert_success', 'Price updated successfully');
     }
 
     public function inStock(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-        ]);
 
-        $product = Product::find($request->product_id);
-
-        if (! $product) {
-            return back()->with('alert_error', 'Product not found');
-        }
-
-        if ($product->in_stock == 1) {
-            $product->in_stock = 0;
-        } else {
-            $product->in_stock = 1;
-        }
-
-        $product->save();
+        new ProductService()->inStock($request);
 
         return back()->with('alert_success', 'In stock updated successfully');
 
@@ -309,7 +151,7 @@ class ProductController extends Controller
             'product_id' => 'required|exists:products,id',
             'description_'.$this->mainLocale->abbr => 'required|string|max:255',
         ]);
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($request->input('product_id'));
         foreach ($this->locales as $locale) {
             $cleaned_descr = preg_replace('/\s+/', ' ', $request->input('description_'.$locale->abbr));
             $trimmed_descr = trim($cleaned_descr);
@@ -328,7 +170,7 @@ class ProductController extends Controller
             'product_id' => 'required|exists:products,id',
             'product_name_'.$this->mainLocale->abbr => 'required|string|max:255',
         ]);
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($request->input('product_id'));
         foreach ($this->locales as $locale) {
             $cleaned_descr = preg_replace('/\s+/', ' ', $request->input('product_name_'.$locale->abbr));
             $trimmed_descr = trim($cleaned_descr);
@@ -348,8 +190,8 @@ class ProductController extends Controller
             'order' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
-        $product->order = $request->order;
+        $product = Product::findOrFail($request->input('product_id'));
+        $product->order = $request->input('order');
         $product->save();
 
         return back()->with('alert_success', 'Order updated successfully');
@@ -361,7 +203,7 @@ class ProductController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($request->input('product_id'));
 
         // Build query for products in the same category/subcategory
         $query = Product::query();
@@ -377,8 +219,8 @@ class ProductController extends Controller
         // ✅ Only check when turning ON
         if ($product->show_in_main == 0) {
             if ($mainCount >= 6) {
-                return back()->with('alert_error', 'You can only have 6 products in main for this ' .
-                    ($product->subcategory_id ? 'subcategory' : 'category') . '.');
+                return back()->with('alert_error', 'You can only have 6 products in main for this '.
+                    ($product->subcategory_id ? 'subcategory' : 'category').'.');
             }
             $product->show_in_main = 1;
         } else {
@@ -397,7 +239,7 @@ class ProductController extends Controller
             'video' => 'required|string|max:100',
         ]);
 
-        $url = $request->video;
+        $url = $request->input('video');
         $host = parse_url($url, PHP_URL_HOST);
 
         if (! in_array($host, ['www.youtube.com', 'youtube.com', 'youtu.be'])) {
@@ -409,8 +251,8 @@ class ProductController extends Controller
 
         // Get the video ID
         $videoId = $query['v'] ?? null;
-
-        $product = Product::find($request->product_id);
+        //        dd($videoId);
+        $product = Product::find($request->input('product_id'));
         $product->embed_video = $videoId;
         $product->save();
 
@@ -423,25 +265,107 @@ class ProductController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
-        $product = Product::find($request->product_id);
+        $product = Product::find($request->input('product_id'));
         $product->embed_video = null;
         $product->save();
 
         return back()->with('alert_success', 'Video deleted successfully');
     }
 
-    public function featured(Request $request){
+    public function featured(Request $request)
+    {
         $request->validate([
             'product_id' => 'required|exists:products,id',
         ]);
 
-        $product=Product::find($request->product_id);
-        if($product->featured == 1){
+        $product = Product::find($request->input('product_id'));
+        if ($product->featured == 1) {
             $product->featured = 0;
-        }else{
+        } else {
             $product->featured = 1;
         }
         $product->save();
+
         return back()->with('alert_success', 'Featured updated successfully');
+    }
+
+    public function htmxImages(Request $request)
+    {
+
+        $product = Product::where('id', $request->product_id)->with('media')->first();
+        if ($product) {
+            return view('backend.components.images_htmx', compact('product'));
+        } else {
+            return 'Product not found';
+        }
+    }
+
+    public function searchHtmx(Request $request)
+    {
+
+        $search = trim($request->input('search', ''));
+
+        $search_products = [];
+
+        if (mb_strlen($search, 'UTF-8') >= 3) {
+            $search_products = Product::where('name', 'like', "%{$search}%")
+                ->with('media')
+                ->paginate(10);
+        }
+
+        return view('frontend.components.toasts.search_htmx', compact('search_products'));
+    }
+
+    public function salesSumDownload(Request $request)
+    {
+
+        $from = $request->input('date_from');
+        $to = $request->input('date_to');
+
+        return new TotalSalesExport($from, $to)->download('invoices.xlsx');
+
+    }
+
+    public function discounted(Request $request)
+    {
+
+        $query = Product::where('discounted', 1)->with('media');
+
+        // Extract optional filters from query string
+        $minPrice = $request->query('min_price');
+        $maxPrice = $request->query('max_price');
+        $sortDir = strtolower($request->query('sort', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        // Normalize numeric inputs if provided
+        $minPrice = is_numeric($minPrice) ? (float) $minPrice : null;
+        $maxPrice = is_numeric($maxPrice) ? (float) $maxPrice : null;
+        if (! is_null($minPrice) && $minPrice < 0) {
+            $minPrice = 0;
+        }
+        if (! is_null($maxPrice) && $maxPrice < 0) {
+            $maxPrice = 0;
+        }
+        if (! is_null($minPrice) && ! is_null($maxPrice) && $minPrice > $maxPrice) {
+            [$minPrice, $maxPrice] = [$maxPrice, $minPrice];
+        }
+
+        if (! is_null($minPrice)) {
+            $query->where('price', '>=', $minPrice);
+        }
+        if (! is_null($maxPrice)) {
+            $query->where('price', '<=', $maxPrice);
+        }
+        if ($request->has('sort')) {
+            // Override default relationship ordering when sorting by price
+            $query->reorder('price', $sortDir);
+        }
+
+        $products = $query->paginate(10)->appends($request->query());
+
+        $site_settings = $this->site_settings;
+        $banners = $this->banners;
+
+        return view('frontend.discounted_products.discounted_products', compact('banners', 'site_settings', 'products'));
+
     }
 }

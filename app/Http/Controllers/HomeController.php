@@ -4,31 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoryOrder;
 use App\Models\Faq;
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-
-class HomeController extends Controller
+class HomeController extends BaseController
 {
     public function index(Request $request)
     {
 
-        $formain = CategoryOrder::with([
-            'category.products' => function ($q) {
-                $q->where('show_in_main', 1)->with('media');
-            },
-            'subcategory.products' => function ($q) {
-                $q->where('show_in_main', 1)->with('media');
-            },
-        ])
-            ->where('active', 1)
-            ->orderBy('order')
-            ->get();
+        if ($this->site_settings->show_only_categories_on_main == 1) {
+            return to_route('categories');
+        }
 
-        $featured_products = Product::where('featured', 1)->get();
+        $formain = $this->formain;
+        $banners = $this->banners;
+        $featured_products = $this->featured_products;
 
-        return view('index', compact('formain', 'featured_products'));
+        return view('index', compact('formain', 'featured_products', 'banners'));
 
     }
 
@@ -52,7 +43,8 @@ class HomeController extends Controller
     {
 
         $faqs = Faq::all()->groupBy('subject');
+        $banners = $this->banners;
 
-        return view('frontend.faqs', compact('faqs'));
+        return view('frontend.faqs', compact('faqs', 'banners'));
     }
 }

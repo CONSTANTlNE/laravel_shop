@@ -34,8 +34,11 @@
                     {!! __('to') !!}
                     <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
                     {!! __('of') !!}
+                    (
+                    {!! __('Total') !!}
                     <span class="fw-semibold">{{ $paginator->total() }}</span>
-                    {!! __('results') !!}
+
+                    )
                 </p>
             </div>
 

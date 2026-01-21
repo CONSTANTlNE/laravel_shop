@@ -18,6 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('mobile')->nullable()->index();
+            $table->boolean('mobile_verified')->default(false);
+            $table->integer('sms_code')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

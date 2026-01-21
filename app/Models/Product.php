@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Observers\ProductObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Translatable\HasTranslations;
 
+#[ObservedBy([ProductObserver::class])]
 class Product extends Model implements HasMedia
 {
     use HasTranslations,InteractsWithMedia,SoftDeletes;
@@ -18,6 +22,20 @@ class Product extends Model implements HasMedia
     protected $casts = [
         'price_history' => 'array',
     ];
+
+    protected $attributes = [
+        'price_history' => '[]', // default empty array
+    ];
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+
+        $this->addMediaConversion('thumbnail')
+            ->performOnCollections('product_image')
+            ->width(500)
+            ->height(400)
+            ->sharpen(10);
+    }
 
     public function getRouteKeyName()
     {
@@ -29,7 +47,8 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
-    public function categories(){
+    public function categories()
+    {
         return $this->belongsToMany(Category::class);
     }
 
@@ -48,12 +67,24 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductFeature::class);
     }
 
-    public function coupon(){
+    public function coupon()
+    {
         return $this->belongsTo(Coupon::class);
     }
 
-    public function discount(){
+    public function discount()
+    {
         return $this->belongsTo(Discount::class);
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     private static function cleanUnicodeAndSlug($string, $ignoreId = null): string
@@ -78,12 +109,12 @@ class Product extends Model implements HasMedia
         $originalSlug = $slug;
 
         // Ensure uniqueness
-        $counter = 1;
-        while (Product::where('slug', $slug)
-            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-            ->exists()) {
-            $slug = $originalSlug.'-'.$counter++;
-        }
+        //        $counter = 1;
+        //        while (Product::where('slug', $slug)
+        //            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+        //            ->exists()) {
+        //            $slug = $originalSlug.'-'.$counter++;
+        //        }
 
         return $slug;
     }
@@ -93,11 +124,20 @@ class Product extends Model implements HasMedia
         parent::boot();
 
         static::creating(function ($product) {
+
             if (! $product->slug) {
                 $product->slug = self::cleanUnicodeAndSlug($product->name);
             }
 
-            $product->order = Product::max('order') + 1;
+            // ⛔ Skip insert if slug already exists
+            if (
+                Product::where('slug', $product->slug)->exists()
+            ) {
+                return false; // cancels INSERT
+            }
+
+            // auto order
+            $product->order = (Product::max('order') ?? 0) + 1;
         });
 
         static::updating(function ($product) {

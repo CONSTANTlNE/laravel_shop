@@ -14,27 +14,36 @@
         <div class="card-overlay bg-gradient-fade rounded-0"></div>
     </div>
 
-    <div class="card card-style bg-23  rounded-m mt-3 list-group list-custom list-group-m mx-3 mb-4">
+    <div class="card card-style bg-23  rounded-m  list-group list-custom list-group-m mx-3 mb-4 mt-4">
         <a class="list-group-item"
            href="{{route('categories')}}">
-            <i class="bi color-red-dark bi-heart-fill"></i>
+            <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
             <div>
-                <strong>All Categories</strong>
+                <strong>{{__('All Categories')}}</strong>
             </div>
         </a>
         @foreach($categories as $catmenuindex => $category)
-            <a class="list-group-item" data-bs-toggle="collapse"
-               href="#collapse-list-{{$catmenuindex}}" aria-controls="collapse-list-1"
-               aria-expanded="true">
-                <i class="bi color-red-dark bi-heart-fill"></i>
-                <div><strong>{{$category->name}}</strong>
-                    <span>List item Description</span>
-                </div>
-                @if($category->subcategories->isNotEmpty())
-                    <i class="bi bi-chevron-down"></i>
-                @endif
-            </a>
-            @if($category->subcategories->isNotEmpty())
+            @if(!$category->subcategories->isNotEmpty())
+                <a class="list-group-item"
+                   href="{{route('category.single',['category'=>$category->slug])}}">
+
+                    <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
+                    <div><strong>{{$category->name}}</strong>
+                        {{--                    <span>List item Description</span>--}}
+                    </div>
+                </a>
+            @else
+                <a class="list-group-item"
+                   href="#collapse-list-{{$catmenuindex}}"
+                   aria-controls="collapse-list-{{$catmenuindex}}"
+                   data-bs-toggle="collapse">
+{{--                    <i class="bi color-red-dark bi-heart-fill"></i>--}}
+                    <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
+                    <div>
+                        <strong>{{$category->name}}</strong>
+                    </div>
+                        <i class="bi bi-chevron-down"></i>
+                </a>
                 <div id="collapse-list-{{$catmenuindex}}" class="collapse " style="">
                     @foreach($category->subcategories as $subcatmenuindex => $subcategory)
                         <a href="{{route('category.single',['category'=>$subcategory->slug])}}" class="list-group-item">
@@ -46,6 +55,7 @@
                     @endforeach
                 </div>
             @endif
+
         @endforeach
     </div>
 

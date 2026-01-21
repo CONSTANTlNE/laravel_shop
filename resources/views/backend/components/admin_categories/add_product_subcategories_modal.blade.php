@@ -4,7 +4,7 @@
         data-bs-target="#create-subcat_product-modal{{$category->id}}"
         onclick="document.getElementById('category_sku_{{$category->id}}').value=generateSKU()"
         class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
-        Add Product
+        {{__('Add Product')}}
     </button>
     <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
          style="width:100%;max-width :400px" id="create-subcat_product-modal{{$category->id}}">
@@ -14,7 +14,7 @@
             <input type="hidden" name="category_id" value="{{$category->id}}">
             <input type="hidden" name="category_slug" value="{{$category->slug}}">
             <p class="font-24 font-800 mb-3 text-center">
-                Add Product
+                {{__('Add Product')}}
             </p>
             <p class="font-24 font-800 mb-3 text-center">
                 ({{$category->name}})
@@ -81,7 +81,7 @@
                     <label for="c7{{$locale->abbr}}"
                            class="color-theme">Description {{$locale->language}}</label>
                     @if($locale->main==1)
-                        <span>(required)</span>
+                        <span>({{__('required')}})</span>
                     @endif
                 </div>
             @endforeach
@@ -91,13 +91,13 @@
                        id="video"
                        placeholder="Youtube Video Link"/>
                 <label for="video"
-                       class="color-theme">Video Link</label>
+                       class="color-theme">{{__('Video Link')}}</label>
             </div>
             <div class="">
                 <div id="preview" class="preview mb-2"></div>
                 <label for="fileInput_products{{$category->name}}" type="button"
                        class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                    Upload Images
+                    {{__('Upload Images')}}
                     <input type="file" id="fileInput_products{{$category->name}}" class="upload-file" name="files[]"
                            multiple
                            accept="image/*">
@@ -105,7 +105,7 @@
             </div>
             <div class="d-flex justify-content-center">
                 <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                    Create
+                    {{__('Create')}}
                 </button>
             </div>
         </form>

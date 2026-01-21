@@ -109,12 +109,12 @@
 }
 
 .bg-fade2-highlight {
-  background-color: !important;
+  /*background-color: !important;*/
   color: #FFF !important;
 }
 
 .bg-fade-highlight {
-  background-color: !important;
+  /*background-color: !important;*/
   color: #FFF !important;
 }
 
@@ -133,7 +133,7 @@
 
 .color-icon-highlight {
   stroke: #4A89DC !important;
-  fill: !important;
+  /*fill: !important;*/
 }
 
 .bg-highlight-dark {
@@ -150,7 +150,7 @@
 }
 
 .border-fade-highlight {
-  border-color: !important;
+  /*border-color: !important;*/
 }
 
 .focus-highlight:focus {

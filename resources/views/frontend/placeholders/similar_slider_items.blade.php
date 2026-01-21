@@ -1,13 +1,13 @@
-
 @foreach( $similar_products as $similar)
+
     <div class="splide__slide">
         <a href="{{route('product.single',[app()->getLocale(),$similar->slug])}}" class="col-12 p-0">
-            <div class="card card-style custom-card m-0"
+            <div class="card card-style custom-card m-0 bg-21"
                  style="
-                    @if($similar->getMedia('product_image')->where('main',1)->first())
-                         background-image: url({{asset($similar->getMedia('product_image')->where('main',1)->first()?->getUrl())}})
-                     @elseif($product->getMedia('product_image')->first())
-                         background-image: url({{asset($similar->getMedia('product_image')->first()?->getUrl())}})
+                     @if($similar->getMedia('product_image')->where('main',1)->first()?->getUrl('thumbnail'))
+                         background-image: url({{$similar->getMedia('product_image')->where('main',1)->first()?->getUrl('thumbnail')}})
+                     @elseif($product->getMedia('product_image')->first()?->getUrl('thumbnail'))
+                         background-image: url({{$similar->getMedia('product_image')->first()?->getUrl('thumbnail')}})
                      @endif
                  "
                  data-card-height="140">
@@ -17,7 +17,6 @@
                         <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">-{{$product->discount_percentage}}%</span>
                     </div>
                 @endif
-
             </div>
             <h5 class="font-600 font-16 line-height-sm pt-3 text-center">
                 {{$similar->name}}

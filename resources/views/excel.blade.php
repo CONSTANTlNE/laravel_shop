@@ -36,7 +36,7 @@
     @csrf
     <input type="file" id="files" name="files[]" webkitdirectory directory multiple>
     <input type="hidden" name="folder" id="folder">
-    <button>Folder</button>
+    <button>Folder</button> <span id="folder_name"></span>
 </form>
 
 <script>
@@ -48,6 +48,7 @@
             let folder = relativePath.split("/")[0]; // "iphone"
 
             document.getElementById('folder').value = folder;
+            document.getElementById('folder_name').innerHTML = folder;
             console.log("Folder:", folder);
         }
     });

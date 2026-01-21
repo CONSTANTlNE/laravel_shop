@@ -1,477 +1,230 @@
 @extends('frontend.components.layout')
 
 @section('product-single')
+    @push('css')
+        {{--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css"> --}}
+        <style>
+            /*.splide__slide img {*/
+            /*    width: 100%;*/
+            /*    height: auto;*/
+            /*}*/
 
-{{--    @dd($product->getMedia('product_image')->first()->getUrl())--}}
-    <div style="margin-left: 0;margin-right: 0;
-         @if($main_image)
-            background-image: url({{$main_image->getUrl()}})
-        @elseif($product->getMedia('product_image')->first())
-            background-image: url({{asset($product->getMedia('product_image')->first()->getUrl())}})
-        @endif"
-         class="card card-style preload-img product_card_height">
-        <div class="card-overlay bg-gradient"></div>
+            .descr_div p {
+                margin-bottom: 5px;
+            }
+
+            /*#share*/
+        </style>
+
+        @if(auth('admin')->check())
+            <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet"/>
+        @endif
+    @endpush
+
+    {{--    <div style="margin-left: 0;margin-right: 0; --}}
+    {{--         @if($main_image) --}}
+    {{--            background-image: url({{$main_image->getUrl()}}) --}}
+    {{--        @elseif($product->getMedia('product_image')->first()) --}}
+    {{--            background-image: url({{asset($product->getMedia('product_image')->first()->getUrl())}}) --}}
+    {{--        @endif" --}}
+    {{--         class="card card-style preload-img product_card_height"> --}}
+    {{--        <div class="card-overlay bg-gradient"></div> --}}
+    {{--    </div> --}}
+    {{--    @dd($product->getMedia('product_image')->first()->getUrl()) --}}
+
+    <div id="main-slider" class='splide card card-style  mb-3' style="max-height: 1500px">
+        <div class="splide__track">
+            <ul class="splide__list  w-100">
+                @if($product->getMedia('product_image')->isNotEmpty())
+                    @foreach($product->getMedia('product_image') as $media)
+                        <li class="splide__slide preload-img product_card_height w-100" style="min-height: 300px">
+                            <a class="col mb-4" data-gallery="gallery-1"
+                               href="{{ $media->getUrl() }}"
+                               title="{{ $product->name }}">
+                                <img src="{{asset($media->getUrl())}}" alt="product image {{$product->name}}"
+                                     style="object-fit: contain; object-position: center;"
+                                     class=" h-100 w-100">
+                            </a>
+                        </li>
+                    @endforeach
+                @else
+                    <li class="splide__slide preload-img product_card_height w-100" style="min-height: 300px">
+                        <a class="col mb-4" data-gallery="gallery-1"
+                           href="{{ asset('defaults/default_placeholder.png')}}}}"
+                           title="{{ $product->name }}">
+                            <img src="{{asset('defaults/default_placeholder.png')}}" alt="" class="w-100">
+                        </a>
+                    </li>
+                @endif
+            </ul>
+        </div>
     </div>
 
+    <div class="d-flex justify-content-center">
+        <div id="thumbnail-slider" class='splide mb-3' style="max-width: 500px">
+            <div class="splide__track">
+                <ul class="splide__list  w-100">
+                    @if($product->getMedia('product_image')->isNotEmpty())
+                        @foreach($product->getMedia('product_image') as $media2)
+                            <li class="splide__slide">
+                                <img src="{{$media2->getUrl('thumbnail')}}" alt="" class="w-100 img-fluid">
+                            </li>
+                        @endforeach
+                    @endif
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @if(auth('admin')->check() && auth('admin')->user()->hasAnyRole('admin|developer'))
+        @include('frontend.product-single.components.product_add_images_modal')
+    @endif
 
     <div style="margin-left: 0;margin-right: 0" class="card card-style">
         <div class="content">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="flex">
-                    <div class="d-flex justify-content-start align-items-center gap-2 mb-1">
-                        <h1 class="font-30">{{$product->name}}</h1>
-                        @if(auth('admin')->check())
-                            <button
-                                class=" btn btn-full btn-s font-900  rounded-s shadow-l bg-blue-dark p-0 px-1"
-                                data-bs-toggle="offcanvas"
-                                data-bs-target="#edit_name">
-                                <i class="bi bi-pencil-square color-black-dark font-18"></i>
-                            </button>
-                            {{--  edit name modal--}}
-                            <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                                 style="width:100%;max-width :400px" id="edit_name">
-                                <form class="content" action="{{route('product.name.update')}}" method="post"
-                                      enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{$product->id}}">
-                                    <p class="font-24 font-800 mb-3 text-center">Edit Product Name</p>
-                                    @foreach($locales as $locale)
-                                        <div class="form-custom mb-3 form-floating">
-                                            <input type="text" name="product_name_{{$locale->abbr}}"
-                                                   class="form-control rounded-xs"
-                                                   id="c1{{$locale->abbr}}"
-                                                   @required($locale->main==1)
-                                                   value="{{$product->getTranslation('name',$locale->abbr)}}"
-                                                   placeholder="Prodct Name"/>
-                                            <label for="c1{{$locale->abbr}}"
-                                                   class="color-theme">Name {{$locale->language}} </label>
-                                            @if($locale->main==1)
-                                                <span>(required)</span>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                    <div class="d-flex justify-content-center">
-                                        <button
-                                            onclick="showOverlay()"
-                                            class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                            Update
-                                        </button>
-                                    </div>
-                                </form>
+            <div class="d-flex  justify-content-between align-items-center mb-2">
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-1">
+                    <div class="d-flex flex-column">
+                        <h1 class="font-30 text-center">{{$product->name}}</h1>
+                        @if($site_settings->use_sku)
+                            <div class="d-flex gap-3 mt-1">
+                                <span class="color-black">{{__('SKU')}}:</span>
+                                <span style="cursor:pointer" onclick="innerCopy(this)">{{$product->sku}}</span>
                             </div>
                         @endif
                     </div>
-                </div>
-                <div class="flex">
-                    <h3 class="font-20">
-                        <del class="opacity-20 font-300">$30<sup>.00</sup></del>
-                        25
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             viewBox="0 0 14 16"
-                             width="14" height="16"
-                             class="md:w-1-4 w-2-0 text-black-600 mb-1">
-                            <path
-                                fill="currentColor" fill-rule="evenodd"
-                                d="M14 8.094c-.017.013-.034.024-.05.039-.33.322-.662.644-.992.968-.015.014-.023.036-.034.055l-.028-.013c-.014-1.18-.352-2.26-1.044-3.233-.693-.974-1.614-1.66-2.751-2.096v.084l.001 4.045c0 .049-.014.082-.05.116L7.966 9.11l-.058.053V3.513c-.137-.015-.268-.038-.4-.043-.233-.01-.468-.017-.702-.011-.197.004-.394.03-.592.042-.047.004-.04.031-.04.06l-.002 1.246c0 1.045-.002 2.09-.001 3.136 0 .048-.014.082-.05.116L5.036 9.11l-.05.045V3.811l-.19.073c-.305.124-.601.265-.878.44-.362.229-.7.484-1.007.782-.312.303-.584.634-.82.995-.296.45-.515.934-.672 1.447-.106.345-.175.696-.206 1.053-.036.423-.042.847.016 1.272.065.48.185.944.37 1.392.17.409.379.798.649 1.153.154.202.319.398.49.587.277.308.596.57.94.805.358.243.738.449 1.14.616.385.16.789.258 1.2.336.354.067.71.082 1.07.082 1.91-.002 3.822 0 5.733 0h.094l-.054.055-1.106 1.08c-.007.006-.012.014-.018.021H.007c.013-.018.024-.039.04-.054.361-.353.724-.705 1.085-1.059.032-.032.065-.043.11-.043h1.861c-.201-.151-.402-.287-.584-.444-.249-.215-.494-.436-.72-.673-.254-.266-.477-.556-.679-.862-.201-.306-.379-.624-.528-.955-.308-.68-.498-1.39-.564-2.132-.039-.44-.038-.88.005-1.319.035-.356.107-.705.196-1.05.092-.361.216-.712.38-1.049.08-.163.152-.33.242-.487.105-.183.216-.365.34-.535.18-.247.363-.493.566-.721.275-.31.585-.587.916-.841.679-.522 1.425-.916 2.25-1.165.046-.014.062-.032.061-.08-.004-.41-.002-.82-.01-1.229-.002-.105.015-.188.111-.245.02-.012.035-.032.052-.048l.975-.953.06-.056v2.343c.58-.07 1.155-.076 1.734.002V2.27l-.001-1.05c0-.046.013-.078.047-.11.366-.352.73-.705 1.095-1.058l.054-.048V.08l.001 1.125v1.333c0 .04.012.056.054.07.198.066.398.13.59.208.612.25 1.176.578 1.695.98.302.234.58.494.839.77.285.304.536.635.756.987.265.424.494.865.652 1.337.092.278.166.562.244.844.029.103.046.21.068.315v.046z"></path>
-                        </svg>
-                    </h3>
                     @if(auth('admin')->check())
-                        <div class="d-flex justify-content-start">
-                            <button
-                                class=" btn btn-full btn-s font-900  rounded-s shadow-l bg-blue-dark p-0 px-1"
-                                data-bs-toggle="offcanvas"
-                                data-bs-target="#edit_price">
-                                <i class="bi bi-pencil-square color-black-dark font-18"></i>
-                            </button>
-                            {{--  edit price modal--}}
-                            <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                                 style="width:100%;max-width :400px" id="edit_price">
-                                <form class="content" action="{{route('product.price.update')}}" method="post"
-                                      enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{$product->id}}">
-                                    <div class="d-flex justify-content-center align-items-center ">
-                                        <i class="bi bi-pencil-fill font-12 disabled"></i>
-                                        <label for="price" style="max-width: 80px" class="color-theme text-center">Edit
-                                            Price
-                                            <input type="number" name="price" class="form-control rounded-xs"
-                                                   id="price" required=""
-                                                   value="{{$product->price}}"
-                                                   placeholder="Price">
-                                        </label>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                        <button
-                                            onclick="showOverlay()"
-                                            class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                            Update
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        @include('frontend.product-single.components.product_name_edit_modal')
                     @endif
-                    <span
-                        class="bg-green-dark float-end rounded-xs text-uppercase font-900 font-9 pe-2 ps-2 pb-0 pt-0 line-height-s mt-n1">
-                        In stock
-                    </span>
                 </div>
             </div>
 
-
             @if(auth('admin')->check())
-                <div class="d-flex justify-content-start">
-                    <button style="all:unset;cursor:pointer"
-                            class="mb-1"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#edit_description">
-                        <i class="bi bi-pencil-square color-blue-dark font-18"></i>
-                    </button>
-                    {{--  edit description modal --}}
-                    <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                         style="width:100%;max-width :400px" id="edit_description">
-                        <form class="content" action="{{route('product.description.update')}}" method="post"
-                              enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{$product->id}}">
-                            <p class="font-24 font-800 mb-3 text-center">Edit Description</p>
-                            @foreach($locales as $locale)
-                                <div class="form-custom mb-3 form-floating">
-                                    <i class="bi bi-pencil-fill font-12 disabled"></i>
-                                    <textarea class="form-control rounded-xs "
-                                              placeholder="Product Description"
-                                              name="description_{{$locale->abbr}}"
-                                              @required($locale->main==1) id="c7ka">{{$product->getTranslation('description',$locale->abbr)}}</textarea>
-                                    <label for="c7ka"
-                                           class="color-theme">Product Description {{$locale->language}}</label>
-                                    @if($locale->main==1)
-                                        <span>(required)</span>
-                                    @endif
-                                </div>
-                            @endforeach
-
-                            <div class="d-flex justify-content-center">
-                                <button
-                                    onclick="showOverlay()"
-                                    class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                @include('frontend.product-single.components.description_edit_modal')
             @endif
-            <p>
-                @if($product->description)
-                    {{$product->description}}
-                @else
-                    The best selling Mobile Progressive Web App on the Envato Marketplaces just got even better now,
-                    with
-                    4.0 introducing
-                    Bootstrap 5.x compatibility and a tone of new gorgeous features!
-                @endif
-            </p>
-
-
-            <div id="features_form" class="row mb-0">
-                @if($product->features->isNotEmpty())
-                    @foreach($product->features as $feature_index => $feature)
-                        <div class="col-4">
-                            <div class="d-flex gap-1">
-                                <span class="font-11">{{$feature->feature_name}}</span>
-                                @if(auth('admin')->check())
-                                    <button style="all:unset;cursor:pointer"
-                                            class="mb-1"
-                                            data-bs-toggle="offcanvas"
-                                            data-bs-target="#edit_feature{{$feature_index}}">
-                                        <i class="bi bi-pencil-square color-blue-dark font-18"></i>
-                                    </button>
-                                    {{--  edit feature modal--}}
-                                    <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                                         style="width:100%;max-width :400px" id="edit_feature{{$feature_index}}">
-                                        <form class="content" action="{{route('product.feature.update')}}" method="post"
-                                              enctype="multipart/form-data">
-                                            @csrf
-                                            <input type="hidden" name="feature_id" value="{{$feature->id}}">
-                                            <p class="font-24 font-800 mb-3 text-center">Edit Feature</p>
-                                            @foreach($locales as $locale)
-                                                <div class="form-custom mb-3 form-floating">
-                                                    <input type="text"
-                                                           name="feature_name_{{$locale->abbr}}"
-                                                           class="form-control rounded-xs"
-                                                           id="c1{{$locale->abbr}}"
-                                                           value="{{$feature->getTranslation('feature_name',$locale->abbr)}}"
-                                                           placeholder="Feature Name"/>
-                                                    <label for="c1{{$locale->abbr}}"
-                                                           class="color-theme">Feature Name {{$locale->language}}
-                                                    </label>
-                                                </div>
-                                                <div class="form-custom mb-3 form-floating">
-                                                    <input type="text"
-                                                           name="feature_text_{{$locale->abbr}}"
-                                                           class="form-control rounded-xs"
-                                                           id="c2{{$locale->abbr}}"
-                                                           value="{{$feature->getTranslation('feature_text',$locale->abbr)}}"
-                                                           placeholder="Text"/>
-                                                    <label for="c1{{$locale->abbr}}"
-                                                           class="color-theme">Feature Text {{$locale->language}}
-                                                    </label>
-                                                </div>
-                                            @endforeach
-
-                                            <div class="d-flex justify-content-center">
-                                                <button
-                                                    onclick="showOverlay()"
-                                                    class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                    Update
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <form action="{{route('product.feature.delete')}}" method="post">
-                                        @csrf
-                                        <input type="hidden" name="feature_id" value="{{$feature->id}}">
-                                        <button style="all:unset;cursor:pointer"
-                                                class="mb-1"
-                                                data-bs-toggle="offcanvas"
-                                                data-bs-target="#delete_feature{{$feature_index}}">
-                                            <i class="bi bi-trash color-red-dark font-18"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
-                            <p class="mt-n2 mb-3">
-                                <strong class="color-theme">{{$feature->feature_text}}</strong>
-                            </p>
+            <div class="descr_div">
+                {!! $product->description !!}
+            </div>
+            <div id="features_form" class="row mb-0 mt-2">
+                @foreach($product->features as $feature_index => $feature)
+                    <div class="col-4">
+                        <div class="d-flex gap-1">
+                            <span class="font-11">{{$feature->feature_name}}</span>
+                            {{--   feature edit and delete modal--}}
+                            @if(auth('admin')->check())
+                                @include('frontend.product-single.components.feature_edit_delete_modals')
+                            @endif
                         </div>
-                    @endforeach
-                @else
-                    @if(auth('admin')->check())
-                        <div class="text-center"> Features example ( Only shown for admin users )</div>
-                        @include('frontend.placeholders.product_features')
-                    @endif
-                @endif
-                @if(auth('admin')->check())
-                    {{--  add product features --}}
-                    <div class="d-flex justify-content-center align-items-center">
-                        <form class="col-12" style="max-width: 500px;" method="post"
-                              action="{{route('product.feature.store')}}">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{$product->id}}">
-                            <p class="text-center">Add Product Features</p>
-                            @foreach($locales as $locale)
-                                <div class="form-custom mb-3 form-floating">
-                                    <input type="text"
-                                           name="feature_name_{{$locale->abbr}}"
-                                           class="form-control rounded-xs"
-                                           id="c1{{$locale->abbr}}"
-                                           value="{{old('feature_name_'.$locale->abbr)}}"
-                                           placeholder="Prodct Name"/>
-                                    <label for="c1{{$locale->abbr}}"
-                                           class="color-theme">Feature Name {{$locale->language}}
-                                    </label>
-                                </div>
-                                <div class="form-custom mb-3 form-floating">
-                                    <input type="text"
-                                           name="feature_text_{{$locale->abbr}}"
-                                           class="form-control rounded-xs"
-                                           id="c2{{$locale->abbr}}"
-                                           value="{{old('feature_text_'.$locale->abbr)}}"
-                                           placeholder="Prodct Name"/>
-                                    <label for="c1{{$locale->abbr}}"
-                                           class="color-theme">Feature Text {{$locale->language}}
-                                    </label>
-                                </div>
-                            @endforeach
-                            <div class="d-flex justify-content-center align-items-center">
-                                <button href="#"
-                                        onclick="showOverlay()"
-                                        class="btn btn-full btn-s font-900  rounded-sm shadow-l bg-blue-dark mb-1 pt-2 pb-2">
-                                    Add Feature
-                                </button>
-                            </div>
-                        </form>
+                        <p class="mt-n2 mb-3">
+                            <strong class="color-theme">{{$feature->feature_text}}</strong>
+                        </p>
                     </div>
+                @endforeach
+                {{--  add product features --}}
+                @if(auth('admin')->check())
+                    @include('frontend.product-single.components.feature_add_modal')
                 @endif
             </div>
 
             <div class="divider mt-3"></div>
 
-            <div class="d-flex">
-                <div class="flex-grow-1">
-                    <span class="font-11">Share with the World </span>
-                    <p class="mt-n2">
-                        <strong class="color-theme">Share or Save for Later</strong>
-                    </p>
-                </div>
-                <div class="flex-shrink-1 mt-1">
-                    <a href="#" data-menu="menu-share" class="icon icon-xs rounded-xl shadow-m ms-2 bg-blue-dark">
-                        <i class="bi bi-share-fill font-15"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center pt-4">
-                <div class="d-flex gap-2">
-                    <div class="align-self-center">
-                        <div class="stepper rounded-s">
-                            <a href="#" class="stepper-sub float-start"><i
-                                    class="bi bi-dash font-18 color-red-dark"></i></a>
-                            <input type="number" class="color-theme" min="1" max="99" value="1">
-                            <a href="#" class="stepper-add float-end"><i
-                                    class="bi bi-plus font-18 color-green-dark"></i></a>
-                        </div>
+            <div class="d-flex flex-wrap justify-content-center pt-4 gap-3">
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <div class="d-flex justify-content-center gap-2">
+                        <h5 class=" font-20">{{$product->price}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="12"
+                                 height="14"
+                                 class="md:w-1-4 w-2-0 text-black-600 mb-1">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                      d="M14 8.094c-.017.013-.034.024-.05.039-.33.322-.662.644-.992.968-.015.014-.023.036-.034.055l-.028-.013c-.014-1.18-.352-2.26-1.044-3.233-.693-.974-1.614-1.66-2.751-2.096v.084l.001 4.045c0 .049-.014.082-.05.116L7.966 9.11l-.058.053V3.513c-.137-.015-.268-.038-.4-.043-.233-.01-.468-.017-.702-.011-.197.004-.394.03-.592.042-.047.004-.04.031-.04.06l-.002 1.246c0 1.045-.002 2.09-.001 3.136 0 .048-.014.082-.05.116L5.036 9.11l-.05.045V3.811l-.19.073c-.305.124-.601.265-.878.44-.362.229-.7.484-1.007.782-.312.303-.584.634-.82.995-.296.45-.515.934-.672 1.447-.106.345-.175.696-.206 1.053-.036.423-.042.847.016 1.272.065.48.185.944.37 1.392.17.409.379.798.649 1.153.154.202.319.398.49.587.277.308.596.57.94.805.358.243.738.449 1.14.616.385.16.789.258 1.2.336.354.067.71.082 1.07.082 1.91-.002 3.822 0 5.733 0h.094l-.054.055-1.106 1.08c-.007.006-.012.014-.018.021H.007c.013-.018.024-.039.04-.054.361-.353.724-.705 1.085-1.059.032-.032.065-.043.11-.043h1.861c-.201-.151-.402-.287-.584-.444-.249-.215-.494-.436-.72-.673-.254-.266-.477-.556-.679-.862-.201-.306-.379-.624-.528-.955-.308-.68-.498-1.39-.564-2.132-.039-.44-.038-.88.005-1.319.035-.356.107-.705.196-1.05.092-.361.216-.712.38-1.049.08-.163.152-.33.242-.487.105-.183.216-.365.34-.535.18-.247.363-.493.566-.721.275-.31.585-.587.916-.841.679-.522 1.425-.916 2.25-1.165.046-.014.062-.032.061-.08-.004-.41-.002-.82-.01-1.229-.002-.105.015-.188.111-.245.02-.012.035-.032.052-.048l.975-.953.06-.056v2.343c.58-.07 1.155-.076 1.734.002V2.27l-.001-1.05c0-.046.013-.078.047-.11.366-.352.73-.705 1.095-1.058l.054-.048V.08l.001 1.125v1.333c0 .04.012.056.054.07.198.066.398.13.59.208.612.25 1.176.578 1.695.98.302.234.58.494.839.77.285.304.536.635.756.987.265.424.494.865.652 1.337.092.278.166.562.244.844.029.103.046.21.068.315v.046z"></path>
+                            </svg>
+                        </h5>
+                        @if($product->price_before_discount && $site_settings->show_discounted==1)
+                            <del class="opacity-50 font- mt-n1">
+                                {{$product->price_before_discount }}₾
+                            </del>
+                        @endif
                     </div>
-                    <div class="w-100  ms-auto">
-                        <a href="#" data-toast="snackbar-cart"
-                           class="btn btn-full btn-s font-900 text-uppercase rounded-sm shadow-l bg-blue-dark ms-3">
-                            Add to Cart
+                </div>
+                <div class="flex">
+                    {{--  edit price modal--}}
+                    @if(auth('admin')->check())
+                        @include('frontend.product-single.components.product_edit_price_modal')
+                    @endif
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="w-100 d-flex justify-content-center gap-2 ms-auto">
+                        @if($in_cart)
+                            <button
+                                id="add_to_cart_single"
+                                hx-swap-oob="true"
+                                hx-post="{{route('cart.add.single')}}"
+                                hx-target="#cart_icon_number"
+                                hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
+                                class="btn-full btn gradient-green shadow-bg shadow-bg-m ms-3">
+                                {{__('Added to cart')}}
+                            </button>
+                        @else
+                            <button data-toast="cart_toast"
+                                    id="add_to_cart_single"
+                                    hx-post="{{route('cart.add.single')}}"
+                                    hx-target="#cart_icon_number"
+                                    hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
+                                    class="btn btn-full btn-s font-900 text-uppercase rounded-sm shadow-l bg-blue-dark ms-3">
+                                {{__('Add to Cart')}}
+                            </button>
+                        @endif
+                        <a href="#" id="share" onclick="sharePage()"
+                           class="icon icon-xs rounded-xl shadow-m ms-2 bg-blue-dark">
+                            <i class="bi bi-share-fill font-15"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="text-center mt-5 d-flex justify-content-center align-middle gap-3">
+                <a rel="nofollow" target="_blank"
+                   href="https://wa.me/995511479914?text={{route('product.single',['product'=>$product->slug])}}">
+                    <svg viewBox="0 0 256 259" width="46" height="46" xmlns="http://www.w3.org/2000/svg"
+                         preserveAspectRatio="xMidYMid">
+                        <path
+                            d="m67.663 221.823 4.185 2.093c17.44 10.463 36.971 15.346 56.503 15.346 61.385 0 111.609-50.224 111.609-111.609 0-29.297-11.859-57.897-32.785-78.824-20.927-20.927-48.83-32.785-78.824-32.785-61.385 0-111.61 50.224-110.912 112.307 0 20.926 6.278 41.156 16.741 58.594l2.79 4.186-11.16 41.156 41.853-10.464Z"
+                            fill="#00E676"></path>
+                        <path
+                            d="M219.033 37.668C195.316 13.254 162.531 0 129.048 0 57.898 0 .698 57.897 1.395 128.35c0 22.322 6.278 43.947 16.742 63.478L0 258.096l67.663-17.439c18.834 10.464 39.76 15.347 60.688 15.347 70.453 0 127.653-57.898 127.653-128.35 0-34.181-13.254-66.269-36.97-89.986ZM129.048 234.38c-18.834 0-37.668-4.882-53.712-14.648l-4.185-2.093-40.458 10.463 10.463-39.76-2.79-4.186C7.673 134.63 22.322 69.058 72.546 38.365c50.224-30.692 115.097-16.043 145.79 34.181 30.692 50.224 16.043 115.097-34.18 145.79-16.045 10.463-35.576 16.043-55.108 16.043Zm61.385-77.428-7.673-3.488s-11.16-4.883-18.136-8.371c-.698 0-1.395-.698-2.093-.698-2.093 0-3.488.698-4.883 1.396 0 0-.697.697-10.463 11.858-.698 1.395-2.093 2.093-3.488 2.093h-.698c-.697 0-2.092-.698-2.79-1.395l-3.488-1.395c-7.673-3.488-14.648-7.674-20.229-13.254-1.395-1.395-3.488-2.79-4.883-4.185-4.883-4.883-9.766-10.464-13.253-16.742l-.698-1.395c-.697-.698-.697-1.395-1.395-2.79 0-1.395 0-2.79.698-3.488 0 0 2.79-3.488 4.882-5.58 1.396-1.396 2.093-3.488 3.488-4.883 1.395-2.093 2.093-4.883 1.395-6.976-.697-3.488-9.068-22.322-11.16-26.507-1.396-2.093-2.79-2.79-4.883-3.488H83.01c-1.396 0-2.79.698-4.186.698l-.698.697c-1.395.698-2.79 2.093-4.185 2.79-1.395 1.396-2.093 2.79-3.488 4.186-4.883 6.278-7.673 13.951-7.673 21.624 0 5.58 1.395 11.161 3.488 16.044l.698 2.093c6.278 13.253 14.648 25.112 25.81 35.575l2.79 2.79c2.092 2.093 4.185 3.488 5.58 5.58 14.649 12.557 31.39 21.625 50.224 26.508 2.093.697 4.883.697 6.976 1.395h6.975c3.488 0 7.673-1.395 10.464-2.79 2.092-1.395 3.487-1.395 4.882-2.79l1.396-1.396c1.395-1.395 2.79-2.092 4.185-3.487 1.395-1.395 2.79-2.79 3.488-4.186 1.395-2.79 2.092-6.278 2.79-9.765v-4.883s-.698-.698-2.093-1.395Z"
+                            fill="#FFF"></path>
+                    </svg>
+                </a>
 
-    <div style="margin-left: 0;margin-right: 0" class="card card-style">
-        <div class="content mb-0">
-            <div class="d-flex justify-content-center align-items-center mb-2 gap-2">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <h2>Product Gallery</h2>
-                    @if(auth('admin')->check() && auth('admin')->user()->hasAnyRole('admin|developer'))
-                        <button
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#create-category-modal"
-                            class="btn btn-full gradient-green shadow-bg shadow-bg-s btn-s ">
-                            Add Images
-                        </button>
-                    @endif
-                </div>
-            </div>
-            {{-- add images modal--}}
-            @if(auth('admin')->check() && auth('admin')->user()->hasAnyRole('admin|developer'))
-                <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                     style="width:100%;max-width :400px" id="create-category-modal">
-                    <form class="content" action="{{route('product.image.add')}}" method="post"
-                          enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                        <p class="font-24 font-800 mb-3 text-center">Upload Product Images</p>
-                        <div class="">
-                            <div id="preview" class="preview mb-2"></div>
-                            <label for="fileInput" type="button"
+                <a rel="nofollow" target="_blank"
+                   href="https://m.me/61553106982418?ref={{route('product.single',['product'=>$product->slug])}}">
 
-                                   class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                                Choose Images
-                                <input type="file" id="fileInput" class="upload-file" name="files[]" multiple
-                                       accept="image/*">
-                            </label>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <button
-                                onclick="showOverlay()"
-                                class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                Upload
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            @endif
-            <div class="row text-center row-cols-3 mb-0">
-                @if($product->getMedia('product_image')->isNotEmpty())
-                    @foreach($product->getMedia('product_image') as $key => $image)
-                        <div class="d-flex flex-column justify-content-center align-items-center">
-                            @if(auth('admin')->check() && auth('admin')->user()->hasAnyRole('admin|developer'))
-                                <div class="d-flex flex-wrap justify-content-center align-items-center gap-1">
-                                    <form action="{{route('product.image.main')}}" method="post">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                                        <input type="hidden" name="media_id" value="{{$image->id}}">
-                                        <button href="#"
-                                                class="btn btn-full btn-s font-900  rounded-sm shadow-l gradient-blue mb-1 pt-2 pb-2">
-                                            Main
-                                        </button>
-                                    </form>
-                                    <form action="{{route('product.image.delete')}}" method="post">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                                        <input type="hidden" name="media_id" value="{{$image->id}}">
-                                        <button href="#"
-                                                class="btn btn-full btn-s font-900  rounded-sm shadow-l gradient-red mb-1 pt-2 pb-2">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            @endif
-                            <a class="col mb-4" data-gallery="gallery-1"
-                               href="{{ $image->getUrl() }}"
-                               title="{{ $product->name }}">
-                                <img src="{{ $product->getMedia('product_thumbnail')->get($key)?->getUrl() ?? '' }}"
-                                     data-src="{{ $product->getMedia('product_thumbnail')->get($key)?->getUrl() ?? '' }}"
-                                     class="img-fluid rounded-m preload-img"
-                                     alt="{{ $product->name }}">
-                            </a>
-                        </div>
-                    @endforeach
-                @else
-                    @include('frontend.placeholders.product_images')
-                @endif
+
+                    <img style="margin-top: 3px" src="https://webmenu.ge/landingassets/messenger.svg" alt="">
+                </a>
+
+                <a rel="nofollow" href="tel:+995511479914">
+                    <svg style="margin-top: 3px" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                         viewBox="0 0 512 512">
+                        <path fill="#8f9799"
+                              d="M345.744 12.715h-40.098a7.2 7.2 0 0 0-7.2 7.2v6.956a7.2 7.2 0 0 0 7.2 7.2h40.098a7.2 7.2 0 0 0 7.2-7.2v-6.956a7.2 7.2 0 0 0-7.2-7.2"></path>
+                        <path fill="#464a4c"
+                              d="M391.564 49.674V469.81c0 15.906-12.894 28.8-28.8 28.8H149.236c-15.906 0-28.8-12.894-28.8-28.8V49.674c0-15.906 12.894-28.8 28.8-28.8h213.528c15.906 0 28.8 12.894 28.8 28.8"></path>
+                        <path fill="#cad6d8"
+                              d="M371.645 67.215v349.969c0 7.953-6.447 14.4-14.4 14.4h-202.49c-7.953 0-14.4-6.447-14.4-14.4V67.215c0-7.953 6.447-14.4 14.4-14.4h202.49c7.953 0 14.4 6.447 14.4 14.4"></path>
+                        <path fill="#f4f9f9"
+                              d="M140.355 340.662V65.235c0-6.86 5.827-12.42 13.016-12.42h157.322z"></path>
+                        <path fill="#8f9799"
+                              d="M235.283 478.024h41.434c7.158 0 12.96-5.802 12.96-12.96v-.474c0-7.158-5.802-12.96-12.96-12.96h-41.434c-7.158 0-12.96 5.802-12.96 12.96v.474c0 7.158 5.802 12.96 12.96 12.96"></path>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
+
     {{--     video embeding --}}
     <div style="margin-left: 0;margin-right: 0" class="card card-style">
         @if(auth('admin')->check())
-            <div class="d-flex justify-content-center align-items-center mt-2 mb-1 gap-2">
-                {{--  edit video modal--}}
-                <button
-                    class=" btn btn-full btn-s font-900  rounded-s shadow-l bg-blue-dark "
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#edit_video">
-                    @if($product->embed_video)
-                        Edit Video
-                    @else
-                        Add Video
-                    @endif
-                </button>
-                <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-                     style="width:100%;max-width :400px" id="edit_video">
-                    <form class="content" action="{{route('product.video.update')}}" method="post"
-                          enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                        <div class="d-flex justify-content-start align-items-center ">
-                            <i class="bi bi-pencil-fill font-12 disabled"></i>
-                            <label for="video" class="color-theme text-center w-100">
-                                Edit Video
-                                <input type="text" name="video" class="form-control rounded-xs"
-                                       id="video"
-                                       value=""
-                                       required
-                                       placeholder="Youtube Video Link">
-                            </label>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <button
-                                onclick="showOverlay()"
-                                class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                Add
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                @if($product->embed_video)
-                    <form action="{{route('product.video.delete')}}" method="post">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                        <button
-                            class=" btn btn-full btn-s font-900  rounded-s shadow-l bg-red-dark ">
-                            Delete Video
-                        </button>
-                    </form>
-                @endif
-            </div>
+            @include('frontend.product-single.components.product_video')
         @endif
         @if($product->embed_video)
             <div class="content">
@@ -485,8 +238,9 @@
     </div>
 
     <div style="margin-left: 0;margin-right: 0" class="card card-style">
-        <div class="content mb-4">
-            <h3 class="text-center">Similar Products</h3>
+        <div class="d-flex justify-content-center mb-5 mt-4">
+            <a class="text-center w-full font-20"
+               href="{{route('category.single',['category'=>$product->category->slug])}}">{{__('Similar Products')}}</a>
         </div>
         <div class="splide  dynamic-slider slider-dots-under slider-boxed" id="dynamic-slider">
             <div class="splide__track">
@@ -496,5 +250,136 @@
             </div>
         </div>
     </div>
+
+    {{--   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>  --}}
+
+    <script>
+
+        if (!/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            document.getElementById('share').style.display = 'none';
+        }
+
+        function sharePage() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: '{{$product->name}}',
+                    url: window.location.href
+                }).catch(err => console.log(err));
+            }
+            // else {
+            //     alert('Sharing not supported on this browser');
+            // }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // var thumbnails = new Splide('#thumbnail-slider', {
+            //     fixedWidth: 104,
+            //     fixedHeight: 58,
+            //     focus: 'center',
+            //     cover: true,
+            //     gap: 10,
+            //     rewind: true,
+            //     pagination: false,
+            //     // isNavigation: true,
+            //     // wheel: true,
+            // });
+
+            var thumbnails = new Splide('#thumbnail-slider', {
+                rewind: true,
+                fixedWidth: 104,
+                fixedHeight: 58,
+                isNavigation: true,
+                gap: 10,
+                focus: 'center',
+                pagination: false,
+                cover: true,
+                dragMinThreshold: {
+                    mouse: 4,
+                    touch: 10,
+                },
+                breakpoints: {
+                    640: {
+                        fixedWidth: 66,
+                        fixedHeight: 38,
+                    },
+                },
+            });
+
+            var main = new Splide('#main-slider', {
+                fixedWidth: 100,
+                rewind: true,
+                type: 'fade',
+                heightRatio: 0.5,
+                pagination: false,
+                arrows: false,
+                cover: true,
+            })
+
+            // Sync sliders
+            thumbnails.mount();
+            main.sync(thumbnails);
+            main.mount();
+
+        });
+
+    </script>
+
+
+    @push('js')
+        @if(auth('admin')->check())
+
+            <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+            <script>
+                @foreach($locales as $locale)
+                const quill{{$locale->abbr}} = new Quill('#editor{{$locale->abbr}}', {
+                    theme: 'snow',
+                    placeholder: 'Write description...',
+                    bounds: document.body,
+                    modules: {
+                        toolbar: [
+                            [{header: [1, 2, 3, false]}],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{color: []}, {background: []}],
+                            [{list: 'ordered'}, {list: 'bullet'}],
+                            [{align: []}],
+                            ['blockquote', 'code-block'],
+                            ['link', 'image', 'video'],
+                            ['clean']
+                        ],
+                        history: {
+                            delay: 2000,
+                            maxStack: 500,
+                            userOnly: true
+                        },
+                        clipboard: {
+                            matchVisual: false
+                        }
+                    },
+                    formats: [
+                        'header', 'bold', 'italic', 'underline', 'strike',
+                        'color', 'background',
+                        'list', 'bullet', 'align',
+                        'link', 'image', 'video',
+                        'blockquote', 'code-block'
+                    ]
+                });
+                @endforeach
+                const form = document.getElementById('description_form')
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault()
+                    @foreach($locales as $locale)
+                    let html{{$locale->abbr}} = quill{{$locale->abbr}}.root.innerHTML;
+                    document.getElementById('description_{{$locale->abbr}}').value = html{{$locale->abbr}}
+                    @endforeach
+                    form.submit()
+                });
+
+            </script>
+        @endif
+    @endpush
 
 @endsection

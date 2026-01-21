@@ -29,11 +29,11 @@ Route::group(['middleware' => config('fortify.middleware', ['auth', 'localizatio
 
         // Authentication...
         if ($enableViews) {
-//            Route::prefix('{locale?}')->group(function () {
-//                Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
-//                    ->middleware(['guest:'.config('fortify.guard')], 'localization')
-//                    ->name('login');
-//            });
+            //            Route::prefix('{locale?}')->group(function () {
+            //                Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
+            //                    ->middleware(['guest:'.config('fortify.guard')], 'localization')
+            //                    ->name('login');
+            //            });
 
             Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
                 ->middleware(['guest:'.config('fortify.guard')], 'localization')
@@ -121,33 +121,33 @@ Route::group(['middleware' => config('fortify.middleware', ['auth', 'localizatio
 
         // Profile Information...
         if (Features::enabled(Features::updateProfileInformation())) {
-            Route::put(RoutePath::for('user-profile-information.update', '/user/profile-information'),
+            Route::put(RoutePath::for('customer-profile-information.update', '/customer/profile-information'),
                 [ProfileInformationController::class, 'update'])
                 ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
-                ->name('user-profile-information.update');
+                ->name('customer-profile-information.update');
         }
 
         // Passwords...
         if (Features::enabled(Features::updatePasswords())) {
-            Route::put(RoutePath::for('user-password.update', '/user/password'), [PasswordController::class, 'update'])
+            Route::put(RoutePath::for('customer-password.update', '/customer/password'), [PasswordController::class, 'update'])
                 ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
-                ->name('user-password.update');
+                ->name('customer-password.update');
         }
 
         // Password Confirmation...
         if ($enableViews) {
-            Route::get(RoutePath::for('password.confirm', '/user/confirm-password'),
+            Route::get(RoutePath::for('password.confirm', '/customer/confirm-password'),
                 [ConfirmablePasswordController::class, 'show'])
                 ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
                 ->name('password.confirm');
         }
 
-        Route::get(RoutePath::for('password.confirmation', '/user/confirmed-password-status'),
+        Route::get(RoutePath::for('password.confirmation', '/customer/confirmed-password-status'),
             [ConfirmedPasswordStatusController::class, 'show'])
             ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
             ->name('password.confirmation');
 
-        Route::post(RoutePath::for('password.confirm', '/user/confirm-password'),
+        Route::post(RoutePath::for('password.confirm', '/customer/confirm-password'),
             [ConfirmablePasswordController::class, 'store'])
             ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
             ->name('password.confirm.store');
@@ -172,37 +172,37 @@ Route::group(['middleware' => config('fortify.middleware', ['auth', 'localizatio
                 ? [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'password.confirm']
                 : [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')];
 
-            Route::post(RoutePath::for('two-factor.enable', '/user/two-factor-authentication'),
+            Route::post(RoutePath::for('two-factor.enable', '/customer/two-factor-authentication'),
                 [TwoFactorAuthenticationController::class, 'store'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.enable');
 
-            Route::post(RoutePath::for('two-factor.confirm', '/user/confirmed-two-factor-authentication'),
+            Route::post(RoutePath::for('two-factor.confirm', '/customer/confirmed-two-factor-authentication'),
                 [ConfirmedTwoFactorAuthenticationController::class, 'store'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.confirm');
 
-            Route::delete(RoutePath::for('two-factor.disable', '/user/two-factor-authentication'),
+            Route::delete(RoutePath::for('two-factor.disable', '/customer/two-factor-authentication'),
                 [TwoFactorAuthenticationController::class, 'destroy'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.disable');
 
-            Route::get(RoutePath::for('two-factor.qr-code', '/user/two-factor-qr-code'),
+            Route::get(RoutePath::for('two-factor.qr-code', '/customer/two-factor-qr-code'),
                 [TwoFactorQrCodeController::class, 'show'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.qr-code');
 
-            Route::get(RoutePath::for('two-factor.secret-key', '/user/two-factor-secret-key'),
+            Route::get(RoutePath::for('two-factor.secret-key', '/customer/two-factor-secret-key'),
                 [TwoFactorSecretKeyController::class, 'show'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.secret-key');
 
-            Route::get(RoutePath::for('two-factor.recovery-codes', '/user/two-factor-recovery-codes'),
+            Route::get(RoutePath::for('two-factor.recovery-codes', '/customer/two-factor-recovery-codes'),
                 [RecoveryCodeController::class, 'index'])
                 ->middleware($twoFactorMiddleware)
                 ->name('two-factor.recovery-codes');
 
-            Route::post(RoutePath::for('two-factor.recovery-codes', '/user/two-factor-recovery-codes'),
+            Route::post(RoutePath::for('two-factor.recovery-codes', '/customer/two-factor-recovery-codes'),
                 [RecoveryCodeController::class, 'store'])
                 ->middleware($twoFactorMiddleware);
         }

@@ -4,17 +4,13 @@
 
     <div class="card overflow-visible card-style m-0 mb-3">
         <div class="content mb-0">
-            <div id="js-check">JavaScript is enabled ✅</div>
-            <noscript>
-                <div style="color: red;">⚠️ JavaScript is disabled in your browser!</div>
-            </noscript>
             <h4>Categories {{$count}} </h4>
 
             {{-- Filters --}}
             <form method="GET" class="mb-2">
                 <div class="d-flex flex-wrap gap-2 justify-content-center align-items-end mb-3">
                     <div>
-                        <label class="d-block small mb-1 text-center">Per PAge</label>
+                        <label class="d-block small mb-1 text-center">{{__('Per Page')}}</label>
                         <select name="per_page" class="form-select rounded-xs w-auto d-inline"
                                 onchange="this.form.submit()">
                             @foreach([10,20, 30, 50, 100] as $size)
@@ -28,7 +24,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="d-block small mb-1 text-center">Category</label>
+                        <label class="d-block small mb-1 text-center">{{__('Category')}}</label>
                         <select name="category_id" class="form-select rounded-xs" onchange="this.form.submit()">
                             <option value="">All</option>
                             @isset($categories)
@@ -42,9 +38,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="d-block small mb-1 text-center">Subcategory</label>
+                        <label class="d-block small mb-1 text-center">{{__('Subcategory')}}</label>
                         <select name="subcategory_id" class="form-select rounded-xs" onchange="this.form.submit()">
-                            <option value="">All</option>
+                            <option value="">{{__('All')}}</option>
                             @isset($subcategories)
                                 @php $selectedCat = request()->query('category_id'); @endphp
                                 @foreach($subcategories as $sub)
@@ -67,7 +63,7 @@
                     {{--                    <button class="btn btn-sm btn-primary rounded-xs">Apply</button>--}}
                     <a class="btn btn-sm btn-secondary rounded-xs"
                        href="{{ route('admin.categories.all', ['locale'=>app()->getLocale()]) }}">
-                        Reset
+                        {{__('Reset')}}
                     </a>
                 </div>
             </form>
@@ -99,7 +95,7 @@
                         <th scope="col">
                             <a href="{{  $sortLink('created_at') }}"
                                class="text-decoration-none">
-                                Created {{  $sortIcon('created_at') }}
+                                {{__('Created')}} {{  $sortIcon('created_at') }}
                             </a>
                         </th>
                         <th scope="col">
@@ -108,10 +104,10 @@
                             </a>
                         </th>
                         <th scope="col">
-                            Category Image
+                           {{__('Category Image')}}
                         </th>
-                        <th scope="col">
-                            Add Product
+                        <th scope="col" class=" text-center">
+                           {{__('Add Product')}}
                         </th>
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('subcategory_count') }}"
@@ -125,16 +121,17 @@
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> Show on Main
+                               class="text-decoration-none"> {{__('Show on Main')}}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            <a href="#"
-                               class="text-decoration-none"> Discount
-                            </a>
+                            {{__('Discount')}}
                         </th>
                         <th scope="col" class="text-center">
-                            Action
+                            {{_('Coupon')}}
+                        </th>
+                        <th scope="col" class="text-center">
+                            {{__('Action')}}
                         </th>
                     </tr>
                     </thead>
@@ -193,6 +190,12 @@
                                     @include('backend.components.admin_categories.discount_modal_categories')
                                 @endif
                             </td>
+                            <td>
+                                {{--  apply coupon modal --}}
+                                @if($category->subcategories->isEmpty())
+                                    @include('backend.components.admin_categories.coupon_modal_categories')
+                                @endif
+                            </td>
                             <td class="text-center">
                                 {{--  edit category modal --}}
                                 @include('backend.components.admin_categories.edit_category_modal_categories')
@@ -218,7 +221,7 @@
                                         @include('backend.components.admin_categories.add_product_subcategories_modal')
                                     </td>
                                     <td class="text-center">
-                                        ---
+                                        ----
                                     </td>
                                     <td class="text-center">
                                         <a target="_blank"
@@ -244,6 +247,10 @@
                                     </td>
                                     <td>
                                         @include('backend.components.admin_categories.discount_modal_subcategories')
+                                    </td>
+                                    <td>
+                                        {{--  apply coupon modal --}}
+                                        @include('backend.components.admin_categories.coupon_modal_subcategories')
                                     </td>
                                     <td class="text-center">
                                         {{--  edit subcategory modal --}}

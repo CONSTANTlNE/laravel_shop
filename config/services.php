@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_CALLBACK_URI'),
+    ],
+
+    'umami' => [
+        'url' => env('UMAMI_URL', 'https://analytics.webmenu.ge'),
+        'username' => env('UMAMI_USERNAME', 'admin'),
+        'password' => env('UMAMI_PASSWORD'),
+    ],
+
+
 ];

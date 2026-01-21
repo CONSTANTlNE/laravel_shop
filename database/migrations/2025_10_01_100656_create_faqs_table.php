@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->jsonb('question');
             $table->jsonb('answer');
+            $table->string('subject')->nullable()->index();
             $table->timestamps();
         });
     }

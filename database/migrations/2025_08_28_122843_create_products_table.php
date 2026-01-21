@@ -28,9 +28,13 @@ return new class extends Migration
             $table->boolean('featured')->default(0);
             $table->float('price')->index();
             $table->float('discount_percentage')->nullable();
-            $table->jsonb('price_history')->default([]);
+            $table->jsonb('price_history');
             $table->string('slug')->unique()->index();
             $table->string('embed_video')->nullable();
+            $table->float('purchase_price')->nullable();
+            $table->boolean('discounted')->default(false);
+            $table->foreignId('coupon_id')->nullable()->constrained()->onDelete('set null');
+            $table->float('price_before_discount')->after('price')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

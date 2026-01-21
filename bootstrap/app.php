@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__.'/../routes/web.php',
             __DIR__.'/../routes/cart.php',
         ],
+        api: [
+            __DIR__.'/../routes/api.php',
+        ],
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
@@ -22,9 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'localization' => \App\Http\Middleware\localization::class,
             'role' => Spatie\Permission\Middleware\RoleMiddleware::class,
             'auth' => \App\Http\Middleware\Authenticate::class,
-            'cartToken'=>  \App\Http\Middleware\CartTokenMiddleware::class
+            'cartToken' => \App\Http\Middleware\CartTokenMiddleware::class,
+            'user.lock' => \App\Http\Middleware\SimpleLockMiddleware::class,
+            'any.lock' => \App\Http\Middleware\LockAnyUntillFirstMiddleware::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    ->withExceptions(function (Exceptions $exceptions): void {})->create();

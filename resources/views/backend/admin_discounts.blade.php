@@ -209,7 +209,7 @@
                                 <button style="all:unset;cursor:pointer"
                                         class="mb-1" data-bs-toggle="offcanvas"
                                         data-bs-target="#edit_discount{{$index}}">
-                                    <i class="bi bi-pencil-square color-blue-dark font-18"></i>
+                                    <i class="bi bi-pencil-square color-blue-dark font-30"></i>
                                 </button>
                                 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                                      style="width:100%;max-width :400px" id="edit_discount{{$index}}">
@@ -241,8 +241,9 @@
                                             <div class="form-check form-check-custom">
                                                 <input class="form-check-input" name="increase_price" checked
                                                        type="checkbox" value="" id="increase_price">
-                                                <label class="form-check-label" for="increase_price">Increase Price
-                                                    after deadline</label>
+                                                <label class="form-check-label" for="increase_price">
+                                                    Increase Price after deadline
+                                                </label>
                                                 <i class="is-checked color-green-dark bi bi-check-square"></i>
                                                 <i class="is-unchecked color-red-dark bi bi-x-square"></i>
                                             </div>
@@ -261,7 +262,7 @@
                                             <button
                                                 onclick="showOverlay()"
                                                 class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                Create
+                                                {{__('Update')}}
                                             </button>
                                         </div>
                                     </form>
@@ -269,11 +270,11 @@
                                 {{--  delete discount modal --}}
                                 <a href="#" data-bs-toggle="offcanvas" data-bs-target="#delete_discount{{$index}}"
                                    class="list-group-item">
-                                    <i class="bi bi-trash color-red-dark font-18"></i>
+                                    <i class="bi bi-trash color-red-dark font-30"></i>
                                 </a>
                                 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                                      style="width:100%;max-width :400px" id="delete_discount{{$index}}">
-                                    <form class="content" action="http://127.0.0.1:8000/ka/admin/category/delete"
+                                    <form class="content" action="{{route('discount.delete')}}"
                                           method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="_token"
                                                value="sJR6uDv3cLjanje6hsEveQh50MEqW9uFgmBcnbRs" autocomplete="off">

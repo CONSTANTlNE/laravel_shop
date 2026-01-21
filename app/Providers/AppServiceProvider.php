@@ -2,14 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Language;
+use App\Models\Setting;
 use App\Models\Term;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -23,14 +25,19 @@ class AppServiceProvider extends ServiceProvider
         Fortify::ignoreRoutes();
     }
 
+
+
     public function boot(): void
     {
-//        URL::forceScheme('https');
+        URL::forceScheme('https');
         Model::unguard();
         Model::preventLazyLoading(!app()->isProduction());
         Model::preventAccessingMissingAttributes();
         Paginator::useBootstrapFive();
 
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('developer') ? true : null;
+        });
 
         LogViewer::auth(function ($request) {
             $user = Auth::guard('admin')->user();
@@ -42,23 +49,65 @@ class AppServiceProvider extends ServiceProvider
 
 
 
-
-
-
-
+        //        LogViewer::auth(function ($request) {
+        //            $user = Auth::guard('web')->user();
+        //
+        //            return $user && in_array($user->email, [
+        //                    'gmta.constantine@gmail.com',
+        //                    'developer@developer.com'
+        //                ]);
+        //        });
 
         $locales = Language::all();
-        $terms=Term::first();
+        if (Schema::hasTable('terms')) {
+            $terms = Term::first();
+            View::share('terms', $terms);
+        }
+        if (Schema::hasTable('terms')) {
+            $site_settings = Setting::first();
+            View::share('site_settings', $site_settings);
+        }
         View::share('locales', $locales);
-        View::share('terms', $terms);
-
 
         view()->composer('frontend.components.categories', function ($view) {
-            $categories = Category::with('subcategories')
-                ->get();
+            $categories = Category::with(['subcategories:id,category_id,name,slug'])
+                ->get(['id', 'name', 'slug'])
+                ->map(function ($cat) {
+                    return (object)[
+                        'name' => $cat->name,
+                        'slug' => $cat->slug,
+                        'subcategories' => $cat->subcategories->map(function ($sub) {
+                            return (object)[
+                                'name' => $sub->name,
+                                'slug' => $sub->slug,
+                            ];
+                        }),
+                    ];
+                });
+
+            //
+            //                Cache::tags(['categories'])
+            //                ->rememberForever('categories', function () {
+            //                    return  Category::with(['subcategories:id,category_id,name,slug'])
+            //                        ->get(['id','name','slug'])
+            //                        ->map(function ($cat) {
+            //                            return (object)[
+            //                                'name' => $cat->name,
+            //                                'slug' => $cat->slug,
+            //                                'subcategories' => $cat->subcategories->map(function ($sub) {
+            //                                    return (object)[
+            //                                        'name' => $sub->name,
+            //                                        'slug' => $sub->slug,
+            //                                    ];
+            //                                }),
+            //                            ];
+            //                        });
+            //                });
 
             return $view->with(compact('categories'));
         });
 
     }
+
+
 }

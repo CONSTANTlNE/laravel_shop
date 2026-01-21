@@ -83,13 +83,8 @@ class SubcategoryController extends Controller
             }
 
             $uploadedFile = $request->file('files')[0];
-            $thumbnail = new Conversion()->thumbnail($uploadedFile);
-            $mainImage = new Conversion()->convert($uploadedFile);
 
-            // save thumbnail
-            Storage::disk('public')->put($category->slug.'.webp', $thumbnail);
-            $category->addMedia(storage_path('app/public/'.$category->slug.'.webp'))->toMediaCollection('category_thumbnail');
-            Storage::disk('public')->delete($category->slug.'.webp');
+            $mainImage = new Conversion()->convert($uploadedFile);
 
             // save main image
             Storage::disk('public')->put($category->slug.'.webp', $mainImage);
@@ -134,17 +129,10 @@ class SubcategoryController extends Controller
 
         if ($request->has('files') && $request->file('files')[0]) {
             $category->clearMediaCollection('category_image');
-            $category->clearMediaCollection('category_thumbnail');
 
             $uploadedFile = $request->file('files')[0];
-            $thumbnail = new Conversion()->thumbnail($uploadedFile);
+
             $mainImage = new Conversion()->convert($uploadedFile);
-
-            // save thumbnail
-            Storage::disk('public')->put($category->slug.'.webp', $thumbnail);
-            $category->addMedia(storage_path('app/public/'.$category->slug.'.webp'))->toMediaCollection('category_thumbnail');
-            Storage::disk('public')->delete($category->slug.'.webp');
-
             // save main image
             Storage::disk('public')->put($category->slug.'.webp', $mainImage);
             $category->addMedia(storage_path('app/public/'.$category->slug.'.webp'))->toMediaCollection('category_image');

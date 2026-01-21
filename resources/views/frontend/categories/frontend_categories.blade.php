@@ -1,9 +1,10 @@
 @extends('frontend.components.layout')
 
 @section('front-categories')
+    @include('frontend.components.featured_products')
     {{--   create category modal --}}
     @if(auth('admin')->check())
-        <div class="d-flex justify-content-center gap-3 mb-3">
+        <div class="d-flex justify-content-center gap-3 mb-3" style="margin-top: 50px">
             <button
                 data-bs-toggle="offcanvas"
                 data-bs-target="#create-category-modal"
@@ -58,7 +59,7 @@
         </div>
     @endif
     {{--  categories grid--}}
-    <div class="card card-style mx-0">
+    <div style="margin-top: 40px" class="card card-style mx-0 ">
         <div class="content">
             <h2 class="text-center mb-3">All Categories</h2>
             <div class="row mb-0 justify-content-center">

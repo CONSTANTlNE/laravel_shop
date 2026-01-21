@@ -2,7 +2,7 @@
    data-bs-toggle="offcanvas"
    data-bs-target="#edit-category-modal_{{$category->id}}"
    class="list-group-item">
-    <i class="bi bi-pencil-square color-blue-dark font-18"></i>
+    <i class="bi bi-pencil-square color-blue-dark font-30"></i>
 </a>
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="edit-category-modal_{{$category->id}}">

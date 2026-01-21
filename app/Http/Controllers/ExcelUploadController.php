@@ -39,6 +39,7 @@ class ExcelUploadController extends Controller
                 if ($loop++ === 0) {
                     continue;
                 }
+
                 $category = new Category;
                 $category_order = new CategoryOrder;
                 $category_order->save();
@@ -152,22 +153,24 @@ class ExcelUploadController extends Controller
         $trimmed = trim($request->input('folder'));
         $product = Product::where('name->ka', $trimmed)->first();
 
+        //        dd($request->all());
         if (! $product) {
             dd('არ მოიძებნა');
         }
 
         foreach ($files as $file) {
-            $thumbnail = new Conversion()->thumbnail($file);
+            //                $thumbnail = new Conversion()->thumbnail($file);
             $mainImage = new Conversion()->convert($file);
-            // save thumbnail
-            Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
-            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
-            Storage::disk('public')->delete($product->slug.'.webp');
+            //                // save thumbnail
+            //                Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
+            //                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
+            //                Storage::disk('public')->delete($product->slug.'.webp');
+            //                // save main image
 
-            // save main image
             Storage::disk('public')->put($product->slug.'.webp', $mainImage);
             $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
             Storage::disk('public')->delete($product->slug.'.webp');
+
         }
 
         return back();

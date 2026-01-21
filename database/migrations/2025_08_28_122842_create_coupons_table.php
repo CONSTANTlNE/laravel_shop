@@ -19,6 +19,10 @@ return new class extends Migration
             $table->date('valid_till');
             $table->string('comment')->nullable();
             $table->string('code')->index();
+            $table->boolean('active')->default(true);
+            $table->boolean('use_with_ordinary_discount')->default(false);
+            $table->enum('use_limit', ['single_use', 'no_limit'])->default('no_limit');
+            $table->integer('minimum_spend')->default(0);
             $table->timestamps();
         });
     }

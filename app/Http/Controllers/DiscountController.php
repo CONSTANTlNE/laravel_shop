@@ -25,7 +25,7 @@ class DiscountController extends Controller
             'comment' => 'nullable|string',
         ]);
 
-        $discount = new Discount();
+        $discount = new Discount;
         $discount->valid_till = $request->valid_till;
         $discount->discount_percentage = $request->percent;
         if ($request->has('increase_price')) {
@@ -44,10 +44,10 @@ class DiscountController extends Controller
     {
 
         $request->validate([
-            'discount_id' => 'required|exists:discounts,id',
-            'category_id' => 'required|exists:categories,id',
+            'discount_id' => 'required|numeric|exists:discounts,id',
+            'category_id' => 'required|numeric',
+            'category_slug' => 'required|string',
         ]);
-
 
         $findcategory = Category::where('id', $request->input('category_id'))
             ->where('slug', $request->input('category_slug'))
@@ -68,14 +68,13 @@ class DiscountController extends Controller
 
         $products = $category->products;
 
-
         $discount = Discount::find($request->discount_id);
 
         foreach ($products as $product) {
             if ($product->discounted == 0) {
                 $discounted_price = $product->price - round($product->price * $discount->discount_percentage / 100, 2);
 
-                $code = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+                $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
                 $historyEntry = [
                     'id' => $code,
                     'update_date' => now()->toDateString(),
@@ -83,7 +82,7 @@ class DiscountController extends Controller
                     'user_id' => auth()->id(),
                     'discount_id' => $request->discount_id,
                     'discount%' => $discount->discount_percentage,
-                    'reason' => 'discounted'
+                    'reason' => 'discounted',
                 ];
 
                 $history = $product->price_history ?? [];
@@ -102,10 +101,7 @@ class DiscountController extends Controller
         return back()->with('alert_success', 'Discount Applied Successfully');
     }
 
-    public function discountRemoveCategory(Request $request)
-    {
-
-    }
+    public function discountRemoveCategory(Request $request) {}
 
     public function discountApplyProduct(Request $request)
     {
@@ -120,7 +116,7 @@ class DiscountController extends Controller
 
         $discounted_price = $product->price - round($product->price * $discount->discount_percentage / 100, 2);
 
-        $code = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         $historyEntry = [
             'id' => $code,
             'update_date' => now()->toDateString(),
@@ -128,7 +124,7 @@ class DiscountController extends Controller
             'user_id' => auth()->id(),
             'discount_id' => $request->discount_id,
             'discount%' => $discount->discount_percentage,
-            'reason' => 'discounted'
+            'reason' => 'discounted',
         ];
 
         $history = $product->price_history ?? [];
@@ -158,7 +154,7 @@ class DiscountController extends Controller
 
         if ($request->has('increase_price')) {
 
-            $code = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
             $historyEntry = [
                 'id' => $code,
                 'update_date' => now()->toDateString(),
@@ -166,7 +162,7 @@ class DiscountController extends Controller
                 'user_id' => auth()->id(),
                 'discount_id' => '',
                 'discount%' => '',
-                'reason' => 'discount removed'
+                'reason' => 'discount removed',
             ];
 
             $history = $product->price_history ?? [];
@@ -174,7 +170,6 @@ class DiscountController extends Controller
             $product->price_history = $history;
             $product->price = $product->price_before_discount;
         }
-
 
         $product->discount_percentage = null;
         $product->price_before_discount = null;
@@ -186,4 +181,5 @@ class DiscountController extends Controller
 
     }
 
+    public function discountDelete(Request $request) {}
 }
