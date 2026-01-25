@@ -21,7 +21,9 @@ class CategoryController extends BaseController
         $cacheTime = 600; // seconds
 
         $featured_products = Cache::remember('homepage:featured_products', $cacheTime, function () {
-            return Product::where('featured', 1)->get();
+            return Product::where('featured', 1)
+                ->where('removed_from_store', false)
+                ->get();
         });
         $banners = $this->banners;
         $categoriesCount = $categories->count();
@@ -42,7 +44,7 @@ class CategoryController extends BaseController
         $settings = $this->site_settings;
         $banners = $this->banners;
 
-//        dd($settings);
+        //        dd($settings);
 
         return view('frontend.categories.category_single', compact('banners', 'productsCount', 'categoriesCount', 'category_orders', 'category', 'settings', 'subcategories'));
     }
@@ -58,7 +60,7 @@ class CategoryController extends BaseController
     public function update(Request $request)
     {
 
-        new UpdateCategory($request, $this->locales, $this->mainLocale);
+        (new UpdateCategory)($request, $this->locales, $this->mainLocale);
 
         return back();
     }

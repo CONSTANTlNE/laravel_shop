@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Models\Setting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +62,6 @@ class CartController extends Controller
 
         $this->cart->add($request->product_id);
 
-
         $owner = $this->cart->getCartOwner();
 
         if (Auth::guard('web')->check() || Auth::guard('admin')->check()) {
@@ -75,9 +75,9 @@ class CartController extends Controller
             $carttotal = $query->sum('quantity');
 
         }
-        $product=$request->product_id;
+        $product = $request->product_id;
 
-        return view('frontend.cart.cart_count_product_single', compact('carttotal', 'owner','product'));
+        return view('frontend.cart.cart_count_product_single', compact('carttotal', 'owner', 'product'));
     }
 
     public function remove(Request $request)
@@ -205,6 +205,13 @@ class CartController extends Controller
         }
 
         $data = $this->cart->getSummary($cartItems);
+
+        // if set min purchase and cart value is less than min purchase return back
+        $min_purchase = Setting::first();
+
+        if ($min_purchase->min_order_amount > $data['total_value']) {
+            return back()->withInput()->with('alert_error', __('Minimum purchase amount is').' '.$min_purchase->min_order_amount.' ₾');
+        }
 
         $hascoupon = $data['hascoupon'];
         $promo_code = $data['promo_code'];

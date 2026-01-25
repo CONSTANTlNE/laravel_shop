@@ -49,10 +49,10 @@ class ShowSingleCategory
         if ($category) {
             // We are on a category page: provide its subcategories collection
             $subcategories = $category->subcategories;
-            $productsCount = $category->products()->count();
+            $productsCount = $category->products()->where('removed_from_store', false)->count();
 
             // Build products query for the category with filters
-            $productsQuery = $category->products()->with('media');
+            $productsQuery = $category->products()->with('media')->where('removed_from_store', false);
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);
             }
@@ -77,10 +77,10 @@ class ShowSingleCategory
                 return back()->with('alert_error', 'Category not found');
             }
 
-            $productsCount = $subcategory->products()->count();
+            $productsCount = $subcategory->products()->where('removed_from_store', false)->count();
 
             // Build products query for the subcategory with filters
-            $productsQuery = $subcategory->products()->with('media');
+            $productsQuery = $subcategory->products()->with('media')->where('removed_from_store', false);
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);
             }

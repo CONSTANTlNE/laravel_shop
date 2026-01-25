@@ -9,7 +9,6 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SmsVerificationController;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\UserController;
-use App\Mail\NewUserRegisteredEmail;
 use App\Models\Admin;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -134,19 +133,20 @@ route::post('/lock/test', function (Request $request) {
 
 // ->middleware('user.lock');
 
-
-
-//Google Auth
+// Google Auth
 
 Route::controller(SocialiteController::class)->group(function () {
     Route::get('auth/google/redirect', 'googleredirect')->name('google.login');
     Route::get('auth/google/callback', 'googlecallback');
 });
 
+Route::get('mail/test', function () {
 
-Route::get('mail/test',function (){
+    Mail::to('gmta.constantine@gmail.com')->send(new \App\Mail\TestMail);
 
-    Mail::to('gmta.constantine@gmail.com')->send(new \App\Mail\TestMail());
+    return 'sent';
+});
 
-    return   'sent';
+Route::fallback(function () {
+    return to_route('home')->with('alert_error', __('Session expired'));
 });

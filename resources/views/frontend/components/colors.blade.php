@@ -1,6 +1,9 @@
-<div id="menu-color"
-     {{--         data-menu-load="menu-highlights.html"--}}
-     style="height:340px" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
+<form id="menu-color"
+      method="post"
+      action="{{route('updateButtonColor')}}"
+      {{--         data-menu-load="menu-highlights.html"--}}
+      style="height:340px" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
+    @csrf
     <div class="content">
         <div class="d-flex">
             <div>
@@ -16,58 +19,74 @@
 
         <div class="d-flex text-center px-1">
             <div class="me-auto">
-                <a href="#" data-change-highlight="red"
-                   class="icon icon-m gradient-red shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                <input style="display:none" class="form-check-input" name="color" value="red" type="radio"  id="red-color">
+                <label for="red-color" href="#" data-change-highlight="red"
+                   class="icon icon-m gradient-red shadow-bg shadow-bg-xs rounded-s">
+                    <i class="bi bi-circle color-white font-16"></i>
+                </label>
                 <h5 class="font-14 pt-1">Red</h5>
             </div>
             <div class="m-auto">
-                <a href="#" data-change-highlight="green"
+                <input style="display:none" class="form-check-input" name="color" value="green" type="radio"  id="green-color">
+                <label  for="green-color" href="#" data-change-highlight="green"
                    class="icon icon-m gradient-green shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Green</h5>
             </div>
             <div class="m-auto">
-                <a href="#" data-change-highlight="blue"
+                <input style="display:none" class="form-check-input" name="color" value="blue" type="radio"  id="blue-color">
+                <label for="blue-color" href="#" data-change-highlight="blue"
                    class="icon icon-m gradient-blue shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-check-circle-fill color-white font-16"></i></a>
+                        class="bi bi-check-circle-fill color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Blue</h5>
             </div>
             <div class="ms-auto">
-                <a href="#" data-change-highlight="mint"
+                <input style="display:none" class="form-check-input" name="color" value="mint" type="radio"  id="mint-color">
+                <label for="mint-color" href="#" data-change-highlight="mint"
                    class="icon icon-m gradient-mint shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Mint</h5>
             </div>
         </div>
         <div class="pt-3"></div>
         <div class="d-flex text-center px-1 pb-1">
             <div class="me-auto">
-                <a href="#" data-change-highlight="orange"
+                <input style="display:none" class="form-check-input" name="color" value="orange" type="radio"  id="orange-color">
+                <label for="orange-color" href="#" data-change-highlight="orange"
                    class="icon icon-m gradient-orange shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Orange</h5>
             </div>
             <div class="m-auto">
-                <a href="#" data-change-highlight="yellow"
+                <input style="display:none" class="form-check-input" name="color" value="yellow" type="radio"  id="yellow-color">
+                <label for="yellow-color" href="#" data-change-highlight="yellow"
                    class="icon icon-m gradient-yellow shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Yellow</h5>
             </div>
             <div class="m-auto">
-                <a href="#" data-change-highlight="magenta"
+                <input style="display:none" class="form-check-input" name="color" value="magenta" type="radio"  id="magenta-color">
+
+                <label for="yellow-color" href="#" data-change-highlight="magenta"
                    class="icon icon-m gradient-magenta shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Magenta</h5>
             </div>
             <div class="ms-auto">
-                <a href="#" data-change-highlight="brown"
+                <input style="display:none" class="form-check-input" name="color" value="brown" type="radio"  id="brown-color">
+
+                <label for="brown-color" href="#" data-change-highlight="brown"
                    class="icon icon-m gradient-brown shadow-bg shadow-bg-xs rounded-s"><i
-                        class="bi bi-circle color-white font-16"></i></a>
+                        class="bi bi-circle color-white font-16"></i></label>
                 <h5 class="font-14 pt-1">Brown</h5>
             </div>
         </div>
     </div>
-    <a href="#" data-bs-dismiss="offcanvas" class="mx-3 btn btn-full gradient-highlight shadow-bg shadow-bg-s">Awesome</a>
-
-</div>
+    <div class="d-flex justify-content-center">
+        <button
+            data-bs-dismiss="offcanvas"
+            class="mx-3 btn btn-full gradient-highlight shadow-bg shadow-bg-s">
+            {{__('Save')}}
+        </button>
+    </div>
+</form>

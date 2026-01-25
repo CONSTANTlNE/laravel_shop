@@ -6,3 +6,5 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+Schedule::command('discounts:cleanup')->dailyAt('00:01')->timezone(config('app.timezone'));

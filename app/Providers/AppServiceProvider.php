@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Admin;
+use App\Models\ButtonColor;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Setting;
@@ -25,13 +25,11 @@ class AppServiceProvider extends ServiceProvider
         Fortify::ignoreRoutes();
     }
 
-
-
     public function boot(): void
     {
         URL::forceScheme('https');
         Model::unguard();
-        Model::preventLazyLoading(!app()->isProduction());
+        Model::preventLazyLoading(! app()->isProduction());
         Model::preventAccessingMissingAttributes();
         Paginator::useBootstrapFive();
 
@@ -43,11 +41,9 @@ class AppServiceProvider extends ServiceProvider
             $user = Auth::guard('admin')->user();
 
             return $user && in_array($user->email, [
-                    'gmta.constantine@gmail.com',
-                ]);
+                'gmta.constantine@gmail.com',
+            ]);
         });
-
-
 
         //        LogViewer::auth(function ($request) {
         //            $user = Auth::guard('web')->user();
@@ -58,7 +54,10 @@ class AppServiceProvider extends ServiceProvider
         //                ]);
         //        });
 
-        $locales = Language::all();
+        if (Schema::hasTable('languages')) {
+            $locales = Language::all();
+            View::share('locales', $locales);
+        }
         if (Schema::hasTable('terms')) {
             $terms = Term::first();
             View::share('terms', $terms);
@@ -67,17 +66,22 @@ class AppServiceProvider extends ServiceProvider
             $site_settings = Setting::first();
             View::share('site_settings', $site_settings);
         }
-        View::share('locales', $locales);
+
+        View()->composer('frontend.components.layout', function ($view) {
+            $active_color = ButtonColor::where('is_active', 1)->first();
+
+            return $view->with(compact('active_color'));
+        });
 
         view()->composer('frontend.components.categories', function ($view) {
             $categories = Category::with(['subcategories:id,category_id,name,slug'])
                 ->get(['id', 'name', 'slug'])
                 ->map(function ($cat) {
-                    return (object)[
+                    return (object) [
                         'name' => $cat->name,
                         'slug' => $cat->slug,
                         'subcategories' => $cat->subcategories->map(function ($sub) {
-                            return (object)[
+                            return (object) [
                                 'name' => $sub->name,
                                 'slug' => $sub->slug,
                             ];
@@ -108,6 +112,4 @@ class AppServiceProvider extends ServiceProvider
         });
 
     }
-
-
 }

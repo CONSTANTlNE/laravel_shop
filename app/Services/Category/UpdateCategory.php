@@ -16,7 +16,7 @@ class UpdateCategory
             'category_name_'.$mainLocale->abbr => 'required|string|max:255',
             'files' => 'nullable|array',
             'order' => 'required|integer',
-            'files.*' => 'image|mimes:jpeg,png,jpg,gif|max:5024',
+            'files.*' => 'image|mimes:jpeg,webp,png,jpg,gif|max:5024',
         ]);
 
         $category = Category::findOrFail($request->input('category_id'));
@@ -42,7 +42,7 @@ class UpdateCategory
 
         if ($request->has('files') && $request->file('files')[0]) {
             $category->clearMediaCollection('category_image');
-            $category->clearMediaCollection('category_thumbnail');
+            $category->clearMediaCollection('thumbnail');
 
             $uploadedFile = $request->file('files')[0];
             //            $thumbnail = new Conversion()->scaleDown($uploadedFile);

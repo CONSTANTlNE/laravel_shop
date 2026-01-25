@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
@@ -62,6 +63,24 @@ class SmsService
             'stopList' => false,
         ];
 
-        $response2 = Http::get($url, $params);
+        try {
+            $response2 = Http::get($url, $params);
+
+            if (! $response2->successful()) {
+                Log::channel('ubill')->error('Ubill HTTP error', [
+                    'status' => $response2->status(),
+                    'response' => $response2->body(),
+                ]);
+            }
+
+        } catch (\Throwable $th) {
+            Log::channel('ubill')->critical('Ubill exception', [
+                'message' => $th->getMessage(),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
+            ]);
+
+            throw $th; // rethrow so queues fail properly
+        }
     }
 }

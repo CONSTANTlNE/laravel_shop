@@ -25,7 +25,7 @@
             @if($site_settings->use_transportation==1)
                 <div class="card card-style">
                     <div class="content">
-                        <h2 class="mb-0">
+                        <h2 class="mb-0 text-center ">
                             {{__('Address')}}
                         </h2>
                         <br>

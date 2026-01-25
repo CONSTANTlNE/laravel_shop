@@ -59,6 +59,9 @@
                                 <li onclick="window.location.href='{{ route('admin.products.sold.sum') }}'">
                                     {{__('Summarized Sales')}}
                                 </li>
+                                <li onclick="window.location.href='{{ route('excel') }}'">
+                                    {{__('Excel Import')}}
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -155,6 +158,7 @@
     </div>
 
     <span class="menu-divider mt-4">{{__('Settings')}}</span>
+
     <div class="menu-list">
         <div class="card card-style rounded-m p-3 py-2 mb-0">
             <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-color">
@@ -173,9 +177,11 @@
         </div>
     </div>
 
-
-    <p class="text-center mb-0 mt-n3 pb-3 font-9 text-uppercase font-600 color-theme">Made with <i
-            class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i> by Enabled in <span class="copyright-year"></span>.
+    <p class="text-center mb-0 mt-n3 pb-3 font-9 text-uppercase font-600 color-theme">
+        Made with
+        <i class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i>
+        by Enabled in
+        <span class="copyright-year"></span>.
     </p>
 
 </div>

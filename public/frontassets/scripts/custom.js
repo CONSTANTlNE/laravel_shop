@@ -1,10 +1,10 @@
 //Removing Preloader
-setTimeout(function () {
-    var preloader = document.getElementById('preloader')
-    if (preloader) {
-        preloader.classList.add('preloader-hide');
-    }
-}, 150);
+// setTimeout(function () {
+//     var preloader = document.getElementById('preloader')
+//     if (preloader) {
+//         preloader.classList.add('preloader-hide');
+//     }
+// }, 150);
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict'
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //Global Variables
     let isPWA = false;  // Enables or disables the service worker and PWA
     let isAJAX = false; // AJAX transitions. Requires local server or server
-    var pwaName = "Duo"; //Local Storage Names for PWA
+    var pwaName = "shopz.ge"; //Local Storage Names for PWA
     var pwaRemind = 1; //Days to re-remind to add to home
     var pwaNoCache = false; //Requires server and HTTPS/SSL. Will clear cache with each visit
 
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function init_template() {
         //Caching Global Variables
         var i, e, el, evt, event; //https://www.w3schools.com/js/js_performance.asp
-
         //Image Sliders
         var splide = document.getElementsByClassName('splide');
         if (splide.length) {
@@ -231,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 ;
                 localStorage.setItem(pwaName + '-Theme', 'dark-mode');
-                // console.log('dark');
+                console.log('dark');
             }
 
             function activateLightMode() {
@@ -243,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 ;
                 localStorage.setItem(pwaName + '-Theme', 'light-mode');
-                // console.log('light');
+                console.log('light');
             }
 
             function setColorScheme() {
@@ -259,13 +258,28 @@ document.addEventListener('DOMContentLoaded', () => {
             //Activating Dark Mode
             var darkModeSwitch = document.querySelectorAll('[data-toggle-theme]')
             darkModeSwitch.forEach(el => el.addEventListener('click', e => {
-                if (document.body.className == "theme-light") {
+                if (document.body.classList.contains('theme-light')) {
                     removeTransitions();
                     activateDarkMode();
-                } else if (document.body.className == "theme-dark") {
+                } else if (document.body.classList.contains('theme-dark')) {
                     removeTransitions();
                     activateLightMode();
+                } else {
+                    // If neither explicit theme is set (e.g. detect-theme), default to toggling to dark
+                    removeTransitions();
+                    activateDarkMode();
                 }
+
+                // If this element is also meant to toggle a visual switch, mirror the state
+                var switchData = el.getAttribute('data-trigger-switch');
+                if (switchData) {
+                    var getCheck = document.getElementById(switchData);
+                    if (getCheck) {
+                        getCheck.checked = !getCheck.checked;
+                        getCheck.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+
                 setTimeout(function () {
                     addTransitions();
                 }, 350);
@@ -349,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var checkVisited = document.querySelectorAll('.check-visited');
         if (checkVisited.length) {
             function check_visited_links() {
-                var visited_links = JSON.parse(localStorage.getItem(pwaName + '_Visited_Links')) || [];
+                var visited_links = JSON.parse(localStorage.getItem(pwaName + '_Visited_Links') || '[]');
                 var links = document.querySelectorAll('.check-visited a');
                 for (let i = 0; i < links.length; i++) {
                     var that = links[i];
@@ -820,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadHighlight.rel = "stylesheet";
                 loadHighlight.className = "page-highlight";
                 loadHighlight.type = "text/css";
-                loadHighlight.href = 'styles/highlights/' + highlight + '.css';
+                loadHighlight.href = '/frontassets/styles/highlights/' + highlight + '.css';
                 document.getElementsByTagName("head")[0].appendChild(loadHighlight);
                 document.body.setAttribute('data-highlight', 'highlight-' + highlight)
                 localStorage.setItem(pwaName + '-Highlight', highlight)
@@ -1035,4 +1049,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     init_template();
+
 });

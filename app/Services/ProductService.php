@@ -18,8 +18,8 @@ class ProductService
     {
 
         $request->validate([
-            'product_name_'.$mainLocale->abbr => 'required|string|max:255',
-            'description_'.$mainLocale->abbr => 'required|string|max:255',
+            'product_name_'.$mainLocale->abbr => 'required|string|max:1000',
+            'description_'.$mainLocale->abbr => 'required|string|max:1000',
             'price' => 'required|numeric|min:1',
             'stock' => 'required|integer|min:1',
             'category_id' => 'required|integer|min:1',
@@ -79,7 +79,7 @@ class ProductService
         $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         $historyEntry = [
             'id' => $code,
-            'update_date' => now()->toDateTimeString(),
+            'update_date' => now()->format('d-m-Y'),
             'price' => $request->price,
             'user_id' => auth()->id(),
             'discount_id' => '',
@@ -106,21 +106,18 @@ class ProductService
         $uploadedFile = $request->file('files');
 
         foreach ($uploadedFile as $file) {
-            //            $thumbnail = new Conversion()->thumbnail($file);
-            //            $mainImage = new Conversion()->convert($file);
-            //            // save thumbnail
-            //            Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
-            //            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
-            //            Storage::disk('public')->delete($product->slug.'.webp');
-            //
-            //            // save main image
-            //            Storage::disk('public')->put($product->slug.'.webp', $mainImage);
-            //            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
-            //            Storage::disk('public')->delete($product->slug.'.webp');
 
-            $product
-                ->addMedia($file) // ORIGINAL file
-                ->toMediaCollection('product_image');
+            $mainImage = new Conversion()->convert($file);
+            //                // save thumbnail
+            //                Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
+            //                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
+            //                Storage::disk('public')->delete($product->slug.'.webp');
+            //                // save main image
+
+            Storage::disk('public')->put($product->slug.'.webp', $mainImage);
+            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
+            Storage::disk('public')->delete($product->slug.'.webp');
+
         }
     }
 
@@ -139,7 +136,7 @@ class ProductService
         // Prepare history entry
         $historyEntry = [
             'id' => $code,
-            'update_date' => now()->toDateTimeString(),
+            'update_date' => now()->format('d-m-Y'),
             'price' => $request->input('price'),
             'user_id' => auth()->id(),
             'discount_id' => '',

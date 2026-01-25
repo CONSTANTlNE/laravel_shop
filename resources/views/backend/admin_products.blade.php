@@ -2,6 +2,35 @@
 
 @section('admin-products-all')
 
+    <style>
+        /* Thicker horizontal scrollbar for the admin products table only */
+        .table-x-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-gutter: stable both-edges;
+            /* Firefox */
+            scrollbar-width: auto;
+        }
+        /* WebKit browsers (Chrome, Edge, Safari) */
+        .table-x-scroll::-webkit-scrollbar {
+            display: initial !important; /* override global hide */
+            height: 14px; /* thickness */
+        }
+        .table-x-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+        }
+        .table-x-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.40);
+            border-radius: 8px;
+            border: 3px solid transparent; /* creates a "pill" look */
+            background-clip: content-box;
+        }
+        .table-x-scroll:hover::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.55);
+        }
+    </style>
+
     <div class="card overflow-visible card-style m-0 mb-3">
         <div class="content mb-0">
             <h4>{{_('Products')}} {{$count}}</h4>
@@ -9,7 +38,7 @@
             {{-- Filters --}}
             @include('backend.components.product_filter')
 
-            <div class="table-responsive">
+            <div class="table-responsive table-x-scroll">
                 <table class="table color-theme mb-2">
                     <thead>
                     @php
@@ -60,13 +89,13 @@
                             <a href="{{  $sortLink('in_stock') }}"
                                class="text-decoration-none  text-center">{{__('Status')}} {{  $sortIcon('in_stock') }}</a>
                         </th>
-                        <th scope="col">
-                            <a href="{{  $sortLink('show_in_main') }}"
-                               class="text-decoration-none  text-center">{{__('On Main ')}} {{  $sortIcon('show_in_main') }}</a>
+                        <th scope="col" class="text-center">
+                            <a href="{{  $sortLink('removed_from_store') }}"
+                               class="text-decoration-none  text-center">{{__('Removed')}} {{  $sortIcon('removed_from_store') }}</a>
                         </th>
                         <th scope="col">
                             <a href="{{  $sortLink('show_in_main') }}"
-                               class="text-decoration-none  text-center">{{__('Featured')}} {{  $sortIcon('featured') }}</a>
+                               class="text-decoration-none  text-center">{{__('On Main ')}} {{  $sortIcon('show_in_main') }}</a>
                         </th>
                         <th scope="col" class="text-center ">
                             {{__('Discount')}}
@@ -75,6 +104,7 @@
                             {{__('Coupon')}}
                         </th>
                         <th scope="col">{{__('Page')}}</th>
+                        <th scope="col" class="text-center">{{__('Action')}}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -112,17 +142,17 @@
                                 </form>
                             </td>
                             <td  class="text-center align-middle">
-                                <form action="{{route('product.main.update')}}" method="post">
+                                <form action="{{route('product.removed')}}" method="post">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
 
-                                    <div class="form-switch ios-switch switch-green switch-l">
+                                    <div class="form-switch ios-switch switch-red switch-l">
                                         <input type="checkbox" class="ios-input"
-                                               id="switch-4c{{$product->slug}}"
-                                               @checked($product->show_in_main==1)
+                                               id="removed_{{$product->slug}}"
+                                               @checked($product->removed_from_store==1)
                                                onchange="this.form.submit()">
                                         <label class="custom-control-label"
-                                               for="switch-4c{{$product->slug}}"></label>
+                                               for="removed_{{$product->slug}}"></label>
                                     </div>
                                 </form>
                             </td>
@@ -155,6 +185,33 @@
                                     Page
                                 </a>
                             </td>
+                            <td class="text-center align-middle">
+                                <a href="#" data-bs-toggle="offcanvas" data-bs-target="#delete_product_{{$product->id}}"
+                                   class="list-group-item">
+                                    <i class="bi bi-trash color-red-dark font-30"></i>
+                                </a>
+                                <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
+                                     style="width:100%;max-width :400px" id="delete_product_{{$product->id}}">
+                                    <form class="content" action="{{route('product.delete')}}" method="post">
+                                        @csrf
+                                        <input type="hidden" value="{{$product->id}}" name="product_id">
+                                        <p class="font-24 font-800 mb-3 text-center">
+                                            {{__('Are You Sure')}} ?
+                                        </p>
+                                        <div class="d-flex justify-content-center gap-4">
+                                            <button type="button" data-bs-dismiss="offcanvas"
+                                                    class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
+                                                {{__('Cancel')}}
+                                            </button>
+                                            <button onclick="showOverlay()"
+                                                    class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-4">
+                                                {{__('Delete')}}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </td>
                         </tr>
 
                     @endforeach
@@ -169,4 +226,18 @@
         </div>
     </div>
 
+    {{--fix scroll position--}}
+    <script>
+        window.addEventListener('beforeunload', function () {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        });
+
+        window.addEventListener('load', function () {
+            if (localStorage.getItem('scrollPosition') !== null) {
+                window.scrollTo(0, parseInt(localStorage.getItem('scrollPosition'), 10));
+                localStorage.removeItem('scrollPosition'); // Clear the stored position after use
+            }
+        });
+
+    </script>
 @endsection

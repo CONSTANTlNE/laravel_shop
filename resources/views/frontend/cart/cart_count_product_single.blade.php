@@ -6,6 +6,6 @@
          hx-post="{{route('cart.add.single')}}"
          hx-target="#cart_icon_number"
          hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product}}"}'
-         class="btn-full btn gradient-green shadow-bg shadow-bg-m ms-3">
+         class="btn-full btn gradient-green shadow-bg shadow-bg-m">
      {{__('Added to cart')}}
 </button>

@@ -55,6 +55,23 @@ class AdminController extends Controller
         return view('backend.admin_sold_products', compact('order_items', 'sortBy', 'sortDir', 'categories', 'subcategories'));
     }
 
+    public function removedProducts(Request $request)
+    {
+        $data = (new AdminService)->removedProducts($request);
+
+        $categories = Category::orderBy('order')->get(['id', 'name']);
+        $subcategories = Subcategory::orderBy('order')->get(['id', 'name', 'category_id']);
+        $discounts = Discount::where('active', 1)->get();
+        $count = Product::where('removed_from_store', true)->count();
+        $coupons = Coupon::where('active', 1)->get();
+
+        $products = $data['products'];
+        $sortBy = $data['sortBy'];
+        $sortDir = $data['sortDir'];
+
+        return view('backend.admin_products_removed', compact('products', 'categories', 'subcategories', 'sortBy', 'sortDir', 'count', 'discounts', 'coupons'));
+    }
+
     public function soldSum(Request $request)
     {
         $perPage = (int) $request->query('per_page', 20);

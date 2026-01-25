@@ -2,17 +2,22 @@
      {{--         data-menu-load="menu-main.html"--}}
      style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
 
-    {{--    <div class="card card-style bg-23 mb-3 rounded-m mt-3" data-card-height="150">--}}
-    {{--        <div class="card-top m-3">--}}
-    {{--            <a href="#" data-bs-dismiss="offcanvas" class="icon icon-xs bg-theme rounded-s color-theme float-end"><i--}}
-    {{--                    class="bi bi-caret-left-fill"></i></a>--}}
-    {{--        </div>--}}
-    {{--        <div class="card-bottom p-3">--}}
-    {{--            <h1 class="color-white font-20 font-700 mb-n2">Duo Mobile</h1>--}}
-    {{--            <p class="color-white font-12 opacity-70 mb-n1">Bootstrap 5 Mobile PWA</p>--}}
-    {{--        </div>--}}
-    {{--        <div class="card-overlay bg-gradient-fade rounded-0"></div>--}}
-    {{--    </div>--}}
+{{--    bg-23--}}
+        <div class="card card-style  mb-3 rounded-m mt-3" data-card-height="150"
+             style="background: url({{asset('shopz_man2.jpeg')}}) no-repeat center center; background-size: cover;"
+        >
+            <div class="card-top m-3">
+                <a href="#" data-bs-dismiss="offcanvas" class="icon icon-xs bg-theme rounded-s color-theme float-end"><i
+                        class="bi bi-caret-left-fill"></i></a>
+            </div>
+            <div class="card-bottom p-3">
+                <h1 class="color-white font-20 font-700 mb-n2">shopz.ge</h1>
+                <p class="color-white font-12 opacity-70 mb-n1">
+                    {{__('Slogan')}}
+                </p>
+            </div>
+            <div class="card-overlay bg-gradient-fade rounded-0"></div>
+        </div>
 
     @auth('admin')
         <div class="card card-style mb-3 rounded-m mt-3" data-card-height="45">
@@ -20,7 +25,7 @@
 
             </div>
             <div class="card-bottom p-3">
-                <h1 class="color-black font-20 font-700 mb-n2">{{auth('admin')->user()?->name}}</h1>
+                <h1 class=" font-20 font-700 mb-n2">{{auth('admin')->user()?->name}}</h1>
             </div>
             <div class="card-overlay  rounded-0"></div>
         </div>
@@ -78,23 +83,24 @@
                    hx-get="{{route('customer.profile.htmx')}}"
                    hx-vals='{"_token": "{{csrf_token()}}"}'
                    hx-target="#menu-profile"
-                   data-bs-target="#menu-profile"
-
-                ><i
-                        class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
-                    </i><span>{{__('Profile')}}</span>
+                   data-bs-target="#menu-profile">
+                    <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-person-circle"></i>
+                    <span>{{__('Profile')}}</span>
                     <i class="bi bi-chevron-right"></i>
                 </a>
-                <a href="{{route('customer.orders')}}" ><i
-                        class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
-                    </i><span>{{__('Purchases')}}</span>
+                <a href="{{route('customer.orders')}}" >
+                    <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-bag"></i>
+                    <span>{{__('Purchases')}}</span>
                     <i class="bi bi-chevron-right"></i>
                 </a>
             @endauth
 
-            <a href="#" id="nav-comps" data-bs-toggle="offcanvas" data-bs-target="#categories"><i
-                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i><span>{{__('Categories')}}</span><i
-                    class="bi bi-chevron-right"></i></a>
+            <a href="#" id="nav-comps" data-bs-toggle="offcanvas" data-bs-target="#categories">
+{{--   <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i>--}}
+                <i class="bi bi-layout-text-sidebar gradient-highlight shadow-bg shadow-bg-xs bi"></i>
+                <span>{{__('Categories')}}</span>
+                <i class="bi bi-chevron-right"></i>
+            </a>
             {{--            <a href="index-pages.html" id="nav-pages"><i--}}
             {{--                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-heart-fill"></i><span>Site Pages</span><i--}}
             {{--                    class="bi bi-chevron-right"></i></a>--}}
@@ -105,19 +111,19 @@
             {{--                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill"></i><span>Contact</span><i--}}
             {{--                    class="bi bi-chevron-right"></i></a>--}}
 
-            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-terms"><i
-                    class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
-                </i><span>{{__('Terms & Conditions')}}</span><i class="bi bi-chevron-right"></i>
-            </a>
-            <a href="{{route('faqs')}}">
-                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
-                </i><span>F.A.Q</span>
+            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-terms">
+                <i class="bi bi-card-checklist gradient-highlight shadow-bg shadow-bg-xs"></i>
+                <span>{{__('Terms & Conditions')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-
+            <a href="{{route('faqs')}}">
+                <i class="bi bi-question-circle-fill gradient-highlight shadow-bg shadow-bg-xs"></i>
+{{--  <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill"></i> --}}
+                <span>F.A.Q</span>
+                <i class="bi bi-chevron-right"></i>
+            </a>
         </div>
     </div>
-
 
     {{--    <span class="menu-divider mt-4">Messages</span>--}}
     {{--    <div class="menu-content px-3">--}}
@@ -190,4 +196,29 @@
     {{--            class=" font-9 px-1 bi bi-heart-fill color-red-dark"></i> by Enabled in <span class="copyright-year"></span>.--}}
     {{--    </p>--}}
 
+    <span class="menu-divider mt-4">{{__('Theme')}}</span>
+    <div class="menu-list">
+        <div class="card card-style rounded-m p-3 py-2 mb-0">
+{{--            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-color">--}}
+{{--                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-palette-fill"></i>--}}
+{{--                <span>Highlights</span>--}}
+{{--                <i class="bi bi-chevron-right"></i>--}}
+{{--            </a>--}}
+            <a href="#" data-toggle-theme data-trigger-switch="switch-1">
+                <i class="gradient-dark shadow-bg shadow-bg-xs bi bi-moon-fill font-13"></i>
+                <span>{{__('Theme')}}</span>
+                <div class="form-switch ios-switch switch-green switch-s me-2">
+                    <input type="checkbox" data-toggle-theme class="ios-input" id="switch-1">
+                    <label class="custom-control-label" for="switch-1"></label>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <span class="menu-divider mt-4">{{__('Contact')}}</span>
+    <div class="menu-content px-3">
+        <div class="card card-style rounded-m p-2 mx-0 bg-theme mb-0">
+          @include('frontend.components.contact')
+        </div>
+    </div>
 </div>

@@ -1,5 +1,17 @@
 @extends('frontend.components.layout')
 
+@section('index-meta')
+    <title>shopz.ge</title>
+    <link rel="canonical" href="https://shopz.ge">
+    <meta name="description" content="ონლაინ მაღაზია, დაბალი ფასები და სწრაფი მიწოდება">
+    <meta name="keywords" content="ციფრული მენიუ, QR მენიუ, რესტორნის მენიუ, შეფასების სისტემა, QR menu">
+    <meta property="og:title" content="shopz.ge">
+    <meta property="og:description" content="ონლაინ მაღაზია, დაბალი ფასები და სწრაფი მიწოდება">
+    <meta property="og:image" content="{{asset('shopz_man2.jpeg')}}">
+    <meta property="og:url" content="https://www.shopz.ge/">
+@endsection
+
+
 @section('index')
 
     {{--  featured  --}}
@@ -79,7 +91,6 @@
                                 } else {
                                     $just_image=null;
                                 }
-
                             @endphp
                             <div
                                 class="col-6 col-sm-6 col-md-4 col-lg-3 text-center mb-3 d-flex flex-column justify-content-between ps-1 pe-1">

@@ -21,10 +21,12 @@ class Product extends Model implements HasMedia
 
     protected $casts = [
         'price_history' => 'array',
+        'removed_from_store' => 'boolean',
     ];
 
     protected $attributes = [
         'price_history' => '[]', // default empty array
+        'removed_from_store' => false,
     ];
 
     public function registerMediaConversions(?Media $media = null): void

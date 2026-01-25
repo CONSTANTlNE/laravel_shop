@@ -23,7 +23,7 @@
                 <div class="preview mb-2"></div>
                 <label for="fileInput_products_{{$product->id}}" type="button"
                        class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                    {{__('Choose Images')}}
+                    {{__('Choose')}}
                     <input type="file" id="fileInput_products_{{$product->id}}" class="upload-file" name="files[]" multiple
                            accept="image/*">
                 </label>

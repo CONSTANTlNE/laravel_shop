@@ -1,21 +1,77 @@
 @extends('frontend.components.layout')
 
+@section('product-meta')
+    <title>{{$product->name}} | shopz.ge</title>
+    <link rel="canonical" href="{{url()->current()}}">
+    <meta name="description" content="შეიძინე ონლაინ "{{$product->name}} ">
+    <meta property="og:title" content="{{$product->name}} - {{$product->price}}">
+    <meta property="og:description" content="შეიძინე ონლაინ "{{$product->name}} >
+    <meta property="og:type" content="product">
+    <meta property="og:image" content="{{$product->media->where('main',1)->first()?->getUrl('thumbnail')}}">
+    <meta property="og:url" content="{{url()->current()}}">
+@endsection
+
+@push('json-ld')
+    <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org/",
+          "@type": "Product",
+          "name": "{{$product->name}}",
+          "image": [
+    "{{ $product->getFirstMediaUrl('product_image') }}" {{-- Use the actual image URL, not url()->current() --}}
+        ],
+        "description": "{{ strip_tags($product->description) }}",
+        "sku": "{{$product->sku}}",
+        {{--  "gtin13": "{{$product->gtin}}", --}}{{-- CRITICAL: Adds your product to the Google Shopping Graph --}}
+        "brand": {
+          "@type": "Brand",
+          "name": "shopz.ge"
+       },
+
+        {{--  "aggregateRating": { --}}{{-- Shows the gold stars in search results --}}
+        {{--        "@type": "AggregateRating",--}}
+        {{--        "ratingValue": "{{$product->average_rating}}",--}}
+        {{--    "reviewCount": "{{$product->reviews_count}}"--}}
+        {{--  },--}}
+        "offers": {
+          "@type": "Offer",
+          "url": "{{ url()->current() }}",
+    "priceCurrency": "GEL",
+    "price": "{{$product->price}}",
+    "priceValidUntil": "{{ now()->addYear()->format('Y-m-d') }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "shippingDetails": { {{-- NEW for 2026: Shows 'Free Shipping' or 'Express' in snippets --}}
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "GEL"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "GE"
+        }
+      },
+      "hasMerchantReturnPolicy": { {{-- Boosts buyer confidence directly in Google Search --}}
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "GE",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnPeriod",
+        "merchantReturnDays": 14,
+        "returnMethod": "https://schema.org/ReturnByMail"
+      }
+    }
+  }
+    </script>
+@endpush
+
 @section('product-single')
     @push('css')
-        {{--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css"> --}}
         <style>
-            /*.splide__slide img {*/
-            /*    width: 100%;*/
-            /*    height: auto;*/
-            /*}*/
-
             .descr_div p {
                 margin-bottom: 5px;
             }
-
-            /*#share*/
         </style>
-
         @if(auth('admin')->check())
             <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet"/>
         @endif
@@ -85,10 +141,10 @@
             <div class="d-flex  justify-content-between align-items-center mb-2">
                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-1">
                     <div class="d-flex flex-column">
-                        <h1 class="font-30 text-center">{{$product->name}}</h1>
+                        <h1 class="product-name-single">{{$product->name}}</h1>
                         @if($site_settings->use_sku)
                             <div class="d-flex gap-3 mt-1">
-                                <span class="color-black">{{__('SKU')}}:</span>
+                                <h4>{{__('SKU')}}:</h4>
                                 <span style="cursor:pointer" onclick="innerCopy(this)">{{$product->sku}}</span>
                             </div>
                         @endif
@@ -127,31 +183,33 @@
             </div>
 
             <div class="divider mt-3"></div>
-
-            <div class="d-flex flex-wrap justify-content-center pt-4 gap-3">
-                <div class="d-flex justify-content-center align-items-center gap-2">
-                    <div class="d-flex justify-content-center gap-2">
-                        <h5 class=" font-20">{{$product->price}}
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="12"
-                                 height="14"
-                                 class="md:w-1-4 w-2-0 text-black-600 mb-1">
-                                <path fill="currentColor" fill-rule="evenodd"
-                                      d="M14 8.094c-.017.013-.034.024-.05.039-.33.322-.662.644-.992.968-.015.014-.023.036-.034.055l-.028-.013c-.014-1.18-.352-2.26-1.044-3.233-.693-.974-1.614-1.66-2.751-2.096v.084l.001 4.045c0 .049-.014.082-.05.116L7.966 9.11l-.058.053V3.513c-.137-.015-.268-.038-.4-.043-.233-.01-.468-.017-.702-.011-.197.004-.394.03-.592.042-.047.004-.04.031-.04.06l-.002 1.246c0 1.045-.002 2.09-.001 3.136 0 .048-.014.082-.05.116L5.036 9.11l-.05.045V3.811l-.19.073c-.305.124-.601.265-.878.44-.362.229-.7.484-1.007.782-.312.303-.584.634-.82.995-.296.45-.515.934-.672 1.447-.106.345-.175.696-.206 1.053-.036.423-.042.847.016 1.272.065.48.185.944.37 1.392.17.409.379.798.649 1.153.154.202.319.398.49.587.277.308.596.57.94.805.358.243.738.449 1.14.616.385.16.789.258 1.2.336.354.067.71.082 1.07.082 1.91-.002 3.822 0 5.733 0h.094l-.054.055-1.106 1.08c-.007.006-.012.014-.018.021H.007c.013-.018.024-.039.04-.054.361-.353.724-.705 1.085-1.059.032-.032.065-.043.11-.043h1.861c-.201-.151-.402-.287-.584-.444-.249-.215-.494-.436-.72-.673-.254-.266-.477-.556-.679-.862-.201-.306-.379-.624-.528-.955-.308-.68-.498-1.39-.564-2.132-.039-.44-.038-.88.005-1.319.035-.356.107-.705.196-1.05.092-.361.216-.712.38-1.049.08-.163.152-.33.242-.487.105-.183.216-.365.34-.535.18-.247.363-.493.566-.721.275-.31.585-.587.916-.841.679-.522 1.425-.916 2.25-1.165.046-.014.062-.032.061-.08-.004-.41-.002-.82-.01-1.229-.002-.105.015-.188.111-.245.02-.012.035-.032.052-.048l.975-.953.06-.056v2.343c.58-.07 1.155-.076 1.734.002V2.27l-.001-1.05c0-.046.013-.078.047-.11.366-.352.73-.705 1.095-1.058l.054-.048V.08l.001 1.125v1.333c0 .04.012.056.054.07.198.066.398.13.59.208.612.25 1.176.578 1.695.98.302.234.58.494.839.77.285.304.536.635.756.987.265.424.494.865.652 1.337.092.278.166.562.244.844.029.103.046.21.068.315v.046z"></path>
-                            </svg>
-                        </h5>
-                        @if($product->price_before_discount && $site_settings->show_discounted==1)
-                            <del class="opacity-50 font- mt-n1">
-                                {{$product->price_before_discount }}₾
-                            </del>
-                        @endif
-                    </div>
-                </div>
-                <div class="flex">
-                    {{--  edit price modal--}}
-                    @if(auth('admin')->check())
-                        @include('frontend.product-single.components.product_edit_price_modal')
+            <div class="d-flex justify-content-center align-items-center gap-2">
+                <div class="d-flex justify-content-center gap-2">
+                    <h5 class=" font-20">{{$product->price}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="12"
+                             height="14"
+                             class="md:w-1-4 w-2-0 text-black-600 mb-1">
+                            <path fill="currentColor" fill-rule="evenodd"
+                                  d="M14 8.094c-.017.013-.034.024-.05.039-.33.322-.662.644-.992.968-.015.014-.023.036-.034.055l-.028-.013c-.014-1.18-.352-2.26-1.044-3.233-.693-.974-1.614-1.66-2.751-2.096v.084l.001 4.045c0 .049-.014.082-.05.116L7.966 9.11l-.058.053V3.513c-.137-.015-.268-.038-.4-.043-.233-.01-.468-.017-.702-.011-.197.004-.394.03-.592.042-.047.004-.04.031-.04.06l-.002 1.246c0 1.045-.002 2.09-.001 3.136 0 .048-.014.082-.05.116L5.036 9.11l-.05.045V3.811l-.19.073c-.305.124-.601.265-.878.44-.362.229-.7.484-1.007.782-.312.303-.584.634-.82.995-.296.45-.515.934-.672 1.447-.106.345-.175.696-.206 1.053-.036.423-.042.847.016 1.272.065.48.185.944.37 1.392.17.409.379.798.649 1.153.154.202.319.398.49.587.277.308.596.57.94.805.358.243.738.449 1.14.616.385.16.789.258 1.2.336.354.067.71.082 1.07.082 1.91-.002 3.822 0 5.733 0h.094l-.054.055-1.106 1.08c-.007.006-.012.014-.018.021H.007c.013-.018.024-.039.04-.054.361-.353.724-.705 1.085-1.059.032-.032.065-.043.11-.043h1.861c-.201-.151-.402-.287-.584-.444-.249-.215-.494-.436-.72-.673-.254-.266-.477-.556-.679-.862-.201-.306-.379-.624-.528-.955-.308-.68-.498-1.39-.564-2.132-.039-.44-.038-.88.005-1.319.035-.356.107-.705.196-1.05.092-.361.216-.712.38-1.049.08-.163.152-.33.242-.487.105-.183.216-.365.34-.535.18-.247.363-.493.566-.721.275-.31.585-.587.916-.841.679-.522 1.425-.916 2.25-1.165.046-.014.062-.032.061-.08-.004-.41-.002-.82-.01-1.229-.002-.105.015-.188.111-.245.02-.012.035-.032.052-.048l.975-.953.06-.056v2.343c.58-.07 1.155-.076 1.734.002V2.27l-.001-1.05c0-.046.013-.078.047-.11.366-.352.73-.705 1.095-1.058l.054-.048V.08l.001 1.125v1.333c0 .04.012.056.054.07.198.066.398.13.59.208.612.25 1.176.578 1.695.98.302.234.58.494.839.77.285.304.536.635.756.987.265.424.494.865.652 1.337.092.278.166.562.244.844.029.103.046.21.068.315v.046z"></path>
+                        </svg>
+                    </h5>
+                    @if($product->price_before_discount && $site_settings->show_discounted==1)
+                        <del class="opacity-50 font- mt-n1">
+                            {{$product->price_before_discount }}₾
+                        </del>
                     @endif
                 </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-center pt-2 gap-3 mb-5">
+
+
+                {{--  edit price modal--}}
+                @if(auth('admin')->check())
+                    <div class="flex">
+                        @include('frontend.product-single.components.product_edit_price_modal')
+                    </div>
+                @endif
+
                 <div class="d-flex gap-2">
                     <div class="w-100 d-flex justify-content-center gap-2 ms-auto">
                         @if($in_cart)
@@ -161,17 +219,24 @@
                                 hx-post="{{route('cart.add.single')}}"
                                 hx-target="#cart_icon_number"
                                 hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
-                                class="btn-full btn gradient-green shadow-bg shadow-bg-m ms-3">
+                                class="btn-full btn gradient-green shadow-bg shadow-bg-m ">
                                 {{__('Added to cart')}}
                             </button>
                         @else
-                            <button data-toast="cart_toast"
-                                    id="add_to_cart_single"
-                                    hx-post="{{route('cart.add.single')}}"
-                                    hx-target="#cart_icon_number"
-                                    hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
-                                    class="btn btn-full btn-s font-900 text-uppercase rounded-sm shadow-l bg-blue-dark ms-3">
-                                {{__('Add to Cart')}}
+                            <button
+                                @if($product->in_stock==1)
+                                    data-toast="cart_toast"
+                                id="add_to_cart_single"
+                                hx-post="{{route('cart.add.single')}}"
+                                hx-target="#cart_icon_number"
+                                hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
+                                @endif
+                                class="{{$product->in_stock==1 ? 'gradient-highlight' : 'gradient-red' }} btn btn-full btn-s font-900 text-uppercase rounded-sm shadow-l">
+                                @if($product->in_stock==1)
+                                    {{__('Add to Cart')}}
+                                @else
+                                    <span class="font-13">{{__('Out Of Stock')}}</span>
+                                @endif
                             </button>
                         @endif
                         <a href="#" id="share" onclick="sharePage()"
@@ -181,43 +246,7 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-5 d-flex justify-content-center align-middle gap-3">
-                <a rel="nofollow" target="_blank"
-                   href="https://wa.me/995511479914?text={{route('product.single',['product'=>$product->slug])}}">
-                    <svg viewBox="0 0 256 259" width="46" height="46" xmlns="http://www.w3.org/2000/svg"
-                         preserveAspectRatio="xMidYMid">
-                        <path
-                            d="m67.663 221.823 4.185 2.093c17.44 10.463 36.971 15.346 56.503 15.346 61.385 0 111.609-50.224 111.609-111.609 0-29.297-11.859-57.897-32.785-78.824-20.927-20.927-48.83-32.785-78.824-32.785-61.385 0-111.61 50.224-110.912 112.307 0 20.926 6.278 41.156 16.741 58.594l2.79 4.186-11.16 41.156 41.853-10.464Z"
-                            fill="#00E676"></path>
-                        <path
-                            d="M219.033 37.668C195.316 13.254 162.531 0 129.048 0 57.898 0 .698 57.897 1.395 128.35c0 22.322 6.278 43.947 16.742 63.478L0 258.096l67.663-17.439c18.834 10.464 39.76 15.347 60.688 15.347 70.453 0 127.653-57.898 127.653-128.35 0-34.181-13.254-66.269-36.97-89.986ZM129.048 234.38c-18.834 0-37.668-4.882-53.712-14.648l-4.185-2.093-40.458 10.463 10.463-39.76-2.79-4.186C7.673 134.63 22.322 69.058 72.546 38.365c50.224-30.692 115.097-16.043 145.79 34.181 30.692 50.224 16.043 115.097-34.18 145.79-16.045 10.463-35.576 16.043-55.108 16.043Zm61.385-77.428-7.673-3.488s-11.16-4.883-18.136-8.371c-.698 0-1.395-.698-2.093-.698-2.093 0-3.488.698-4.883 1.396 0 0-.697.697-10.463 11.858-.698 1.395-2.093 2.093-3.488 2.093h-.698c-.697 0-2.092-.698-2.79-1.395l-3.488-1.395c-7.673-3.488-14.648-7.674-20.229-13.254-1.395-1.395-3.488-2.79-4.883-4.185-4.883-4.883-9.766-10.464-13.253-16.742l-.698-1.395c-.697-.698-.697-1.395-1.395-2.79 0-1.395 0-2.79.698-3.488 0 0 2.79-3.488 4.882-5.58 1.396-1.396 2.093-3.488 3.488-4.883 1.395-2.093 2.093-4.883 1.395-6.976-.697-3.488-9.068-22.322-11.16-26.507-1.396-2.093-2.79-2.79-4.883-3.488H83.01c-1.396 0-2.79.698-4.186.698l-.698.697c-1.395.698-2.79 2.093-4.185 2.79-1.395 1.396-2.093 2.79-3.488 4.186-4.883 6.278-7.673 13.951-7.673 21.624 0 5.58 1.395 11.161 3.488 16.044l.698 2.093c6.278 13.253 14.648 25.112 25.81 35.575l2.79 2.79c2.092 2.093 4.185 3.488 5.58 5.58 14.649 12.557 31.39 21.625 50.224 26.508 2.093.697 4.883.697 6.976 1.395h6.975c3.488 0 7.673-1.395 10.464-2.79 2.092-1.395 3.487-1.395 4.882-2.79l1.396-1.396c1.395-1.395 2.79-2.092 4.185-3.487 1.395-1.395 2.79-2.79 3.488-4.186 1.395-2.79 2.092-6.278 2.79-9.765v-4.883s-.698-.698-2.093-1.395Z"
-                            fill="#FFF"></path>
-                    </svg>
-                </a>
-
-                <a rel="nofollow" target="_blank"
-                   href="https://m.me/61553106982418?ref={{route('product.single',['product'=>$product->slug])}}">
-
-
-                    <img style="margin-top: 3px" src="https://webmenu.ge/landingassets/messenger.svg" alt="">
-                </a>
-
-                <a rel="nofollow" href="tel:+995511479914">
-                    <svg style="margin-top: 3px" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                         viewBox="0 0 512 512">
-                        <path fill="#8f9799"
-                              d="M345.744 12.715h-40.098a7.2 7.2 0 0 0-7.2 7.2v6.956a7.2 7.2 0 0 0 7.2 7.2h40.098a7.2 7.2 0 0 0 7.2-7.2v-6.956a7.2 7.2 0 0 0-7.2-7.2"></path>
-                        <path fill="#464a4c"
-                              d="M391.564 49.674V469.81c0 15.906-12.894 28.8-28.8 28.8H149.236c-15.906 0-28.8-12.894-28.8-28.8V49.674c0-15.906 12.894-28.8 28.8-28.8h213.528c15.906 0 28.8 12.894 28.8 28.8"></path>
-                        <path fill="#cad6d8"
-                              d="M371.645 67.215v349.969c0 7.953-6.447 14.4-14.4 14.4h-202.49c-7.953 0-14.4-6.447-14.4-14.4V67.215c0-7.953 6.447-14.4 14.4-14.4h202.49c7.953 0 14.4 6.447 14.4 14.4"></path>
-                        <path fill="#f4f9f9"
-                              d="M140.355 340.662V65.235c0-6.86 5.827-12.42 13.016-12.42h157.322z"></path>
-                        <path fill="#8f9799"
-                              d="M235.283 478.024h41.434c7.158 0 12.96-5.802 12.96-12.96v-.474c0-7.158-5.802-12.96-12.96-12.96h-41.434c-7.158 0-12.96 5.802-12.96 12.96v.474c0 7.158 5.802 12.96 12.96 12.96"></path>
-                    </svg>
-                </a>
-            </div>
+            @include('frontend.components.contact')
         </div>
     </div>
 
@@ -230,6 +259,9 @@
             <div class="content">
                 <div class="responsive-iframe rounded-s">
                     <iframe class="rounded-s"
+                            title="YouTube video player"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             src="https://www.youtube.com/embed/{{$product->embed_video}}" frameborder="0"
                             allowfullscreen=""></iframe>
                 </div>
@@ -251,7 +283,6 @@
         </div>
     </div>
 
-    {{--   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>  --}}
 
     <script>
 
@@ -333,40 +364,43 @@
             <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
             <script>
+
+                window.Quill = Quill;
+
                 @foreach($locales as $locale)
                 const quill{{$locale->abbr}} = new Quill('#editor{{$locale->abbr}}', {
                     theme: 'snow',
-                    placeholder: 'Write description...',
-                    bounds: document.body,
+                    placeholder: 'აღწერეთ პროდუქტი დეტალურად...',
                     modules: {
+                        // imageResize is removed from here
                         toolbar: [
-                            [{header: [1, 2, 3, false]}],
+                            [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                            [{'font': []}],
+                            [{'size': ['small', false, 'large', 'huge']}],
                             ['bold', 'italic', 'underline', 'strike'],
-                            [{color: []}, {background: []}],
-                            [{list: 'ordered'}, {list: 'bullet'}],
-                            [{align: []}],
-                            ['blockquote', 'code-block'],
+                            ['blockquote'],
+                            [{'color': []}, {'background': []}],
+                            [{'script': 'sub'}, {'script': 'super'}],
+                            [{'list': 'ordered'}, {'list': 'bullet'}],
+                            [{'indent': '-1'}, {'indent': '+1'}],
+                            [{'direction': 'rtl'}],
+                            [{'align': []}],
                             ['link', 'image', 'video'],
                             ['clean']
-                        ],
-                        history: {
-                            delay: 2000,
-                            maxStack: 500,
-                            userOnly: true
-                        },
-                        clipboard: {
-                            matchVisual: false
-                        }
+                        ]
                     },
+                    // Maximum compatible formats for Quill 2.0.3
                     formats: [
-                        'header', 'bold', 'italic', 'underline', 'strike',
+                        'header', 'font', 'size',
+                        'bold', 'italic', 'underline', 'strike',
                         'color', 'background',
-                        'list', 'bullet', 'align',
-                        'link', 'image', 'video',
-                        'blockquote', 'code-block'
+                        'script', 'blockquote',
+                        'list', 'indent', 'direction',
+                        'align', 'link', 'image', 'video'
                     ]
                 });
                 @endforeach
+
                 const form = document.getElementById('description_form')
 
                 form.addEventListener('submit', function (e) {

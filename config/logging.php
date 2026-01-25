@@ -77,9 +77,20 @@ return [
             'path' => storage_path('logs/bog.log'),
             'level' => env('LOG_LEVEL', 'info'),
         ],
+
+        'chatwoot' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/chatwoot.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
         'socialite' => [
             'driver' => 'single',
             'path' => storage_path('logs/socialite.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
+        'excel_upload' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/excel_upload.log'),
             'level' => env('LOG_LEVEL', 'info'),
         ],
 

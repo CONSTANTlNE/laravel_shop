@@ -5,21 +5,20 @@
     <div class="card overflow-visible card-style m-0 mb-3">
         <div class="content mb-0">
             <div class="d-flex justify-content-start gap-2 align-items-center">
-                <h4>Discounts </h4>
-
+                <h4>{{__('Discounts')}} </h4>
                 <button
                     class="btn btn-full btn-s font-900  rounded-sm shadow-l bg-blue-dark mb-1 pt-2 pb-2"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#edit_name">
-                    Create Discount
+                    {{__('Add Discount')}}
                 </button>
-                {{--  edit name modal --}}
+                {{--  create discount --}}
                 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                      style="width:100%;max-width :400px" id="edit_name">
                     <form class="content" action="{{route('discount.store')}}" method="post"
                           enctype="multipart/form-data">
                         @csrf
-                        <p class="font-24 font-800 mb-3 text-center">Create Discount</p>
+                        <p class="font-24 font-800 mb-3 text-center">{{__('Create Discount')}}</p>
                         <div class="d-flex justify-content-between gap-3 ">
                             <div class="form-custom mb-3 form-floating">
                                 <input type="text" name="percent"
@@ -29,22 +28,23 @@
                                        value=""
                                        placeholder="%"/>
                                 <label for="c1"
-                                       class="color-theme">Percent </label>
+                                       class="color-theme">{{__('Percent')}}</label>
                             </div>
                             <div class="form-custom mb-3 form-floating w-100">
                                 <input type="date" name="valid_till"
                                        class="form-control rounded-xs"
                                        id="c1"/>
                                 <label for="c"
-                                       class="color-theme">Valid Till </label>
+                                       class="color-theme">{{__('Valid Till')}}</label>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center gap-2">
                             <div class="form-check form-check-custom">
                                 <input class="form-check-input" name="increase_price" checked type="checkbox" value=""
                                        id="increase_price">
-                                <label class="form-check-label" for="increase_price">Increase Price after
-                                    deadline</label>
+                                <label class="form-check-label" for="increase_price">
+
+                                </label>
                                 <i class="is-checked color-green-dark bi bi-check-square"></i>
                                 <i class="is-unchecked color-red-dark bi bi-x-square"></i>
                             </div>
@@ -56,14 +56,14 @@
                                    value=""
                                    placeholder="Prodct Name"/>
                             <label for="c"
-                                   class="color-theme">Comment </label>
+                                   class="color-theme">{{__('Comment')}}</label>
                         </div>
 
                         <div class="d-flex justify-content-center">
                             <button
                                 onclick="showOverlay()"
                                 class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                Create
+                                {{__('Create')}}
                             </button>
                         </div>
                     </form>
@@ -87,37 +87,6 @@
                             </option>
                         </select>
                     </div>
-                    <div>
-                        <label class="d-block small mb-1 text-center">Category</label>
-                        <select name="category_id" class="form-select rounded-xs" onchange="this.form.submit()">
-                            <option value="">All</option>
-                            @isset($categories)
-                                @foreach($categories as $cat)
-                                    <option
-                                        value="{{ $cat->id }}" {{ (string)request()->query('category_id') === (string)$cat->id ? 'selected' : '' }}>
-                                        {{ $cat->name }}
-                                    </option>
-                                @endforeach
-                            @endisset
-                        </select>
-                    </div>
-                    <div>
-                        <label class="d-block small mb-1 text-center">Subcategory</label>
-                        <select name="subcategory_id" class="form-select rounded-xs" onchange="this.form.submit()">
-                            <option value="">All</option>
-                            @isset($subcategories)
-                                @php $selectedCat = request()->query('category_id'); @endphp
-                                @foreach($subcategories as $sub)
-                                    @if(!$selectedCat || (string)$sub->category_id === (string)$selectedCat)
-                                        <option
-                                            value="{{ $sub->id }}" {{ (string)request()->query('subcategory_id') === (string)$sub->id ? 'selected' : '' }}>
-                                            {{ $sub->name }}
-                                        </option>
-                                    @endif
-                                @endforeach
-                            @endisset
-                        </select>
-                    </div>
                     <input type="hidden" name="sort_by"
                            value="{{ request()->query('sort_by', $sortBy ?? 'created_at') }}"/>
                     <input type="hidden" name="sort_dir"
@@ -126,7 +95,7 @@
                 <div class="d-flex gap-2 justify-content-center align-items-center">
                     {{--                    <button class="btn btn-sm btn-primary rounded-xs">Apply</button>--}}
                     <a class="btn btn-sm btn-secondary rounded-xs"
-                       href="{{ route('admin.categories.all', ['locale'=>app()->getLocale()]) }}">
+                       href="{{ route('discount.all', ['locale'=>app()->getLocale()]) }}">
                         Reset
                     </a>
                 </div>
@@ -157,14 +126,12 @@
                                 Created {{  $sortIcon('created_at') }}
                             </a>
                         </th>
-
                         <th scope="col" class="text-center">
                             Discount
                         </th>
-
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('valid_till') }}"
-                               class="text-decoration-none">Valiity {{  $sortIcon('valid_till') }}
+                               class="text-decoration-none">Valid Till {{  $sortIcon('valid_till') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
@@ -199,10 +166,31 @@
                         <tr>
                             <td class="text-center">{{$discount->created_at->format('d/m/Y')}}</td>
                             <td class="text-center">{{$discount->discount_percentage}}</td>
-                            <td class="text-center">{{$discount->valid_till}}</td>
-                            <td class="text-center">{{$discount->increase_price}}</td>
-                            <td class="text-center">{{$discount->active}}</td>
-                            <td>products</td>
+                            <td class="text-center">{{$discount->valid_till->format('d/m/Y')}}</td>
+                            <td class="text-center">
+
+                                    @if($discount->increase_price==true)
+                                        <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">
+                                           YES
+                                         </span>
+                                    @else
+                                        <span class="bg-red-dark p-2 py-1 rounded-1 font-13 font-600">
+                                            NO
+                                        </span>
+                                    @endif
+                            </td>
+                            <td class="text-center">
+                                @if($discount->active==true)
+                                    <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">
+                                           YES
+                                    </span>
+                                @else
+                                    <span class="bg-red-dark p-2 py-1 rounded-1 font-13 font-600">
+                                            NO
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="text-center">products</td>
                             <td class="text-center">{{$discount->comment}}</td>
                             <td class="d-flex justify-content-center">
                                 {{--  edit discount modal --}}

@@ -69,9 +69,9 @@
             <div class="ms-auto">
                 <img
                     @if($item->product->getMedia('product_image')->where('main',1)->first())
-                        src="{{ $item->product->getMedia('product_image')->where('main',1)->first()->getUrl() }}"
+                        src="{{ $item->product->getMedia('product_image')->where('main',1)->first()->getUrl('thumbnail') }}"
                     @elseif($item->product->getMedia('product_image')->first())
-                        src="{{ $item->product->getMedia('product_image')->first()->getUrl() }}"
+                        src="{{ $item->product->getMedia('product_image')->first()->getUrl('thumbnail') }}"
                     @endif
                     class="rounded-m shadow-xl" width="130">
             </div>

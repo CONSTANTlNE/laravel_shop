@@ -183,7 +183,7 @@
                                         <form class="content" action="{{route('admin.banners.delete')}}"
                                               method="post">
                                             @csrf
-                                            <input type="hidden" value="2" name="banner_id">
+                                            <input type="hidden" name="banner_id" value="{{$banner->id}}">
                                             <p class="font-24 font-800 mb-3 text-center">
                                                 {{__('Are You Sure')}} ?
                                             </p>

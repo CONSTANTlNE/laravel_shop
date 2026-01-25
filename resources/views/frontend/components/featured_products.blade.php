@@ -1,3 +1,5 @@
+
+@if(!$featured_products->isEmpty())
 <div class="splide  dynamic-slider slider-dots-under slider-boxed" id="dynamic-slider">
     <h2 class="text-center mb-3">{{__('Featured')}}</h2>
     <div class="splide__track">
@@ -21,7 +23,7 @@
                             </div>
                             @endif
                         </div>
-                        <h5 class="font-600 font-16 line-height-sm pt-3 text-center">
+                        <h5 class="font-600 product-name-title line-height-sm pt-2 text-center">
                             {{$featured->name}}
                         </h5>
                     </div>
@@ -48,3 +50,4 @@
         </div>
     </div>
 </div>
+@endif

@@ -7,6 +7,7 @@ use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +38,7 @@ class PurchaseController extends Controller
         }
 
         if (! isset($data['cart_items'][0]['cart_token'])) {
-//            return to_route('home')->with('alert_error', __('Empty Cart'));
+            //            return to_route('home')->with('alert_error', __('Empty Cart'));
             return to_route('home');
         }
 
@@ -239,8 +240,15 @@ class PurchaseController extends Controller
             return to_route('home')->with('alert_error', 'Empty Cart');
         }
 
+        // if set min purchase and cart value is less than min purchase return back
+        $min_purchase = Setting::first();
+
+        if ($min_purchase->min_order_amount > $data['total_value']) {
+            return back()->withInput()->with('alert_error', __('Minimum purchase amount is').' '.$min_purchase->min_order_amount);
+        }
+
         $cart_items = CartItem::where('cart_token', $data['cart_items'][0]['cart_token'])
-            ->with('product')
+            ->with('product.media')
             ->where('owner_id', auth('web')->user()->id)
             ->get();
 
@@ -268,7 +276,7 @@ class PurchaseController extends Controller
                     'coupon_discount' => $cart_item->coupon_discount,
                     'coupon_id' => $cart_item->coupon_id,
                     'product_total' => $cart_item->product_price * $cart_item->quantity - $cart_item->coupon_discount * $cart_item->quantity,
-                    'image'=>$cart_item->product->getMedia('product_image')->first()?->getUrl('thumbnail'),
+                    'image' => $cart_item->product->getMedia('product_image')->first()?->getUrl('thumbnail'),
                 ];
             }
 
@@ -295,7 +303,7 @@ class PurchaseController extends Controller
 
             $outOfStockProducts = collect();
 
-            DB::transaction(function () use ($cart_items, $code,$data,$order,$outOfStockProducts) {
+            DB::transaction(function () use ($cart_items, $code, $data, $order, $outOfStockProducts) {
                 foreach ($cart_items as $cart_item) {
                     $product = $cart_item->product;
 
@@ -326,7 +334,6 @@ class PurchaseController extends Controller
                     $cart_item->delete();
                 }
             });
-
 
             if ($outOfStockProducts->isNotEmpty()) {
                 event(new OutOfStockEvent($outOfStockProducts));

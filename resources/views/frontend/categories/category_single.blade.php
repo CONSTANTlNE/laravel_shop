@@ -1,5 +1,53 @@
 @extends('frontend.components.layout')
 
+@section('index-categorყ-single')
+    <title>{{$category->name}} | shopz.ge</title>
+    <link rel="canonical" href="{{url()->current()}}">
+    <meta name="description" content="ონლაინ მაღაზია, დაბალი ფასები და სწრაფი მიწოდება">
+    <meta name="keywords" content="ონლაინ მაღაზია">
+    <meta property="og:title" content="shopz.ge | {{$category->name}}">
+    <meta property="og:description" content="ონლაინ მაღაზია, დაბალი ფასები და სწრაფი მიწოდება">
+    <meta property="og:image" content="{{asset('shopz_man2.jpeg')}}">
+    <meta property="og:url" content="{{url()->current()}}">
+@endsection
+
+@push('json-ld')
+    <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ $category->name }}",
+  "description": "{{ Str::limit(strip_tags($category->name), 160) }}",
+  "url": "{{ url()->current() }}",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ $category->products->count() }},
+    "itemListElement": [
+        @foreach($category->products as $index => $product)
+            {
+              "@type": "ListItem",
+              "position": {{ $index + 1 }},
+        "item": {
+          "@type": "Product",
+          "name": "{{ $product->name }}",
+          "url": "{{ route('product.single', $product->slug) }}",
+          "image": "{{ $product->getFirstMediaUrl('product_image') ?: asset('defaults/default_placeholder.png') }}",
+          "description": "{{ Str::limit(strip_tags($product->description), 160) }}",
+          "offers": {
+            "@type": "Offer",
+            "price": "{{ $product->price }}",
+            "priceCurrency": "GEL",
+            "availability": "https://schema.org/InStock"
+          }
+        }
+      }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+        ]
+      }
+    }
+    </script>
+@endpush
+
 @section('front-category-single')
     {{--    @dd($category->subcategories->isEmpty())--}}
     {{--   create product modal if there are no subcategories in category--}}
@@ -9,7 +57,7 @@
                 data-bs-toggle="offcanvas"
                 data-bs-target="#create-category-modal"
                 class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
-                Add Product
+                {{__('Add Product')}}
             </button>
             <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                  style="width:100%;max-width :400px" id="create-category-modal">
@@ -219,8 +267,10 @@
                         </div>
                     @endforeach
                 @else
+
                     {{--  show  subcategories --}}
                     @foreach($subcategories as $subcategory)
+{{--                        @dd($subcategory->getMedia('category_image')->first() ,$subcategory->getMedia('category_image')->first()?->getUrl('thumbnail') )--}}
                         <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                             @if(auth('admin')->check())
                                 <div class="d-flex justify-content-center gap-4 mb-1">
@@ -332,7 +382,7 @@
                             <a href="{{route('category.single',$subcategory->slug)}}">
                                 <div class="card card-style custom-card m-0 bg-21"
                                      data-card-height="140"
-                                     style="height: 140px; background-image: url({{$subcategory->getMedia('category_thumbnail')->first()?->getUrl()}})">
+                                     style="height: 140px; background-image: url({{$subcategory->getMedia('category_image')->first()?->getUrl('thumbnail')}})">
                                 </div>
                                 <h5 class="font-600 font-16 line-height-sm pt-3 text-center">
                                     {{$subcategory->name}}

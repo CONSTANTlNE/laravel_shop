@@ -29,6 +29,25 @@ class ProductController extends BaseController
         return back()->with('alert_success', 'Product created successfully.');
     }
 
+    public function delete(Request $request)
+    {
+        $product = Product::find($request->product_id);
+
+        if (! $product) {
+            return back()->with('alert_error', __('Product not found'));
+        }
+
+        if ($product->orderItems()->exists()) {
+            return back()->with('alert_error', __('Cannot delete product that has order items.'));
+        }
+
+        $product->clearMediaCollection('product_image');
+        $product->clearMediaCollection('thumbnail');
+        $product->delete();
+
+        return back()->with('alert_success', __('Product deleted successfully.'));
+    }
+
     public function show($locale, $slug)
     {
         $query = Product::where('slug', $slug)
@@ -39,8 +58,8 @@ class ProductController extends BaseController
                 'media', // keep media as usual
             ])->first();
 
-        if (!$query) {
-            $product = Product::where('id', $slug)
+        if (! $query) {
+            $query = Product::where('id', $slug)
                 ->with([
                     'features' => function ($query) {
                         $query->orderBy('id'); // order by id ascending
@@ -49,10 +68,14 @@ class ProductController extends BaseController
                 ])->first();
         }
 
-        $product=$query;
+        $product = $query;
 
-        if (!$product) {
+        if (! $product) {
             return back()->with('alert_error', __('Product not found'));
+        }
+
+        if ($product->removed_from_store) {
+            return back()->with('alert_error', __('Product is not available'));
         }
 
         $settings = $this->site_settings;
@@ -66,6 +89,7 @@ class ProductController extends BaseController
             ->inRandomOrder()
             ->take(10)
             ->get();
+        //        dd($similar_products);
 
         $cartItems = $this->cart->getCart();
 
@@ -145,11 +169,34 @@ class ProductController extends BaseController
 
     }
 
+    public function removed(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $product = Product::findOrFail($request->input('product_id'));
+
+        // Toggle removed_from_store. When enabling removal, also ensure out of stock.
+        if (! $product->removed_from_store) {
+            $product->removed_from_store = true;
+            $product->in_stock = 0;
+        } else {
+            $product->removed_from_store = false;
+        }
+
+        $product->save();
+
+        return back()->with('alert_success', $product->removed_from_store
+            ? __('Product removed from store and hidden from customers.')
+            : __('Product restored to store.'));
+    }
+
     public function descriptionUpdate(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'description_'.$this->mainLocale->abbr => 'required|string|max:255',
+            'description_'.$this->mainLocale->abbr => 'required|string',
         ]);
         $product = Product::findOrFail($request->input('product_id'));
         foreach ($this->locales as $locale) {
@@ -308,7 +355,8 @@ class ProductController extends BaseController
         $search_products = [];
 
         if (mb_strlen($search, 'UTF-8') >= 3) {
-            $search_products = Product::where('name', 'like', "%{$search}%")
+            $search_products = Product::whereLike('name', "%{$search}%")
+                ->where('removed_from_store', false)
                 ->with('media')
                 ->paginate(10);
         }

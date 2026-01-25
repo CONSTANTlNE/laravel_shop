@@ -35,7 +35,10 @@ class BaseController extends Controller
                 return Setting::first();
             });
 
-        $this->featured_products = Product::where('featured', 1)->with('media')->get();
+        $this->featured_products = Product::where('featured', 1)
+            ->where('removed_from_store', false)
+            ->with('media')
+            ->get();
 
         //
         //            Cache::tags(['featured_products'])
@@ -45,10 +48,14 @@ class BaseController extends Controller
 
         $this->formain = CategoryOrder::with([
             'category.products' => function ($q) {
-                $q->where('show_in_main', 1)->with('media');
+                $q->where('show_in_main', 1)
+                    ->where('removed_from_store', false)
+                    ->with('media');
             },
             'subcategory.products' => function ($q) {
-                $q->where('show_in_main', 1)->with('media');
+                $q->where('show_in_main', 1)
+                    ->where('removed_from_store', false)
+                    ->with('media');
             },
         ])
             ->where('active', 1)
@@ -73,7 +80,7 @@ class BaseController extends Controller
         //            });
 
         $this->locales = Language::all();
-        $this->mainLocale = Language::where('main', 0)->first();
+        $this->mainLocale = Language::where('main', 1)->first();
 
     }
 }

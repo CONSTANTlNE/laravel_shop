@@ -2,14 +2,16 @@
      {{--         data-menu-load="menu-main.html"--}}
      style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
 
-    <div class="card card-style bg-23 mb-3 rounded-m mt-3" data-card-height="150">
+    <div class="card card-style  mb-3 rounded-m mt-3" data-card-height="150"
+         style="background: url({{asset('shopz_man2.jpeg')}}) no-repeat center center; background-size: cover;"
+    >
         <div class="card-top m-3">
             <a href="#" data-bs-dismiss="offcanvas" class="icon icon-xs bg-theme rounded-s color-theme float-end"><i
                     class="bi bi-caret-left-fill"></i></a>
         </div>
         <div class="card-bottom p-3">
-            <h1 class="color-white font-20 font-700 mb-n2">Duo Mobile</h1>
-            <p class="color-white font-12 opacity-70 mb-n1">Bootstrap 5 Mobile PWA</p>
+            <h1 class="color-white font-20 font-700 mb-n2">shopz.ge</h1>
+            <p class="color-white font-12 opacity-70 mb-n1">დაბალი ფასები,სწრაფი მიწოდება</p>
         </div>
         <div class="card-overlay bg-gradient-fade rounded-0"></div>
     </div>
@@ -19,7 +21,7 @@
            href="{{route('categories')}}">
             <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
             <div>
-                <strong>{{__('All Categories')}}</strong>
+                <strong class="product-name-title">{{__('All Categories')}}</strong>
             </div>
         </a>
         @foreach($categories as $catmenuindex => $category)
@@ -28,7 +30,7 @@
                    href="{{route('category.single',['category'=>$category->slug])}}">
 
                     <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
-                    <div><strong>{{$category->name}}</strong>
+                    <div><strong class="product-name-title">{{$category->name}}</strong>
                         {{--                    <span>List item Description</span>--}}
                     </div>
                 </a>
@@ -40,7 +42,7 @@
 {{--                    <i class="bi color-red-dark bi-heart-fill"></i>--}}
                     <i class="bi color-blue-dark bi-arrow-right-square-fill font-20"></i>
                     <div>
-                        <strong>{{$category->name}}</strong>
+                        <strong class="product-name-title">{{$category->name}}</strong>
                     </div>
                         <i class="bi bi-chevron-down"></i>
                 </a>
@@ -48,7 +50,7 @@
                     @foreach($category->subcategories as $subcatmenuindex => $subcategory)
                         <a href="{{route('category.single',['category'=>$subcategory->slug])}}" class="list-group-item">
                             <div class="ps-1">
-                                <strong class="font-12">{{$subcategory->name}}</strong>
+                                <strong class="font-11 ">{{$subcategory->name}}</strong>
                             </div>
                             <i class="bi bi-chevron-right font-9 color-gray-dark ps-4"></i>
                         </a>

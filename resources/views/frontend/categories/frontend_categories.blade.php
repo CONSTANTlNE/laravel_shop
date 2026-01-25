@@ -1,5 +1,44 @@
 @extends('frontend.components.layout')
 
+@section('index-categories')
+    <title>{{__('Categories')}} | shopz.ge</title>
+    <link rel="canonical" href="{{url()->current()}}">
+    <meta name="description" content="ონლაინ მაღაზია, დაბალი ფასები და სწრაფი მიწოდება">
+    <meta name="keywords" content="ონლაინ მაღაზია">
+    <meta property="og:title" content="shopz.ge">
+    <meta property="og:description" content="პროდუქტის კატეგორიები">
+    <meta property="og:image" content="{{asset('shopz_man2.jpeg')}}">
+    <meta property="og:url" content="{{ request()->fullUrlWithQuery(['page' => request('page')]) }}">
+@endsection
+
+@push('json-ld')
+    <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Shopz.ge Product Categories",
+          "description": "Browse our wide range of product categories including electronics, home goods, and more.",
+          "url": "{{ request()->fullUrlWithQuery(['page' => request('page')]) }}",
+          "numberOfItems": {{ $categories->count() }},
+          "itemListElement": [
+                @foreach($categories as $index => $category)
+                    {
+                      "@type": "ListItem",
+                      "position": {{ $index + 1 }},
+              "item": {
+                "@type": "CollectionPage",
+                "name": "{{ Str::limit(strip_tags($category->name), 160)  }}",
+                "url": "{{ route('category.single',$category->slug)}}",
+                "image": "{{ $category->getFirstMediaUrl('category_image') ?: asset('defaults/default_placeholder.png') }}",
+                "description": "{{  Str::limit(strip_tags($category->name), 160)   }}"
+              }
+            }@if(!$loop->last),@endif
+                @endforeach
+                ]
+            }
+    </script>
+@endpush
+
 @section('front-categories')
     @include('frontend.components.featured_products')
     {{--   create category modal --}}
@@ -9,14 +48,14 @@
                 data-bs-toggle="offcanvas"
                 data-bs-target="#create-category-modal"
                 class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
-                Add Category
+                {{__('Add Category')}}
             </button>
             <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                  style="width:100%;max-width :400px" id="create-category-modal">
                 <form class="content" action="{{route('category.store')}}" method="post"
                       enctype="multipart/form-data">
                     @csrf
-                    <p class="font-24 font-800 mb-3 text-center">Create Category</p>
+                    <p class="font-24 font-800 mb-3 text-center">{{__('Create Category')}}</p>
                     @foreach($locales as $locale)
                         <div class="form-custom mb-3 form-floating">
                             <input type="text" name="category_name_{{$locale->abbr}}"
@@ -27,7 +66,7 @@
                                    placeholder="Category Name"/>
                             <label for="c1{{$locale->abbr}}"
                                    class="color-theme">Name {{$locale->language}} </label>
-                            <span>(required)</span>
+                            <span>({{__('required')}})</span>
                         </div>
                     @endforeach
                     <div class="form-check form-check-custom  mb-2">
@@ -36,7 +75,7 @@
                                type="checkbox"
                                checked
                                id="c2a2">
-                        <label class="form-check-label" for="c2a2">Show on Main Page</label>
+                        <label class="form-check-label" for="c2a2">{{__('Show on Main Page')}}</label>
                         <i class="is-checked color-green-dark bi bi-check-square"></i>
                         <i class="is-unchecked color-red-dark bi bi-x-square"></i>
                     </div>
@@ -44,24 +83,24 @@
                         <div id="preview" class="preview"></div>
                         <label for="fileInput" type="button"
                                class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                            Upload Image
+                            {{__('Upload Image')}}
                             <input type="file" id="fileInput" class="upload-file" name="files[]" multiple
                                    accept="image/*">
                         </label>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                            Create
+                            {{__('Create')}}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     @endif
-    {{--  categories grid--}}
+    {{--  categories grid --}}
     <div style="margin-top: 40px" class="card card-style mx-0 ">
         <div class="content">
-            <h2 class="text-center mb-3">All Categories</h2>
+            <h2 class="text-center mb-3">{{__('All Categories')}}</h2>
             <div class="row mb-0 justify-content-center">
                 @foreach($categories as $category)
                     <div class="col-6 col-sm-6 col-md-4 col-lg-3">
@@ -102,14 +141,14 @@
                                                        @checked($category->categoryOrder?->active==1)
                                                        id="c2a2{{$category->slug}}">
                                                 <label class="form-check-label" for="c2a2{{$category->slug}}">
-                                                    Show on Main Page
+                                                    {{__('Show on Main Page')}}
                                                 </label>
                                                 <i class="is-checked color-green-dark bi bi-check-square"></i>
                                                 <i class="is-unchecked color-red-dark bi bi-x-square"></i>
                                             </div>
                                             <div class="d-flex justify-content-center gap-3">
                                                 <label class="form-check-label">
-                                                    Order
+                                                    {{__('Order')}}
                                                 </label>
                                                 <select name="order" id=""
                                                         style="width: 70px;"
@@ -127,7 +166,7 @@
                                             <div id="previewEdit_{{$category->id}}" class="preview"></div>
                                             <label for="fileInputEdit_{{$category->name}}" type="button"
                                                    class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                                                Upload New Image
+                                                {{__('Upload New Image')}}
                                                 <input type="file"
                                                        id="fileInputEdit_{{$category->name}}"
                                                        class="upload-file"
@@ -137,7 +176,7 @@
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                Update
+                                                {{__('Update')}}
                                             </button>
                                         </div>
                                     </form>
@@ -153,16 +192,15 @@
                                           enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" value="{{$category->id}}" name="category_id">
-                                        <p class="font-24 font-800 mb-3 text-center">Delet Category {{$category->name}}
-                                            ?</p>
+                                        <p class="font-24 font-800 mb-3 text-center">{{__('Delet Category')}} {{$category->name}}?</p>
 
                                         <div class="d-flex justify-content-center gap-4">
                                             <button type="button" data-bs-dismiss="offcanvas"
                                                     class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                Cancel
+                                                {{__('Cancel')}}
                                             </button>
                                             <button class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-4">
-                                                Delete
+                                                {{__('Delete')}}
                                             </button>
                                         </div>
                                     </form>
@@ -179,7 +217,7 @@
                                         <input type="hidden" name="category_id" value="{{$category->id}}">
                                         @csrf
                                         <input type="hidden" value="{{$category->id}}" name="category_id">
-                                        <p class="font-24 font-800 mb-3 text-center">Add Subcategory to
+                                        <p class="font-24 font-800 mb-3 text-center">{{__('Add Subcategory to')}}
                                             : {{$category->name}}</p>
                                         @foreach($locales as $locale)
                                             <div class="form-custom mb-3 form-floating">
@@ -188,11 +226,12 @@
                                                        id="c16{{$locale->abbr}}"
                                                        @required($locale->main==1)
                                                        value=""
-                                                       placeholder="SubCategory Name"/>
+                                                       placeholder="{{__('SubCategory Name')}}"/>
                                                 <label for="c16{{$locale->abbr}}"
-                                                       class="color-theme">SubCategory
-                                                    Name {{$locale->language}} </label>
-                                                <span>(required)</span>
+                                                       class="color-theme">
+                                                    {{__('SubCategory Name')}}
+                                                    {{$locale->language}} </label>
+                                                <span>({{__('required')}})</span>
                                             </div>
                                         @endforeach
                                         <div class="form-check form-check-custom  mb-2">
@@ -201,7 +240,7 @@
                                                    type="checkbox"
                                                    checked
                                                    id="c2a2">
-                                            <label class="form-check-label" for="c2a2">Show on Main Page</label>
+                                            <label class="form-check-label" for="c2a2">{{__('Show on Main Page')}}</label>
                                             <i class="is-checked color-green-dark bi bi-check-square"></i>
                                             <i class="is-unchecked color-red-dark bi bi-x-square"></i>
                                         </div>
@@ -209,7 +248,7 @@
                                             <div id="previewEdit_subcat_{{$category->id}}" class="preview"></div>
                                             <label for="fileInputEdit_subcat_{{$category->name}}" type="button"
                                                    class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
-                                                Upload Image
+                                                {{__('Upload Image')}}
                                                 <input type="file"
                                                        id="fileInputEdit_subcat_{{$category->name}}"
                                                        class="upload-file"
@@ -219,7 +258,7 @@
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                Update
+                                                {{__('Add')}}
                                             </button>
                                         </div>
                                     </form>
@@ -229,8 +268,8 @@
                         <a href="{{route('category.single',$category->slug)}}">
                             <div class="card card-style custom-card m-0  bg-333"
                                  data-card-height="140"
-                                 @if($category->getMedia('category_thumbnail')->first())
-                                     style="height: 140px; background-image: url({{$category->getMedia('category_thumbnail')->first()?->getUrl()}})"
+                                 @if($category->getMedia('category_image')->first())
+                                     style="height: 140px; background-image: url({{$category->getMedia('category_image')->first()?->getUrl('thumbnail')}})"
                                      @else
                                        style="height: 140px; background-image: url({{asset('defaults/default_placeholder.png')}})"
                                  @endif

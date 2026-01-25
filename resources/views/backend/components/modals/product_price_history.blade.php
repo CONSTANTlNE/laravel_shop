@@ -7,19 +7,22 @@
 
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="price_history_{{$product->id}}">
-    <form class="content" action="" method="post"
-          style="overflow: hidden"
-          enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" value="{{$product->id}}" name="product_id">
+    <div class="content" style="overflow: hidden">
         <p class="font-18 font-800 mb-3">Price History {{$product->name}}</p>
+        <style>
+            /* Prevent wrapping inside the price history table (scoped to this modal) */
+            #price_history_{{$product->id}} table th,
+            #price_history_{{$product->id}} table td {
+                white-space: nowrap;
+            }
+        </style>
         <table class="table color-theme mb-2" style="table-layout: fixed; width: 100%;">
             <thead>
             <tr>
                 <th style="width: 90px!important;" scope="col">Date</th>
                 <th scope="col">Price</th>
-                <th style="width: 75px!important;" scope="col">Discount</th>
-                <th scope="col">Reason</th>
+                <th style="width: 75px!important;" scope="col">Discount %</th>
+                <th scope="col" style="width: min-content">Reason</th>
                 <th style="width: 90px!important;" scope="col">Updated By</th>
             </tr>
             </thead>
@@ -29,7 +32,7 @@
                     <td style="width: 90px!important;">{{ $history['update_date'] ?? '-' }}</td>
                     <td>{{ $history['price'] ?? '-' }}</td>
                     <td>
-                        {{ $history['discount%'] ?? '' }}%
+                        {{ $history['discount%'] ?? '' }}
                         {{--                                                        @if(!empty($history['discount_id']))--}}
                         {{--                                                            (ID: {{ $history['discount_id'] }})--}}
                         {{--                                                        @endif--}}
@@ -45,10 +48,10 @@
             </tbody>
         </table>
         <div class="d-flex justify-content-center">
-            <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                Apply
+            <button  data-bs-dismiss="offcanvas" class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
+                {{__('Close')}}
             </button>
         </div>
-    </form>
+    </div>
 
 </div>

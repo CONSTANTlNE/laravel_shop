@@ -14,11 +14,11 @@
 
                 @if($similar->price_before_discount)
                     <div class="card-top p-2 text-start">
-                        <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">-{{$product->discount_percentage}}%</span>
+                        <span class="bg-red-dark p-2 py-1 rounded-1 font-13 font-600">-{{$similar->discount_percentage}}%</span>
                     </div>
                 @endif
             </div>
-            <h5 class="font-600 font-16 line-height-sm pt-3 text-center">
+            <h5 class="font-600 product-name-title font-16 line-height-sm pt-1 text-center">
                 {{$similar->name}}
             </h5>
             <div class="d-flex justify-content-center align-items-center gap-2">

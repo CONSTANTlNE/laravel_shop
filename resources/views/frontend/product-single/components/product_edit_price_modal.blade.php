@@ -16,10 +16,11 @@
             <input type="hidden" name="product_id" value="{{$product->id}}">
             <div class="d-flex justify-content-center align-items-center ">
                 <i class="bi bi-pencil-fill font-12 disabled"></i>
-                <label for="price" style="max-width: 80px" class="color-theme text-center">Edit
-                    Price
+                <label for="price" style="max-width: 80px" class="color-theme text-center">
+                    Edit Price
                     <input type="number" name="price" class="form-control rounded-xs"
                            id="price" required=""
+                           step="any"
                            value="{{$product->price}}"
                            placeholder="Price">
                 </label>

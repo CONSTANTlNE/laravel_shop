@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ButtonColorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DiscountController;
@@ -33,6 +34,7 @@ Route::prefix('{locale}'.'/admin')
         Route::controller(AdminController::class)->group(function () {
             Route::get('/products/all', 'allProducts')->name('admin.products.all');
             Route::get('/products/sold', 'soldProducts')->name('admin.products.sold');
+            Route::get('/products/removed', 'removedProducts')->name('admin.products.removed');
             Route::get('/products/sold/sum', 'soldSum')->name('admin.products.sold.sum');
             Route::get('/categories/all', 'allCategories')->name('admin.categories.all');
             Route::get('/admins/all', 'allAdmins')->name('admin.admins.all');
@@ -62,7 +64,9 @@ Route::prefix('{locale}'.'/admin')
 
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'store')->name('product.store');
+            Route::post('/product/delete', 'delete')->name('product.delete');
             Route::post('/product/in-stock', 'inStock')->name('product.in-stock');
+            Route::post('/product/removed', 'removed')->name('product.removed');
             Route::post('/product/image/main', 'mainImage')->name('product.image.main');
             Route::post('/product/image/delete', 'deleteImage')->name('product.image.delete');
             Route::post('/product/image/add', 'addImage')->name('product.image.add');
@@ -167,8 +171,51 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/static/translation/update', 'updateStaticTranslation')->name('updateStaticTranslation');
         });
 
-        Route::controller(LanguageController::class)->group(function () {
+        Route::controller(ButtonColorController::class)->group(function () {
+            Route::post('/update/button/color', 'updateButtonColor')->name('updateButtonColor');
+        });
 
+        Route::controller(LanguageController::class)->group(function () {});
+
+        Route::get('facebook/post', function () {
+
+            //            https://developers.facebook.com/docs/pages-api/posts/
+
+            $pageId = '900502759820558';
+            $accessToken = config('credentials.FB_USER_TOKEN');
+            $accessTokenPage = config('credentials.FB_PAGE_ACCESS_TOKEN');
+            //            $accessToken = config('credentials.FB_APP_CLIENT_TOKEN');
+
+            // ======= create post  returns post id
+            $response = Http::post("https://graph.facebook.com/v24.0/{$pageId}/feed", [
+                'message' => 'Check out our new floor plans!',
+                'link' => 'https://shopz.ge/ka/products/dell-latitude-3320',
+                'published' => true,
+                //                'scheduled_publish_time' => now()->addHours(2)->timestamp, // Example: 2 hours from now
+                'access_token' => $accessTokenPage,
+            ]);
+
+            // ======== get all posts ?!
+            //            $response = Http::get("https://graph.facebook.com/v24.0/{$pageId}/feed", [
+            //                'access_token'           => $accessTokenPage,
+            //            ]);
+
+            // ========  read post details
+            //            $post_id='900502759820558_122103187047222256';
+            //            $response = Http::get("https://graph.facebook.com/v24.0/{$post_id}", [
+            //                'access_token'           => $accessTokenPage,
+            //            ])
+
+            //            $response = Http::post("https://graph.facebook.com/v24.0/me?fields=id,name", [
+            //                'access_token'           => $accessToken,
+            //            ]);
+
+            if ($response->successful()) {
+
+                return $response->json();
+            }
+
+            return 'Error: '.$response->body();
         });
 
     });

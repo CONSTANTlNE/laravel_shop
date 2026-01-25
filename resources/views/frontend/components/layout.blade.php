@@ -1,15 +1,16 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="{{app()->getLocale()}}">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html;"/>
+    <meta charset="utf-8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover"/>
-    <title>SHOP</title>
-    {{--    <link rel="stylesheet" type="text/css" href="{{asset('frontassets/styles/bootstrap.css')}}">--}}
-    {{--    <link rel="stylesheet" type="text/css" href="{{asset('frontassets/fonts/bootstrap-icons.css')}}">--}}
-    {{--    <link rel="stylesheet" type="text/css" href="{{asset('frontassets/styles/style.css')}}">--}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+    <link rel="shortcut icon" href="{{asset('shopz_man2.jpeg')}}">
+    <meta name="robots" content="index, follow">
+
+    <meta name="author" content="shopz.ge">
+    <meta name="application-name" content="shopz.ge">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Roboto:wght@400;500;700&display=swap"
@@ -17,198 +18,27 @@
     {{--    <link rel="manifest" href="_manifest.json">--}}
     <meta id="theme-check" name="theme-color" content="#FFFFFF">
     <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('defaults/default_placeholder.png')}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('shopz_man2.jpeg')}}">
 
+    <meta property="og:site_name" content="shopz.ge">
+    <meta property="og:locale" content="{{app()->getLocale()}}">
+    <meta property="og:type" content="website">
+
+    @yield('index-meta')
+    @yield('categories-meta')
+    @yield('product-meta')
+    @yield('index-categories')
     @vite([ 'resources/js/app.js'])
-    <style>
-        .mx-lg-6 {
-            margin-left: 5rem !important; /* 80px */
-            margin-right: 5rem !important;
-        }
-
-        .bg-333 {
-            background-image: url({{asset('defaults/placeholder.jpeg')}});
-        }
-
-        .bg-144 {
-            background-image: url({{asset('frontassets/images/test/gradient-1.jpg')}});
-
-        }
-
-        .dynamic-width {
-            width: clamp(360px, 50vw, 1000px);
-        }
-
-        .custom-h1 {
-            font-size: 28px;
-            font-weight: 700;
-            line-height: 1.4;
-            font-feature-settings: 'case';
-        }
-
-        .content {
-            /*margin-left:0;*/
-            /*margin-right:0;*/
-        }
-
-        .product_card_height {
-            height: 400px;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .bottom_center {
-            position: absolute;
-            bottom: 0; /* stick to bottom */
-            left: 50%; /* move to horizontal center */
-            transform: translateX(-50%); /* pull back by half width */
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            width: 100%;
-        }
-
-
-        @media (min-width: 768px) {
-            .product_card_height {
-                height: 600px;
-            }
-        }
-
-        /* Desktops (min-width: 1024px) */
-        @media (min-width: 1024px) {
-            .product_card_height {
-                height: 800px;
-            }
-        }
-
-
-        {{--    stiles for image upload --}}
-
-     /* Uniform preview grid */
-        .preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-        }
-
-        .preview-item {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1; /* keep square tiles */
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .preview-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* makes all images same visual size */
-            display: block;
-        }
-
-        .preview-file {
-            padding: 8px;
-            font-size: 12px;
-            text-align: center;
-            color: #333;
-        }
-
-        .remove-btn {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            border: none;
-            background: rgba(0, 0, 0, .5);
-            color: red;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .remove-btn:hover {
-            background: rgba(0, 0, 0, .7);
-        }
-
-        /* Center layout when only one preview is present */
-        .preview.preview-single {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .preview.preview-single .preview-item {
-            width: 200px; /* constrain single item width */
-            max-width: 70%;
-        }
-
-
-        /* Make the cart offcanvas clearly show a vertical scrollbar on all major browsers */
-        #menu-register {
-            /* Keep layout from shifting when scrollbar appears and ensure it’s reserved */
-            scrollbar-gutter: stable both-edges;
-            /* Firefox visible scrollbar styling */
-            scrollbar-width: auto;
-            scrollbar-color: rgba(0, 0, 0, 0.45) rgba(0, 0, 0, 0.08);
-        }
-
-        /* WebKit-based browsers (Chrome, Edge, Safari, Opera) */
-        #menu-register::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        #menu-register::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-        }
-
-        #menu-register::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: 8px;
-        }
-
-        #menu-register:hover::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.55);
-        }
-
-        .offcanvas-detached.offcanvas-top {
-            left: 50% !important;
-            top: calc(10px + env(safe-area-inset-top));
-            transform: translateX(-50%) !important;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .woot-widget-bubble {
-            display: none;
-        }
-
-
-    </style>
-
+    <link rel="stylesheet" href="{{asset('frontassets/styles/custom.css')}}">
     @stack('css')
-
-
+    @stack('json-ld')
 </head>
 
-<body class=" {{$site_settings->dark_theme ? 'theme-dark' : 'theme-light' }}">
+<body class=" {{$site_settings->dark_theme ? 'theme-dark' : 'theme-light' }}" data-highlight="{{$active_color->color}}">
+<script>
+    localStorage.setItem('shopz.ge' + '-Highlight', '{{$active_color->color}}')
+
+</script>
 <div class="overlay" id="overlay" style="display:none;">
 
     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24">
@@ -320,7 +150,6 @@
                 </div>
             </div>
         @endif
-
         @if(session()->has('success'))
             <div class="d-flex justify-content-center">
                 <div style="max-width: 400px"
@@ -334,7 +163,6 @@
                 </div>
             </div>
         @endif
-
         @if(session()->has('status'))
             <div class="d-flex justify-content-center">
                 <div style="max-width: 400px"
@@ -348,9 +176,6 @@
                 </div>
             </div>
         @endif
-
-
-
 
 
         @yield('index')
@@ -377,6 +202,7 @@
         @yield('admin-shipping-prices')
         @yield('admin-users')
         @yield('admin-admins')
+        @yield('admin-excel')
 
         @if(request()->routeIs('customer.dashboard'))
             <div class="card card-style py-3">
@@ -391,8 +217,11 @@
                 </div>
             </div>
         @endif
-
     </div>
+
+
+{{--@include('frontend.components.custom_chat_chatwootAPI')--}}
+
 
     <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-ios">
         <div class="content">
@@ -431,32 +260,18 @@
 @include('frontend.components.toasts.general_success_toast')
 
 
-{{--fix scroll position--}}
-{{--<script>--}}
-{{--    window.addEventListener('beforeunload', function () {--}}
-{{--        localStorage.setItem('scrollPosition', window.scrollY);--}}
-{{--    });--}}
-
-{{--    window.addEventListener('load', function () {--}}
-{{--        if (localStorage.getItem('scrollPosition') !== null) {--}}
-{{--            window.scrollTo(0, parseInt(localStorage.getItem('scrollPosition'), 10));--}}
-{{--            localStorage.removeItem('scrollPosition'); // Clear the stored position after use--}}
-{{--        }--}}
-{{--    });--}}
-
-{{--</script>--}}
-
-<script src="{{asset('frontassets/scripts/bootstrap.min.js')}}"></script>
 <script src="{{asset('frontassets/scripts/custom.js')}}"></script>
+<script src="{{asset('frontassets/scripts/bootstrap.min.js')}}"></script>
+
 <script src="{{asset('frontassets/customjs/imageupload.js')}}"></script>
 <script src="{{asset('frontassets/custom-htmx.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"
-        integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"
-        crossorigin="anonymous"></script>
+
+
 
 @stack('js')
 
-
+{{-- chatwoot api channel--}}
+{{--<script src="{{asset('frontassets/chatwoot.js')}}" ></script>--}}
 {{--card height--}}
 <script>
     function innerCopy(element) {
@@ -529,7 +344,7 @@
 </script>
 
 <script>
-
+     // remove item from cart afterrequest htmx
     function handleRemoval(id) {
 
         document.getElementById('removable' + id).remove();
@@ -602,48 +417,6 @@
 
 </script>
 
-<script>
-    (function (d, t) {
-        var BASE_URL = "https://chatwoot.ews.ge";
-        var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        g.src = BASE_URL + "/packs/js/sdk.js";
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g, s);
-        g.onload = function () {
-            window.chatwootSDK.run({
-                websiteToken: '7qX5zipidSqBZZZRA5t3Kk4h',
-                baseUrl: BASE_URL,
-                hideMessageBubble: false,   // show only icon
-                position: 'right',
-                showPopoutButton: false,
-                disableGreeting: true,      // disables greetings and status text
-                locale: 'ka',
-                darkMode: true
-            })
-        }
-    })(document, "script");
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const observer = new MutationObserver((mutations) => {
-            // Select all links inside #app (or anywhere you want)
-            const links = document.querySelectorAll('#app a');
-            console.log(links);
-            links.forEach(link => {
-                // hide if not already hidden
-                if (link.style.display !== 'none') {
-                    link.style.setProperty('display', 'none', 'important');
-                }
-            });
-        });
-
-        // Observe the entire #app subtree
-        const app = document.getElementById('app');
-        if (app) {
-            observer.observe(app, {childList: true, subtree: true});
-        }
-    });
-</script>
 
 <script>
 

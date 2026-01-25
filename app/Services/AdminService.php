@@ -36,6 +36,8 @@ class AdminService
             'price',
             'in_stock',
             'show_in_main',
+            'featured',
+            'removed_from_store',
             'id',
         ];
         if (! in_array($sortBy, $allowedSorts, true)) {
@@ -131,6 +133,68 @@ class AdminService
             'sortDir' => $sortDir,
         ];
 
+    }
+
+    public function removedProducts($request)
+    {
+        $perPage = (int) $request->query('per_page', 20);
+        if ($perPage < 1) {
+            $perPage = 10;
+        }
+        if ($perPage > 100) {
+            $perPage = 100;
+        }
+
+        $sortBy = $request->query('sort_by', 'id');
+        $sortDir = strtolower($request->query('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        $allowedSorts = [
+            'created_at',
+            'name',
+            'category_name',
+            'subcategory_name',
+            'stock',
+            'price',
+            'in_stock',
+            'show_in_main',
+            'featured',
+            'removed_from_store',
+            'id',
+        ];
+        if (! in_array($sortBy, $allowedSorts, true)) {
+            $sortBy = 'id';
+        }
+
+        $locale = app()->getLocale();
+
+        $query = Product::query()
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('subcategories', 'products.subcategory_id', '=', 'subcategories.id')
+            ->select('products.*')
+            ->selectRaw("categories.name ->> '{$locale}' as category_name")
+            ->selectRaw("subcategories.name ->> '{$locale}' as subcategory_name")
+            ->with(['category', 'subcategory', 'features', 'discount'])
+            ->where('products.removed_from_store', true);
+
+        // Sorting
+        if ($sortBy) {
+            if (in_array($sortBy, ['category_name', 'subcategory_name'], true)) {
+                $query->orderBy(DB::raw($sortBy), $sortDir);
+            } else {
+                $query->orderBy('products.'.$sortBy, $sortDir);
+            }
+        } else {
+            // Default order
+            $query->orderBy('products.id', 'desc');
+        }
+
+        $products = $query->paginate($perPage)->appends($request->query());
+
+        return [
+            'products' => $products,
+            'sortBy' => $sortBy,
+            'sortDir' => $sortDir,
+        ];
     }
 
     public function soldProducts($request)
