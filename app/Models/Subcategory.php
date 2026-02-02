@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -14,7 +13,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Subcategory extends Model implements HasMedia
 {
-    use HasTranslations,InteractsWithMedia,SoftDeletes;
+    use HasTranslations, InteractsWithMedia;
 
     protected $casts = [
         'category_order_id' => 'integer',
@@ -121,7 +120,7 @@ class Subcategory extends Model implements HasMedia
                         ->exists()
                 ) {
                     // keep old slug, allow update to continue
-                    $subcategory->slug = $subcategory->getOriginal('slug');
+                    $subcategory->slug = $subcategory->getOriginal('slug') ?? $subcategory->slug;
                 } else {
                     $subcategory->slug = $newSlug;
                 }
@@ -132,33 +131,40 @@ class Subcategory extends Model implements HasMedia
                 $oldOrder = $subcategory->getOriginal('order');
                 $newOrder = $subcategory->order;
 
-                if ($oldOrder < $newOrder) {
-                    // Moving down: shift others up
-                    Subcategory::where('order', '>', $oldOrder)
-                        ->where('order', '<=', $newOrder)
-                        ->decrement('order');
-                } elseif ($oldOrder > $newOrder) {
-                    // Moving up: shift others down
-                    Subcategory::where('order', '<', $oldOrder)
-                        ->where('order', '>=', $newOrder)
-                        ->increment('order');
+                // Ensure we have valid numbers to compare
+                if ($oldOrder !== null && is_numeric($oldOrder) && is_numeric($newOrder)) {
+                    if ($oldOrder < $newOrder) {
+                        // Moving down: shift others up
+                        Subcategory::where('order', '>', $oldOrder)
+                            ->where('order', '<=', $newOrder)
+                            ->decrement('order');
+                    } elseif ($oldOrder > $newOrder) {
+                        // Moving up: shift others down
+                        Subcategory::where('order', '<', $oldOrder)
+                            ->where('order', '>=', $newOrder)
+                            ->increment('order');
+                    }
                 }
             }
 
         });
 
         static::deleting(function ($subcategory) {
-            $order = $subcategory->order; // save the current order first
+            $order = $subcategory->order;
 
-            // Delete related media/products
+            // 1. Explicitly load the products to avoid the Lazy Loading error
+            $subcategory->load('products');
+
+            // 2. Delete related media
             $subcategory->clearMediaCollection();
+
+            // 3. Now you can safely loop through the loaded collection
             foreach ($subcategory->products as $product) {
-                $product->delete(); // triggers Product deleting event
+                $product->delete();
             }
 
-            // Reorder remaining subcategories
-            Subcategory::where('order', '>', $order)
-                ->decrement('order');
+            // 4. Reorder remaining subcategories
+            Subcategory::where('order', '>', $order)->decrement('order');
         });
 
     }

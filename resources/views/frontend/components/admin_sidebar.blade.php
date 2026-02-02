@@ -38,7 +38,7 @@
         <div class="card card-style rounded-m p-3 py-2 mb-0" >
 
             <a href="#" class="d-flex">
-                <i class="gradient-blue shadow-bg shadow-bg-xs bi bi-gear-fill"></i>
+                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i>
                 <div class="accordion border-0 accordion-s" id="accordion-group-users" style="width: 100%">
                     <div class="accordion-item">
                         <button class="accordion-button px-0 collapsed" type="button" data-bs-toggle="collapse"
@@ -50,7 +50,7 @@
                              data-bs-parent="#accordion-group-users"
                              style="">
                             <ul>
-                                <li onclick="window.location.href='{{ route('admin.products.all') }}'">
+                                <li onclick="window.location.href='{{ route('admin.products.all') }}'" >
                                      {{__('All Products')}}
                                 </li>
                                 <li onclick="window.location.href='{{ route('admin.products.sold') }}'">
@@ -67,48 +67,54 @@
                     </div>
                 </div>
             </a>
-            <a href="{{route('admin.orders')}}" id="nav-homes">
+            <a href="{{route('admin.orders')}}" @if(request()->routeIs('admin.orders'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
                 </i><span>{{__('Orders')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
+            <a href="{{route('admin.carts')}}" @if(request()->routeIs('admin.carts'))id="nav-homes"@endif>
+                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
+                </i><span>{{__('Cart Items')}}</span>
+                <i class="bi bi-chevron-right"></i>
+            </a>
 
-            <a href="{{route('home')}}" id="nav-homes">
+
+            <a href="{{route('home')}}" >
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-house-fill">
                 </i><span>{{__('Homepage')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('admin.categories.all')}}" id="nav-pages">
+            <a href="{{route('admin.categories.all')}}"  @if(request()->routeIs('admin.categories.all'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-heart-fill">
                 </i><span>{{__('All Categories')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('discount.all')}}" id="nav-pages">
+            <a href="{{route('discount.all')}}"  @if(request()->routeIs('discount.all'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-heart-fill">
                 </i><span>{{__('Discounts')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('coupons')}}" id="nav-pages">
+            <a href="{{route('coupons')}}" @if(request()->routeIs('coupons'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-heart-fill">
                 </i><span>{{__('Coupons')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('shippingprice')}}" id="nav-mails">
+            <a href="{{route('shippingprice')}}" @if(request()->routeIs('shippingprice'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>{{__('Shipping Prices')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('admin.admins.all')}}" id="nav-mails">
+            <a href="{{route('admin.admins.all')}}" @if(request()->routeIs('admin.admins.all'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>{{__('Admins')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('admin.users.all')}}" id="nav-mails">
+            <a href="{{route('admin.users.all')}}"  @if(request()->routeIs('admin.users.all'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>{{__('Users')}}</span>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="{{route('admin.banners')}}" id="nav-mails">
+            <a href="{{route('admin.banners')}}"  @if(request()->routeIs('admin.banners'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>{{__('Banners')}}</span>
                 <i class="bi bi-chevron-right"></i>
@@ -148,7 +154,7 @@
                     </div>
                 </div>
             </a>
-            <a href="{{route('admin.translations')}}" id="nav-mails">
+            <a href="{{route('admin.translations')}}"  @if(request()->routeIs('admin.translations'))id="nav-homes"@endif>
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-envelope-fill">
                 </i><span>{{__('Localization')}}</span>
                 <i class="bi bi-chevron-right"></i>

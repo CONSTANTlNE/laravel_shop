@@ -114,17 +114,25 @@ class SubcategoryController extends Controller
             $category->setTranslation('name', $locale->abbr, $trimmed);
         }
 
-        $category->order = $request->order;
+        // musnt be null so checking if its sent or not
+        if ($request->input('order')) {
+            $category->order = $request->input('order');
+        }
+
         $category->save();
 
-        $category_order = $category->categoryOrder->first();
+        $category_order = $category->categoryOrder?->first();
 
-        if (! $request->has('for_main')) {
-            $category_order->active = 0;
-            $category_order->save();
+        if ($category_order == null && $request->has('for_main')) {
+            $newcatorder = new CategoryOrder;
+            $newcatorder->save();
+            $category->category_order_id = $newcatorder->id;
+            $category->save();
+
         } else {
-            $category_order->active = 1;
-            $category_order->save();
+            if ($category_order != null) {
+                $category_order->delete();
+            }
         }
 
         if ($request->has('files') && $request->file('files')[0]) {

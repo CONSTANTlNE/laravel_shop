@@ -2,16 +2,19 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ButtonColorController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\ExcelUploadController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\MainBannerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PresentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductFeatureController;
 use App\Http\Controllers\PromoterController;
@@ -54,6 +57,7 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/category/update', 'update')->name('category.update');
             Route::post('/category/delete', 'delete')->name('category.delete');
             Route::post('/category/change/main', 'changeMain')->name('category.change.main');
+            Route::post('/category/change/slider', 'categorySlider')->name('category.change.slider');
         });
 
         Route::controller(SubCategoryController::class)->group(function () {
@@ -71,6 +75,7 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/product/image/delete', 'deleteImage')->name('product.image.delete');
             Route::post('/product/image/add', 'addImage')->name('product.image.add');
             Route::post('/product/price/update', 'priceUpdate')->name('product.price.update');
+            Route::post('/product/stock/update', 'stockUpdate')->name('product.stock.update');
             Route::post('/product/description/update', 'descriptionUpdate')->name('product.description.update');
             Route::post('/product/name/update', 'nameUpdate')->name('product.name.update');
             Route::post('/product/order/update', 'updateOrder')->name('product.order.update');
@@ -78,8 +83,9 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/product/video/update', 'updateVideo')->name('product.video.update');
             Route::post('/product/video/delete', 'deleteVideo')->name('product.video.delete');
             Route::post('/product/featured', 'featured')->name('product.featured');
+            Route::post('/product/onmain', 'onMain')->name('product.onmain');
             Route::post('/product/htm/images', 'htmxImages')->name('product.htmx.images');
-            Route::post('/product/download/sales/sum', 'salesSumDownload')->name('product.download.sales.sum');
+            Route::post('/product/for-sale', 'toggleForSale')->name('product.for_sale');
 
         });
 
@@ -149,6 +155,11 @@ Route::prefix('{locale}'.'/admin')
             route::post('delivery', 'delivery')->name('admin.orders.delivery');
         });
 
+        Route::controller(CartController::class)->group(function () {
+            route::get('carts', 'carts')->name('admin.carts');
+            route::get('cart/get/products', 'getProducts')->name('admin.cart.products');
+        });
+
         Route::controller(MainBannerController::class)->group(function () {
             route::get('/banners', 'index')->name('admin.banners');
             route::post('/banners/create', 'create')->name('admin.banners.create');
@@ -175,11 +186,24 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/update/button/color', 'updateButtonColor')->name('updateButtonColor');
         });
 
+        Route::controller(ExportController::class)->group(function () {
+            Route::post('/product/download/sales/sum', 'salesSumDownload')->name('product.download.sales.sum');
+            Route::post('/product/export', 'exportProducts')->name('product.export');
+            Route::get('/exports/message', 'message')->name('exports.message');
+            Route::get('/exports/download', 'download')->name('exports.download');
+        });
+
+        Route::controller(PresentController::class)->group(function () {
+            Route::post('/product/is_present', 'isPresent')->name('product.is_present');
+            Route::get('/present/products', 'presentProducts')->name('present.products');
+            Route::post('/present/toggle', 'togglePresent')->name('present.toggle');
+        });
+
         Route::controller(LanguageController::class)->group(function () {});
 
         Route::get('facebook/post', function () {
 
-            //            https://developers.facebook.com/docs/pages-api/posts/
+            //  https://developers.facebook.com/docs/pages-api/posts/
 
             $pageId = '900502759820558';
             $accessToken = config('credentials.FB_USER_TOKEN');

@@ -26,7 +26,7 @@ class ButtonColorSeeder extends Seeder
         foreach ($colors as $color) {
             ButtonColor::create([
                 'color' => $color,
-                'is_active' => false,
+                'is_active' => $color === 'orange',
             ]);
         }
     }

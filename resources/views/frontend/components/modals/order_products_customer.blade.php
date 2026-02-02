@@ -28,12 +28,10 @@
                         @foreach($order->products_details as $item)
                             <tr>
                                 <td class="text-center">
-
                                     <a target="_blank" href="{{route('product.single',[ 'locale'=>app()->getLocale(),'product'=>$item['id']])}}">
                                         <img loading="lazy" style="width: 150px" src="{{$item['image']}}" alt="">
                                         <p style="color:blue" class="mt-2">{{$item['name']}}</p>
                                     </a>
-
                                 </td>
                                 <td class="text-center">{{$item['price']}}</td>
                                 <td class="text-center">{{$item['quantity']}}</td>
@@ -43,7 +41,7 @@
                         @endforeach
                         @if(count($order->products_details) >1 && $order->city)
                             <tr style="background: lightslategray">
-                                <td class="text-center">Total</td>
+                                <td>{{__('Total')}}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

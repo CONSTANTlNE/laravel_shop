@@ -1,37 +1,37 @@
 @extends('frontend.components.layout')
 
 @section('customer-orders')
-@push('css')
-    <style>
-        /* Make the cart offcanvas clearly show a vertical scrollbar on all major browsers */
-        #menu-register {
-            /* Keep layout from shifting when scrollbar appears and ensure it’s reserved */
-            scrollbar-gutter: stable both-edges;
-            /* Firefox visible scrollbar styling */
-            scrollbar-width: auto;
-            scrollbar-color: rgba(0, 0, 0, 0.45) rgba(0, 0, 0, 0.08);
-        }
+    @push('css')
+        <style>
+            /* Make the cart offcanvas clearly show a vertical scrollbar on all major browsers */
+            #menu-register {
+                /* Keep layout from shifting when scrollbar appears and ensure it’s reserved */
+                scrollbar-gutter: stable both-edges;
+                /* Firefox visible scrollbar styling */
+                scrollbar-width: auto;
+                scrollbar-color: rgba(0, 0, 0, 0.45) rgba(0, 0, 0, 0.08);
+            }
 
-        /* WebKit-based browsers (Chrome, Edge, Safari, Opera) */
-        #menu-register::-webkit-scrollbar {
-            width: 10px;
-        }
+            /* WebKit-based browsers (Chrome, Edge, Safari, Opera) */
+            #menu-register::-webkit-scrollbar {
+                width: 10px;
+            }
 
-        #menu-register::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-        }
+            #menu-register::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.08);
+                border-radius: 8px;
+            }
 
-        #menu-register::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: 8px;
-        }
+            #menu-register::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.35);
+                border-radius: 8px;
+            }
 
-        #menu-register:hover::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.55);
-        }
-    </style>
-@endpush
+            #menu-register:hover::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.55);
+            }
+        </style>
+    @endpush
     <div class="card overflow-visible card-style m-0 mb-3">
         <div class="content mb-0">
             <h4 class="text-center">{{__('Purchases')}}</h4>
@@ -62,22 +62,30 @@
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            <a href="{{  $sortLink('name') }}"   style="min-width: max-content; white-space: nowrap;"
+                            <a href="{{  $sortLink('name') }}" style="min-width: max-content; white-space: nowrap;"
                                class="text-decoration-none d-inline-flex align-items-center gap-1">{{__('Order No')}} {{  $sortIcon('name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            <a href="{{  $sortLink('category_name') }}"   style="min-width: max-content; white-space: nowrap;"
+                            <a href="{{  $sortLink('category_name') }}"
+                               style="min-width: max-content; white-space: nowrap;"
                                class="text-decoration-none d-inline-flex align-items-center gap-1">{{__('Amount')}} {{  $sortIcon('category_name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            <a href="{{  $sortLink('category_name') }}"   style="min-width: max-content; white-space: nowrap;"
+                            <a href="{{  $sortLink('category_name') }}"
+                               style="min-width: max-content; white-space: nowrap;"
                                class="text-decoration-none d-inline-flex align-items-center gap-1">{{__('Address')}} {{  $sortIcon('category_name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             {{__('Products')}}
+                        </th>
+                        <th scope="col" class="text-center">
+                            {{__('Presents')}}
+                        </th>
+                        <th scope="col" class="text-center">
+                            {{__('Invoice')}}
                         </th>
                     </tr>
                     </thead>
@@ -89,12 +97,27 @@
                             <td class="text-center">{{$order->grand_total}}</td>
                             <td class="text-center">{{$order->address}}</td>
                             <td class="text-center">
-                                <a  href="#" data-bs-toggle="offcanvas"
-                                    data-bs-target="#order_products_{{$order->order_token}}"
-                                    class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+                                <a href="#" data-bs-toggle="offcanvas"
+                                   data-bs-target="#order_products_{{$order->order_token}}"
+                                   class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
                                     {{__('Products')}}
                                 </a>
                                 @include('frontend.components.modals.order_products_customer')
+                            </td>
+                            <td class="text-center">
+                                @if($order->presents !=null)
+                                    <a href="#" data-bs-toggle="offcanvas"
+                                       data-bs-target="#present_products_{{$order->order_token}}"
+                                       class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+                                        {{__('Presents')}}
+                                    </a>
+                                    @include('frontend.components.modals.order_presents_customer')
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <a target="_blank" href="{{route('customer.orders.invoice',['locale'=>app()->getLocale(),'order'=>$order->order_token])}}">{{__('Invoice')}}</a>
                             </td>
                         </tr>
                     @endforeach

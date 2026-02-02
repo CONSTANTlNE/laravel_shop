@@ -63,7 +63,6 @@ class User extends Authenticatable
         return $this->morphMany(Order::class, 'owner');
     }
 
-
     protected static function booted()
     {
         static::creating(function ($user) {
@@ -73,4 +72,3 @@ class User extends Authenticatable
         });
     }
 }
-

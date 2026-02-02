@@ -35,7 +35,6 @@ return new class extends Migration
             $table->boolean('discounted')->default(false);
             $table->foreignId('coupon_id')->nullable()->constrained()->onDelete('set null');
             $table->float('price_before_discount')->after('price')->nullable();
-            $table->softDeletes();
             $table->timestamps();
         });
     }

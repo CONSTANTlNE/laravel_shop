@@ -59,14 +59,17 @@
                             hx-trigger="click"
                             hx-vals='{"product_id":"{{$item->product->id}}","_token":"{{csrf_token()}}","is_cart":"1"}'
                             hx-on::after-request=" handleRemoval({{$item->id}})"
-                            {{--                                onclick="handleRemoval({{$item->id}})"--}}
+                            {{--  onclick="handleRemoval({{$item->id}})"--}}
                             class="mt-1">
                         <i class="bi bi-trash color-red-dark font-18"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="ms-auto">
+            <a href="{{route('product.single',['locale'=>app()->getLocale(),'product'=>$item->product->slug])}}" class="ms-auto position-relative">
+                @if($item->product->presents->isNotEmpty())
+                    @include('frontend.components.present_svg')
+                @endif
                 <img
                     @if($item->product->getMedia('product_image')->where('main',1)->first())
                         src="{{ $item->product->getMedia('product_image')->where('main',1)->first()->getUrl('thumbnail') }}"
@@ -74,9 +77,10 @@
                         src="{{ $item->product->getMedia('product_image')->first()->getUrl('thumbnail') }}"
                     @endif
                     class="rounded-m shadow-xl" width="130">
-            </div>
+            </a>
         </div>
 
         <div class="divider mt-1"></div>
     </div>
+
 @endforeach

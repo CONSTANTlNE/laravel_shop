@@ -1,4 +1,8 @@
-<a href="{{route('product.single',[app()->getLocale(),$product->slug])}}">
+<a href="{{route('product.single',[app()->getLocale(),$product->slug])}}" class="position-relative">
+    @if($product->presents->isNotEmpty())
+        @include('frontend.components.present_svg')
+    @endif
+
     <div class="card card-style custom-card m-0 bg-21"
          data-card-height="140"
          style="height: 140px;
@@ -6,14 +10,22 @@
                  background-image: url({{asset($mainImage->getUrl('thumbnail'))}})
              @elseif($just_image)
                  background-image: url({{asset($just_image->getUrl('thumbnail'))}})
-             @endif"
-    >
+             @endif">
         @if($product->price_before_discount)
             <div class="card-top p-2 text-start">
                 <span
-                    class="bg-red-dark p-2 py-1 rounded-1 font-13 font-600">-{{$product->discount_percentage}}%</span>
+                    class="bg-red-dark p-2 py-1rounded-1 font-13 font-600">
+                    -{{$product->discount_percentage}}%
+                </span>
             </div>
         @endif
+        @if($product->coupon!=null)
+            <div class="card-top p-2  pt-0  text-start">
+                <img src="{{asset('voucher.png')}}" alt=""
+                     style="width: 50px; top:-18px;right: 40px;z-index: 9999">
+            </div>
+        @endif
+
         {{--                                        @if($product->in_stock==1)--}}
         {{--                                            <span--}}
         {{--                                                class="bottom_center color-green-dark d-block font-11 font-600 text-center">In Stock</span>--}}
@@ -23,7 +35,7 @@
         {{--                                        @endif--}}
         <div class="card-bottom p-1 bg-dark bg-opacity-50">
             <div class="d-flex justify-content-center align-items-center gap-2">
-                <div class="d-flex justify-content-center gap-2">
+                <div class="d-flex justify-content-center gap-2 ">
                     <h5 class=" font-16 " style="color:white">{{$product->price}}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="12"
                              height="14"
@@ -68,12 +80,12 @@
     <button
         class="{{$product->in_stock==1 ? 'gradient-highlight' : 'gradient-red' }} btn-full btn shadow-bg shadow-bg-m  pt-2 pb-2"
         @if($product->in_stock==1)
-        data-toast="cart_toast"
+            data-toast="cart_toast"
         hx-post="{{route('cart.add')}}"
         hx-target="#cart_icon_number"
         hx-vals='{"product_id":"{{$product->id}}","_token":"{{csrf_token()}}","is_cart":"0"}'
         style="min-width: 148px"
-        >
+    >
         <i class="bi bi-cart4 font-13"></i>
         {{__('Add')}}
         @else

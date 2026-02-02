@@ -18,6 +18,6 @@ class CartItem extends Model
 
     public function couponDiscount()
     {
-        return $this->belongsTo(Coupon::class);
+        return $this->belongsTo(Coupon::class, 'coupon_id');
     }
 }

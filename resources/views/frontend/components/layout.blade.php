@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
-<html lang="{{app()->getLocale()}}">
+<html lang="{{app()->getLocale()}}" hx-headers='{"X-CSRF-TOKEN": "{{csrf_token()}}"}'>
 <head>
     <meta http-equiv="Content-Type" content="text/html;"/>
     <meta charset="utf-8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
     <link rel="shortcut icon" href="{{asset('shopz_man2.jpeg')}}">
     <meta name="robots" content="index, follow">
 
@@ -32,12 +33,92 @@
     <link rel="stylesheet" href="{{asset('frontassets/styles/custom.css')}}">
     @stack('css')
     @stack('json-ld')
+    <style>
+        .myloader {
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 30px;
+            animation: l1 1s linear infinite alternate;
+        }
+
+        .myloader:before {
+            content: "Loading..."
+        }
+
+        @keyframes l1 {
+            to {
+                opacity: 0
+            }
+        }
+
+        .htmx-indicator {
+            opacity: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            height: 0;
+            visibility: hidden;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 30px;
+            animation: l1 1s linear infinite alternate;
+        }
+
+        .htmx-indicator:before {
+            content: "Loading..."
+        }
+
+        @keyframes l1 {
+            to {
+                opacity: 0
+            }
+        }
+
+        .htmx-request .htmx-indicator {
+            display: inline;
+
+        }
+
+        .htmx-request.htmx-indicator {
+            opacity: 1;
+            margin-top: 10px;
+            height: 30px;
+            margin-bottom: 10px;
+            visibility: visible;
+            transition: opacity 200ms ease-in;
+        }
+
+        .product-image-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Makes the image a perfect square */
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px; /* Optional: matches modern card styles */
+            height: auto !important; /* Overrides any inherited fixed heights */
+        }
+
+        /* Optional: Limit the size only on desktop so it doesn't get TOO big */
+        @media (min-width: 1200px) {
+            .featured_anchor {
+                display: block;
+                max-width: 450px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .featured_anchor {
+                display: block;
+                width: 150px !important; /* Keeps your specific height design */
+
+            }
+        }
+
+    </style>
 </head>
 
 <body class=" {{$site_settings->dark_theme ? 'theme-dark' : 'theme-light' }}" data-highlight="{{$active_color->color}}">
 <script>
     localStorage.setItem('shopz.ge' + '-Highlight', '{{$active_color->color}}')
-
 </script>
 <div class="overlay" id="overlay" style="display:none;">
 
@@ -98,85 +179,30 @@
 
         {{--  Banners   --}}
         {{--        &&  !auth('admin')->check()--}}
+
         @if($site_settings->use_main_banner && !request()->routeIs('checkout') && !request()->routeIs('product.single') && !request()->routeIs('customer.orders'))
-            <div class="splide single-slider slider-no-dots slider-no-arrows slider-boxed text-center mt-n2"
-                 id="banner-slider">
-                <div class="splide__track">
-                    <div class="splide__list">
-                        @if(isset($banners) && $banners->isNotEmpty())
-                            @foreach($banners as $banner)
-                                <div class="splide__slide">
-                                    <div class="card card-style mx-0 shadow-card shadow-card-m bg-14"
-                                         style="background-image: url({{$banner->getFirstMediaUrl('banner_image')}})"
-                                         data-card-height="400">
-                                        <div class="card-bottom pb-3 px-3">
-                                            <h3 class="color-white mb-1">{{$banner->header}} </h3>
-                                            <p class="color-white opacity-80 mb-0 mt-n1 font-14">{{$banner->description}}</p>
-                                        </div>
-                                        {{--                                        <div class="card-overlay bg-gradient-fade"></div>--}}
-                                    </div>
-                                </div>
-                            @endforeach
-                        @else
-                            {{--                            <div class="splide__slide">--}}
-                            {{--                                <div class="card card-style mx-0 shadow-card shadow-card-m bg-14"--}}
-                            {{--                                     data-card-height="400">--}}
-                            {{--                                    <div class="card-bottom pb-3 px-3">--}}
-                            {{--                                        <h3 class="color-white mb-1">Meet Duo 3.0</h3>--}}
-                            {{--                                        <p class="color-white opacity-80 mb-0 mt-n1 font-14">Duo is now Better than--}}
-                            {{--                                            Ever!</p>--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div class="card-overlay bg-gradient-fade"></div>--}}
-                            {{--                                </div>--}}
-                            {{--                            </div>--}}
-                        @endif
-                    </div>
-                </div>
-            </div>
+            @include('frontend.components.main_banner')
         @endif
 
-        @if($errors->any())
-            <div class="d-flex justify-content-center">
-                <div style="max-width: 500px"
-                     class="text-center alert bg-fade-red color-red-dark alert-dismissible rounded-s fade show"
-                     role="alert">
-                    @foreach($errors->all() as $error)
-                        <i class="bi bi-exclamation-triangle pe-2"></i>
-                        <strong>Warning</strong> - {{$error}}
-                        <button type="button" class="btn-close opacity-20 font-11 pt-3 mt-1" data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                        <br>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-        @if(session()->has('success'))
-            <div class="d-flex justify-content-center">
-                <div style="max-width: 400px"
-                     class="alert bg-green-light shadow-bg shadow-bg-m alert-dismissible rounded-s fade show mb-3 text-center"
-                     role="alert">
-                    <i class="bi bi-check-circle-fill pe-2"></i>
-                    {{--                    <strong>Awesome</strong> - --}}
-                    {{session('success')}}
-                    <button type="button" class="btn-close opacity-10" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                </div>
-            </div>
-        @endif
-        @if(session()->has('status'))
-            <div class="d-flex justify-content-center">
-                <div style="max-width: 400px"
-                     class="alert bg-green-light shadow-bg shadow-bg-m alert-dismissible rounded-s fade show mb-3 text-center"
-                     role="alert">
-                    <i class="bi bi-check-circle-fill pe-2"></i>
-                    {{--                    <strong>Awesome</strong> - --}}
-                    {{session('status')}}
-                    <button type="button" class="btn-close opacity-10" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                </div>
-            </div>
-        @endif
+        @include('frontend.components.session_messages')
 
+        @if($export!=null)
+            <div class="d-flex justify-content-center mb-3">
+                <div hx-get="{{route('exports.message')}}"
+                     id="export_status"
+                     hx-trigger="load delay:2s"
+                     hx-swap="outerHTML">
+                    @if($export!=null)
+                        Ready
+                        <a href="{{ route('exports.download') }}" target="_blank">
+                            Download Export
+                        </a>
+                    @else
+                        Preparing download
+                    @endif
+                </div>
+            </div>
+        @endif
 
         @yield('index')
         @yield('product-single')
@@ -199,6 +225,7 @@
         @yield('admin-terms')
         @yield('admin-faqs')
         @yield('admin-orders')
+        @yield('admin-carts')
         @yield('admin-shipping-prices')
         @yield('admin-users')
         @yield('admin-admins')
@@ -220,7 +247,7 @@
     </div>
 
 
-{{--@include('frontend.components.custom_chat_chatwootAPI')--}}
+    {{--@include('frontend.components.custom_chat_chatwootAPI')--}}
 
 
     <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-ios">
@@ -260,15 +287,10 @@
 @include('frontend.components.toasts.general_success_toast')
 
 
-<script src="{{asset('frontassets/scripts/custom.js')}}"></script>
-<script src="{{asset('frontassets/scripts/bootstrap.min.js')}}"></script>
-
+{{--<script src="{{asset('frontassets/scripts/custom.js')}}"></script>--}}
 <script src="{{asset('frontassets/customjs/imageupload.js')}}"></script>
 <script src="{{asset('frontassets/custom-htmx.js')}}"></script>
 
-
-
-@stack('js')
 
 {{-- chatwoot api channel--}}
 {{--<script src="{{asset('frontassets/chatwoot.js')}}" ></script>--}}
@@ -331,6 +353,8 @@
     </script>
 @endif
 
+<script id="htmx_messages"></script>
+
 <script>
     // remove cart item if qty is 0 via htmx
     document.body.addEventListener('remove_cart_item', (event) => {
@@ -344,7 +368,7 @@
 </script>
 
 <script>
-     // remove item from cart afterrequest htmx
+    // remove item from cart afterrequest htmx
     function handleRemoval(id) {
 
         document.getElementById('removable' + id).remove();
@@ -397,22 +421,18 @@
 
     }
 
-    @if(request()->routeIs('home'))
-    new Splide('#banner-slider').mount();
+    @if($site_settings->use_main_banner && !request()->routeIs('checkout') && !request()->routeIs('product.single') && !request()->routeIs('customer.orders'))
+    document.addEventListener('DOMContentLoaded', function () {
+        new Splide('#banner-slider', {
+            arrows: false,
+            lazyLoad: 'nearby',
+            autoplay: true,
+            interval: 3000,
+            type: 'loop',
+            loop: true,
+        }).mount();
+    });
     @endif
-
-
-
-
-
-    // document.body.addEventListener('htmx:afterRequest', function(event) {
-    //     const target = event.target;
-    //
-    //     // If the element has our custom attribute, refresh the page
-    //     if (target && target.dataset.refreshPage !== undefined) {
-    //         window.location.reload();
-    //     }
-    // });
 
 
 </script>
@@ -462,8 +482,73 @@
     //     }
     // }
 
-</script>
 
+    // Initialize Notyf
+    let notyf;
+    document.addEventListener('DOMContentLoaded', () => {
+        notyf = new Notyf({
+            duration: 3000,
+            position: {x: 'center', y: 'top'},
+            dismissible: true,
+            types: [
+                {
+                    type: 'success',
+                    background: '#28a745', // You can change this to match your brand
+                },
+                {
+                    type: 'error',
+                    background: '#dc3545',
+                }
+            ]
+        });
+    })
+
+
+    document.body.addEventListener('showSuccess', function (evt) {
+
+        notyf.open({
+            type: evt.detail.icon || 'success',
+            message: evt.detail.message
+        });
+    });
+
+    document.body.addEventListener('showError', function (evt) {
+        Swal.fire({
+            icon: evt.detail.icon,
+            text: evt.detail.message,
+            showConfirmButton: false,
+            timer: 2800
+        });
+    });
+
+    document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
+        if (evt.detail.xhr.status === 422) {
+            // Prevent HTMX from trying to swap the error response into the DOM
+            evt.detail.shouldSwap = false;
+
+            const response = JSON.parse(evt.detail.xhr.responseText);
+            const errors = response.errors;
+
+            // Convert the error object into a readable list
+            let errorHtml = '<ul style="text-align: left;">';
+            Object.values(errors).forEach(errorMessages => {
+                errorMessages.forEach(message => {
+                    errorHtml += `<li>${message}</li>`;
+                });
+            });
+            errorHtml += '</ul>';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Failed',
+                html: errorHtml,
+                showConfirmButton: true
+            });
+        }
+    });
+
+</script>
+@stack('js')
 
 </body>
 

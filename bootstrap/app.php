@@ -1,5 +1,7 @@
 <?php
 
+use App\Notifications\ErrorOccurred;
+use Illuminate\Contracts\Notifications\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -8,6 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
             __DIR__.'/../routes/fortify.php',
+            __DIR__.'/../routes/waybill.php',
             __DIR__.'/../routes/admin.php',
             __DIR__.'/../routes/web.php',
             __DIR__.'/../routes/cart.php',
@@ -30,4 +33,24 @@ return Application::configure(basePath: dirname(__DIR__))
             'any.lock' => \App\Http\Middleware\LockAnyUntillFirstMiddleware::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {})->create();
+    ->withExceptions(function (Exceptions $exceptions): void {
+
+        $exceptions->report(function (Throwable $exception) {
+
+            if (app()->runningInConsole()) {
+                return;
+            }
+
+            if (! app()->bound(Dispatcher::class)) {
+                return;
+            }
+
+            Notification::route('mail', 'shopzgestore@gmail.com')
+                ->notify(
+                    new ErrorOccurred(
+                        $exception,
+                        request()?->user()
+                    )
+                );
+        });
+    })->create();

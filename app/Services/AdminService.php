@@ -52,7 +52,7 @@ class AdminService
             ->select('products.*')
             ->selectRaw("categories.name ->> '{$locale}' as category_name")
             ->selectRaw("subcategories.name ->> '{$locale}' as subcategory_name")
-            ->with(['category', 'subcategory', 'features', 'discount']);
+            ->with(['category', 'subcategory', 'features', 'discount', 'presents']);
 
         // Filtering
         if ($request->filled('category_id')) {
@@ -111,6 +111,26 @@ class AdminService
             $query->whereNotNull('products.discount_id');
         } elseif ($discountsFilter === 'coupons') {
             $query->whereNotNull('products.coupon_id');
+        }
+
+        // Status filter
+        $statusFilter = $request->query('status_filter');
+        if ($statusFilter === 'in_stock') {
+            $query->where('products.in_stock', 1);
+        } elseif ($statusFilter === 'show_in_main') {
+            $query->where('products.show_in_main', 1);
+        } elseif ($statusFilter === 'featured') {
+            $query->where('products.featured', 1);
+        } elseif ($statusFilter === 'is_present') {
+            $query->where('products.is_present', 1);
+        } elseif ($statusFilter === 'has_presents') {
+            $query->whereHas('presents');
+        } elseif ($statusFilter === 'discounted') {
+            $query->whereNotNull('products.discount_id');
+        } elseif ($statusFilter === 'show_in_similar') {
+            $query->where('products.show_in_similar', 1);
+        } elseif ($statusFilter === 'removed_from_store') {
+            $query->where('products.removed_from_store', 1);
         }
 
         // Sorting

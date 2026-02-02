@@ -3,6 +3,7 @@
 namespace App\Services\Category;
 
 use App\Models\Category;
+use App\Models\CategoryOrder;
 use App\Services\Conversion;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,20 +16,25 @@ class UpdateCategory
             'category_id' => 'required|exists:categories,id',
             'category_name_'.$mainLocale->abbr => 'required|string|max:255',
             'files' => 'nullable|array',
-            'order' => 'required|integer',
             'files.*' => 'image|mimes:jpeg,webp,png,jpg,gif|max:5024',
         ]);
 
+        //        dd($request->all());
         $category = Category::findOrFail($request->input('category_id'));
 
         $category_order = $category->categoryOrder?->first();
+        //        dd($category_order);
 
-        if ($category_order && ! $request->has('for_main')) {
-            $category_order->active = 0;
-            $category_order->save();
-        } elseif ($category_order) {
-            $category_order->active = 1;
-            $category_order->save();
+        if ($category_order == null && $request->has('for_main')) {
+            $newcatorder = new CategoryOrder;
+            $newcatorder->save();
+            $category->category_order_id = $newcatorder->id;
+            $category->save();
+
+        } else {
+            if ($category_order != null) {
+                $category_order->delete();
+            }
         }
 
         foreach ($locales as $locale) {
@@ -37,7 +43,10 @@ class UpdateCategory
             $category->setTranslation('name', $locale->abbr, $trimmed);
         }
 
-        $category->order = $request->input('order');
+        // musnt be null so checking if its sent or not
+        if ($request->input('order')) {
+            $category->order = $request->input('order');
+        }
         $category->save();
 
         if ($request->has('files') && $request->file('files')[0]) {

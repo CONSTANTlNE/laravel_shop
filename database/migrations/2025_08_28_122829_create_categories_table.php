@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('slug')->unique()->index();
             $table->integer('order')->nullable();
             $table->foreignId('category_order_id')->nullable()->constrained()->onDelete('set null');
-            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -150,6 +150,15 @@
                             Products
                         </th>
                         <th scope="col" class="text-center">
+                            Presents
+                        </th>
+                        <th scope="col" class="text-center">
+                            Google Map
+                        </th>
+                        <th scope="col" class="text-center">
+                            Waybill
+                        </th>
+                        <th scope="col" class="text-center">
                             Delivered
                         </th>
                     </tr>
@@ -171,9 +180,69 @@
                                 <a href="#" data-bs-toggle="offcanvas"
                                    data-bs-target="#order_products_{{$order->order_token}}"
                                    class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
-                                    Products
+                                    {{__('Products')}}
                                 </a>
                                 @include('backend.components.modals.order_products')
+                            </td>
+                            <td class="text-center">
+                                {{--                                @if($order->presentsRelation?->isNotEmpty())--}}
+                                {{--                                    <a href="#" data-bs-toggle="offcanvas"--}}
+                                {{--                                       data-bs-target="#order_presents_{{$order->order_token}}"--}}
+                                {{--                                       class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">--}}
+                                {{--                                        {{__('Presents')}}--}}
+                                {{--                                    </a>--}}
+                                {{--                                    @include('backend.components.modals.order_presents')--}}
+                                {{--                                @endif--}}
+
+                                @if($order->presents!=null)
+                                    <a href="#" data-bs-toggle="offcanvas"
+                                       data-bs-target="#order_presents_{{$order->order_token}}"
+                                       class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+                                        {{__('Presents')}}
+                                    </a>
+                                    @include('backend.components.modals.order_presents')
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($order->google_map!=null)
+                                    <a href="{{$order->google_map}}" target="_blank">Google Map</a>
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @php
+                                    $finished=$order->waybill?->is_finished
+                                @endphp
+                                @if($order->waybill == null)
+                                    <form action="{{route('waybill.with.transport')}}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="order_id" value="{{$order->id}}">
+
+                                        <button type="submit"
+                                                class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+                                            Waybill
+                                        </button>
+                                    </form>
+                                @endif
+                                @if($order->waybill !=null && $order->waybill->status==0)
+                                    <form action="{{route('waybill.finish')}}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="order_id" value="{{$order->id}}">
+                                        <p class="mb-0">{{$order->waybill->waybill_number}}</p>
+                                        @if(!$finished)
+                                            <button type="submit"
+                                                    class="default-link btn btn-m rounded-s gradient-blue shadow-bg shadow-bg-s px-5 mb-0 ">
+                                                Finish
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                    class="default-link btn btn-m rounded-s gradient-green shadow-bg shadow-bg-s px-5 mb-0 ">
+                                                Finished
+                                            </button>
+                                        @endif
+                                    </form>
+                                @endif
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center">

@@ -45,9 +45,11 @@
                                 {{$order->created_at->format('d/m/Y')}}
                             </td>
                             <td>
-                                <strong>
-                                    {{$order->order_token}}
-                                </strong>
+                                <a href="{{route('admin.orders',['q'=>$order->order_token])}}" target="_blakn">
+                                    <strong>
+                                        {{$order->order_token}}
+                                    </strong>
+                                </a>
                             </td>
                             <td>{{$order->shipping_cost}}</td>
                             <td>{{$order->city->name}}</td>

@@ -400,7 +400,7 @@
 
 
     <script>
-        @if($settings->use_sku==1)
+        @if($settings->use_sku==1 && $category->subcategories->isEmpty())
         // generate rantom sku for products
         function generateSKU(length = 7) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

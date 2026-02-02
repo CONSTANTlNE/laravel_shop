@@ -40,6 +40,7 @@ Route::middleware(['cartToken', 'auth'])
     ->group(function () {
         Route::controller(PurchaseController::class)->group(function () {
             Route::post('/purchase', 'payment')->name('purchase');
+            Route::post('/purchase/nawilnawil', 'nawilNawili')->name('nawilnawili');
         });
 
     });

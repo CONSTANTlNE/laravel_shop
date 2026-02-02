@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -15,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model implements HasMedia
 {
-    use HasTranslations, InteractsWithMedia,SoftDeletes;
+    use HasTranslations, InteractsWithMedia;
 
     protected $casts = [
         'category_order_id' => 'integer',
@@ -128,7 +127,7 @@ class Category extends Model implements HasMedia
                         ->exists()
                 ) {
                     // keep old slug, allow update to continue
-                    $category->slug = $category->getOriginal('slug');
+                    $category->slug = $category->getOriginal('slug') ?? $category->slug;
                 } else {
                     $category->slug = $newSlug;
                 }
@@ -139,38 +138,46 @@ class Category extends Model implements HasMedia
                 $oldOrder = $category->getOriginal('order');
                 $newOrder = $category->order;
 
-                if ($oldOrder < $newOrder) {
-                    // Moving down: shift others up
-                    Category::where('order', '>', $oldOrder)
-                        ->where('order', '<=', $newOrder)
-                        ->decrement('order');
-                } elseif ($oldOrder > $newOrder) {
-                    // Moving up: shift others down
-                    Category::where('order', '<', $oldOrder)
-                        ->where('order', '>=', $newOrder)
-                        ->increment('order');
+                // Ensure we have valid numbers to compare
+                if ($oldOrder !== null && is_numeric($oldOrder) && is_numeric($newOrder)) {
+                    if ($oldOrder < $newOrder) {
+                        Category::where('order', '>', $oldOrder)
+                            ->where('order', '<=', $newOrder)
+                            ->decrement('order');
+                    } elseif ($oldOrder > $newOrder) {
+                        Category::where('order', '<', $oldOrder)
+                            ->where('order', '>=', $newOrder)
+                            ->increment('order');
+                    }
                 }
             }
 
         });
 
-        // Ensure related subcategories and products are deleted via Eloquent so their media is cleaned as well
         static::deleting(function ($category) {
-            // Delete subcategories explicitly to trigger media cleanup
-            $category->subcategories()->get()->each(function ($sub) {
+            // 1. Eager load relations to prevent "Lazy Loading Disabled" errors
+            $category->load(['subcategories', 'products', 'categoryOrder']);
+
+            // 2. Delete subcategories (this triggers Subcategory::deleting events)
+            $category->subcategories->each(function ($sub) {
                 $sub->delete();
             });
-            // Delete products explicitly (in case they have media or related records in the future)
-            $category->products()->get()->each(function ($product) {
+
+            // 3. Delete products (this triggers Product::deleting events)
+            $category->products->each(function ($product) {
                 $product->delete();
             });
+
+            // 4. Clean up Category's own media
             $category->clearMediaCollection();
 
-            foreach ($category->products as $product) {
-                $product->delete(); // triggers Product deleting event
+            // 5. Delete the CategoryOrder parent record
+            if ($category->categoryOrder) {
+                $category->categoryOrder->delete();
             }
 
-            Category::where('order', '>', $category->order)
+            // 6. Reorder the remaining categories
+            static::where('order', '>', $category->order)
                 ->decrement('order');
         });
     }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\TotalSalesExport;
 use App\Models\Product;
 use App\Services\CartService;
 use App\Services\ProductService;
@@ -58,7 +57,7 @@ class ProductController extends BaseController
                 'media', // keep media as usual
             ])->first();
 
-        if (! $query) {
+        if (! $query && is_numeric($slug)) {
             $query = Product::where('id', $slug)
                 ->with([
                     'features' => function ($query) {
@@ -71,11 +70,13 @@ class ProductController extends BaseController
         $product = $query;
 
         if (! $product) {
-            return back()->with('alert_error', __('Product not found'));
+            return redirect()->route('home') // Redirect to a specific route
+                ->with('alert_error', __('Product not found'));
         }
 
         if ($product->removed_from_store) {
-            return back()->with('alert_error', __('Product is not available'));
+            return redirect()->route('home')
+                ->with('alert_error', __('Product is not available'));
         }
 
         $settings = $this->site_settings;
@@ -121,10 +122,11 @@ class ProductController extends BaseController
             }
             $media->save();
 
-            return back()->with('alert_success', 'Main image updated successfully');
+            return back()->with('alert_success', __('Product image updated successfully.'));
+
         }
 
-        return back()->with('alert_error', 'Media not found');
+        return back()->with('alert_error', __('Product not found.'));
 
     }
 
@@ -136,20 +138,37 @@ class ProductController extends BaseController
         if ($media) {
             $media->delete();
 
-            return back()->with('alert_success', 'Image deleted successfully');
+            //            return back()->with('alert_success', 'Image deleted successfully');
+            $success = __('Images deleted successfully');
+            //            return back()->with('alert_success', 'Images added successfully');
+            //            return view('backend.htmx.messages_htmx', compact('success'));
+
+            return response()
+                ->view('backend.htmx.messages_htmx')
+                ->header('HX-Trigger', json_encode([
+                    'showSuccess' => [
+                        'icon' => 'success',
+                        'message' => __('Image deleted successfully'),
+                    ],
+                ]));
         }
 
-        return back()->with('alert_error', 'Media not found');
+        //        return back()->with('alert_error', 'Media not found');
 
+        return response()
+            ->view('backend.htmx.messages_htmx')
+            ->header('HX-Trigger', json_encode([
+                'showError' => [
+                    'icon' => 'error',
+                    'message' => __('Media not found'),
+                ],
+            ]));
     }
 
     public function addImage(Request $request)
     {
-
-        new ProductService()->addImage($request);
-
-        return back()->with('alert_error', 'Product not found');
-
+        return new ProductService()->addImage($request);
+        //        return back()->with('alert_error', 'Product not found');
     }
 
     public function priceUpdate(Request $request)
@@ -160,12 +179,18 @@ class ProductController extends BaseController
         return back()->with('alert_success', 'Price updated successfully');
     }
 
+    public function stockUpdate(Request $request)
+    {
+
+        new ProductService()->stockUpdate($request);
+
+        return back()->with('alert_success', 'Stock updated successfully');
+    }
+
     public function inStock(Request $request)
     {
 
-        new ProductService()->inStock($request);
-
-        return back()->with('alert_success', 'In stock updated successfully');
+        return new ProductService()->inStock($request);
 
     }
 
@@ -333,7 +358,64 @@ class ProductController extends BaseController
         }
         $product->save();
 
-        return back()->with('alert_success', 'Featured updated successfully');
+        return response()
+            ->view('backend.htmx.messages_htmx')
+            ->header('HX-Trigger', json_encode([
+                'showSuccess' => [
+                    'icon' => 'success',
+                    'message' => __('Updated successfully'),
+                ],
+            ]));
+    }
+
+    public function onMain(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $product = Product::find($request->input('product_id'));
+        if ($product->show_in_main == 1) {
+            $product->show_in_main = 0;
+        } else {
+            $product->show_in_main = 1;
+        }
+        $product->save();
+
+        return response()
+            ->view('backend.htmx.messages_htmx')
+            ->header('HX-Trigger', json_encode([
+                'showSuccess' => [
+                    'icon' => 'success',
+                    'message' => __('Updated successfully'),
+                ],
+            ]));
+    }
+
+    public function toggleForSale(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $product = Product::find($request->input('product_id'));
+        if ($product->for_sale == 1) {
+            $product->for_sale = 0;
+            $messsage = __('Not for Sale set successfully');
+        } else {
+            $product->for_sale = 1;
+            $messsage = __('Marked as For Sale');
+        }
+        $product->save();
+
+        return response()
+            ->view('backend.htmx.not_for_sale', compact('product'))
+            ->header('HX-Trigger', json_encode([
+                'showSuccess' => [
+                    'icon' => 'success',
+                    'message' => $messsage,
+                ],
+            ]));
     }
 
     public function htmxImages(Request $request)
@@ -362,16 +444,6 @@ class ProductController extends BaseController
         }
 
         return view('frontend.components.toasts.search_htmx', compact('search_products'));
-    }
-
-    public function salesSumDownload(Request $request)
-    {
-
-        $from = $request->input('date_from');
-        $to = $request->input('date_to');
-
-        return new TotalSalesExport($from, $to)->download('invoices.xlsx');
-
     }
 
     public function discounted(Request $request)

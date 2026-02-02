@@ -1,12 +1,12 @@
 
 @if(!$featured_products->isEmpty())
-<div class="splide  dynamic-slider slider-dots-under slider-boxed" id="dynamic-slider">
+<div class="splide  slider-dots-under slider-boxed" id="featured-slider">
     <h2 class="text-center mb-3">{{__('Featured')}}</h2>
     <div class="splide__track">
         <div class="splide__list">
             @foreach($featured_products as $featured)
             <div class="splide__slide">
-                <a href="{{route('product.single',['product'=>$featured->slug])}}">
+                <a href="{{route('product.single',['product'=>$featured->slug])}}" class="featured_anchor">
                     <div class="col-12 p-0">
                         <div class="card card-style custom-card m-0 " data-card-height="140"
                              style="height: 140px;

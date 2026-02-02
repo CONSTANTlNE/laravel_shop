@@ -3,13 +3,16 @@
      id="order_products_{{$order->order_token}}">
     <div class="content">
         <div class="d-flex justify-content-center">
-            <h5>Order {{$order->order_token}} - {{$order->created_at->format('d/m/Y')}}</h5>
+            <h5>Order Products {{$order->order_token}} - {{$order->created_at->format('d/m/Y')}}</h5>
         </div>
         <div class="card p-2 card-style m-0">
             @if($order->products_details)
                 <table class="table color-theme mb-2">
                     <th scope="col" class="text-center">
                         {{__('Product')}}
+                    </th>
+                    <th scope="col" class="text-center">
+                        {{__('Present')}}
                     </th>
                     <th scope="col" class="text-center">
                         SKU
@@ -23,6 +26,7 @@
                     <th scope="col" class="text-center">
                         Coupon Discount
                     </th>
+
                     <th scope="col" class="text-center">
                         Total
                     </th>
@@ -30,6 +34,9 @@
                     @foreach($order->products_details as $item)
                         <tr>
                             <td class="text-center">{{$item['name']}}</td>
+                            <td class="text-center">
+
+                            </td>
                             <td class="text-center">{{$item['sku']}}</td>
                             <td class="text-center">{{$item['price']}}</td>
                             <td class="text-center">{{$item['quantity']}}</td>

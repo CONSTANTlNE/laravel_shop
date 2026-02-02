@@ -99,7 +99,9 @@ class ProductService
         $product->price = $request->input('price');
         $product->embed_video = $videoId;
         $product->admin_id = auth('admin')->id();
-
+        if ($request->has('is_present')) {
+            $product->is_present = true;
+        }
         $product->save();
         $product->categories()->attach($category->id);
 
@@ -157,6 +159,26 @@ class ProductService
 
     }
 
+    public function stockUpdate($request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $product = Product::findOrFail($request->input('product_id'));
+
+        // Update stock
+        $product->stock = $request->input('stock');
+
+        // If stock becomes 0, set in_stock to 0
+        if ($product->stock === 0) {
+            $product->in_stock = 0;
+        }
+
+        $product->save();
+    }
+
     public function inStock($request)
     {
         $request->validate([
@@ -177,8 +199,10 @@ class ProductService
             }
             $product->in_stock = 1;
         }
-
         $product->save();
+
+        return back()->with('alert_success', 'Product stock updated successfully');
+
     }
 
     public function addImage($request)
@@ -207,7 +231,33 @@ class ProductService
 
             }
 
-            return back()->with('alert_success', 'Images added successfully');
+            //            return back()->with('alert_success', 'Images added successfully');
+            $currentUrl = $request->header('HX-Current-URL');
+
+            if ($currentUrl && str_contains($currentUrl, route('product.single', $product->slug))) {
+                return response()->noContent()
+                    ->header('HX-Refresh', 'true');
+            } else {
+                return response()
+                    ->view('backend.htmx.messages_htmx')
+                    ->header('HX-Trigger', json_encode([
+                        'showSuccess' => [
+                            'icon' => 'success',
+                            'message' => __('Images added successfully'),
+                        ],
+                    ]));
+            }
+
+        } else {
+
+            return response()
+                ->view('backend.htmx.messages_htmx')
+                ->header('HX-Trigger', json_encode([
+                    'showError' => [
+                        'icon' => 'error',
+                        'message' => __('Product not found'),
+                    ],
+                ]));
         }
     }
 }

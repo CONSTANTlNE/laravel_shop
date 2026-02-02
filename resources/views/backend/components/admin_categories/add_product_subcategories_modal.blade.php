@@ -33,7 +33,7 @@
                 @if($settings->use_stock==1)
                     <label for="stock"
                            style="max-width: 80px"
-                           class="color-theme text-center">Stock
+                           class="color-theme text-center">{{__('Stock')}}
                         <input type="number"
                                name="stock"
                                class="form-control rounded-xs"
@@ -45,7 +45,7 @@
                 @endif
                 <label for="price"
                        style="max-width: 80px"
-                       class="color-theme text-center">Price
+                       class="color-theme text-center">{{__('Price')}}
                     <input type="number"
                            name="price"
                            step="any"
@@ -66,9 +66,9 @@
                            value="{{old('product_name_'.$locale->abbr)}}"
                            placeholder="Prodct Name"/>
                     <label for="c1{{$locale->abbr}}"
-                           class="color-theme">Name {{$locale->language}} </label>
+                           class="color-theme">{{__('Name')}} {{$locale->language}} </label>
                     @if($locale->main==1)
-                        <span>(required)</span>
+                        <span>({{__('required')}})</span>
                     @endif
                 </div>
                 <div class="form-custom mb-3 form-floating">
@@ -79,7 +79,7 @@
                               @required($locale->main==1)
                               id="c7{{$locale->abbr}}">{{old('description_'.$locale->abbr)}}</textarea>
                     <label for="c7{{$locale->abbr}}"
-                           class="color-theme">Description {{$locale->language}}</label>
+                           class="color-theme">{{__('Description')}} {{$locale->language}}</label>
                     @if($locale->main==1)
                         <span>({{__('required')}})</span>
                     @endif
@@ -92,6 +92,13 @@
                        placeholder="Youtube Video Link"/>
                 <label for="video"
                        class="color-theme">{{__('Video Link')}}</label>
+            </div>
+            <div class="form-check form-check-custom">
+                <input class="form-check-input"
+                       name="is_present" type="checkbox" value="" id="is_present{{$category->slug}}">
+                <label class="form-check-label" for="is_present{{$category->slug}}">Is Present</label>
+                <i class="is-checked color-green-dark bi bi-check-circle"></i>
+                <i class="is-unchecked color-red-dark bi bi-x-circle"></i>
             </div>
             <div class="">
                 <div id="preview" class="preview mb-2"></div>

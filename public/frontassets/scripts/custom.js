@@ -75,13 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         perPage: 6, // default
                         breakpoints: {
                             1050: { // Bootstrap large breakpoint
-                                perPage: 3
+                                perPage: 5
                             },
                             1460: { // Bootstrap large breakpoint
                                 perPage: 4
                             },
                             750: { // you can adjust this
-                                perPage: 2
+                                perPage: 3
                             }
                         }
                     }).mount();
@@ -127,6 +127,82 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).mount();
                 });
             }
+
+            // Featured Slider
+            var featuredSlider = document.getElementById('featured-slider');
+            if (featuredSlider) {
+                new Splide(featuredSlider, {
+                    type: 'loop',
+                    perPage: 5,
+                    focus: 'center',
+                    gap: '10px',
+                    arrows: false,
+                    padding: '5rem',
+                    drag: true,
+                    snap: true,
+                    lazyLoad: 'nearby',
+                    autoplay: true,
+                    interval: 2000,
+                    flickPower: 300,
+                    breakpoints: {
+                        1200: {
+                            perPage: 4,
+                            padding: '1rem',
+                            drag: true,
+                        },
+                        768: {
+                            perPage: 3,
+                            padding: '1rem',
+                            drag: true,
+                        },
+                        480: {
+                            perPage: 2,
+                            padding: 0,
+                            type: 'loop',
+                            drag: true,
+                        },
+                    },
+                }).mount();
+            }
+
+            // Category Sliders
+            var categorySliders = document.querySelectorAll('.category-slider');
+            if (categorySliders.length) {
+                categorySliders.forEach(function (item, index) {
+                    var splide = new Splide(item, {
+                        type: 'loop',
+                        perPage: 5,
+                        focus: 'center',
+                        gap:'10px',
+                        arrows: false,
+                        padding: '5rem',
+                        drag: true,
+                        snap: true,
+                        flickPower: 300,
+
+                        autoplay: true,
+                        breakpoints: {
+                            1200: {
+                                perPage: 4,
+                                padding: '1rem',
+                                drag: true,
+                            },
+                            768: {
+                                perPage: 3,
+                                padding: '1rem',
+                                drag: true,
+                            },
+                            480: {
+                                perPage: 2,
+                                padding: 0,
+                                type: 'loop',
+                                drag: true,
+                            },
+                        },
+                    });
+                    splide.mount();
+                });
+            }
         }
 
         //Don't jump on Empty Links
@@ -137,12 +213,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
 
         //Activate Selected Menu
+        // function activatePage() {
+        //     var activeMenu = document.querySelectorAll('[data-menu-active]');
+        //     if (activeMenu) {
+        //         var activeData = activeMenu[0].getAttribute('data-menu-active');
+        //         var activeID = document.querySelectorAll('#' + activeData)[0]
+        //         activeID.classList.add('active-item')
+        //     }
+        // }
         function activatePage() {
-            var activeMenu = document.querySelectorAll('[data-menu-active]');
-            if (activeMenu) {
-                var activeData = activeMenu[0].getAttribute('data-menu-active');
-                var activeID = document.querySelectorAll('#' + activeData)[0]
-                activeID.classList.add('active-item')
+            // 1. Get the element that holds the active data
+            const menuContainer = document.querySelector('[data-menu-active]');
+
+            if (menuContainer) {
+                // 2. Get the ID string from the attribute
+                const activeIDName = menuContainer.getAttribute('data-menu-active');
+
+                // 3. Find the target element by ID
+                const activeElement = document.getElementById(activeIDName);
+
+                // 4. Check if the element actually exists before adding the class
+                if (activeElement) {
+                    activeElement.classList.add('active-item');
+                } else {
+                    console.warn(`Menu activation failed: No element found with ID "#${activeIDName}"`);
+                }
             }
         }
 

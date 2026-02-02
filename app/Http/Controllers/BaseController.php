@@ -37,7 +37,7 @@ class BaseController extends Controller
 
         $this->featured_products = Product::where('featured', 1)
             ->where('removed_from_store', false)
-            ->with('media')
+            ->with('media', 'presents')
             ->get();
 
         //
@@ -50,12 +50,12 @@ class BaseController extends Controller
             'category.products' => function ($q) {
                 $q->where('show_in_main', 1)
                     ->where('removed_from_store', false)
-                    ->with('media');
+                    ->with('media', 'presents', 'coupon');
             },
             'subcategory.products' => function ($q) {
                 $q->where('show_in_main', 1)
                     ->where('removed_from_store', false)
-                    ->with('media');
+                    ->with('media', 'presents', 'coupon');
             },
         ])
             ->where('active', 1)

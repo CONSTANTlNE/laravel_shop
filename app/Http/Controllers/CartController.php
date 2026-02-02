@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Models\Order;
 use App\Models\Setting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
@@ -224,5 +225,64 @@ class CartController extends Controller
         $grand_total = $data['grand_total'];
 
         return view('frontend.checkout', compact('grand_total', 'shipping_cost', 'cartItems', 'total_value', 'hascoupon', 'total_coupon_discount', 'promo_code', 'discount_value', 'total_value_no_discount', 'cities'));
+    }
+
+    public function carts(Request $request)
+    {
+        $perPage = (int) $request->query('per_page', 30);
+        if ($perPage <= 0) {
+            $perPage = 30;
+        }
+
+        $sortBy = in_array($request->query('sort_by'), ['created_at', 'order_token', 'grand_total', 'address', 'bank_order_id'])
+            ? $request->query('sort_by')
+            : 'created_at';
+        $sortDir = strtolower($request->query('sort_dir')) === 'asc' ? 'asc' : 'desc';
+
+        $cartsQuery = CartItem::with(['product', 'owner', 'couponDiscount'])
+            ->select('cart_token')
+            ->selectRaw('SUM(product_total) as product_total')
+            ->selectRaw('MAX(id) as id')
+            ->selectRaw('MAX(product_id) as product_id')
+            ->selectRaw('MAX(owner_id) as owner_id')          // Polymorphic ID
+            ->selectRaw('MAX(owner_type) as owner_type')      // Polymorphic Type (CRITICAL)
+            ->selectRaw('MAX(coupon_id) as coupon_id')
+            ->selectRaw('MAX(created_at) as created_at')
+            ->groupBy('cart_token');
+
+        // Search across amount (grand_total), address, and bank order id
+        if ($q = trim((string) $request->query('q', ''))) {
+            $cartsQuery->where(function ($builder) use ($q) {
+                $builder->where('address', 'like', "%{$q}%")
+                    ->orWhere('bank_order_id', 'like', "%{$q}%")
+                    ->orWhere('order_token', 'like', "%{$q}%");
+                // If query is numeric, try matching grand_total approximately
+                if (is_numeric(str_replace([','], ['.'], $q))) {
+                    $num = (float) str_replace([','], ['.'], $q);
+                    $builder->orWhere('grand_total', $num)
+                        ->orWhere('grand_total', 'like', "%{$q}%");
+                } else {
+                    $builder->orWhere('grand_total', 'like', "%{$q}%");
+                }
+            });
+        }
+
+        $carts = $cartsQuery
+            ->orderBy($sortBy === 'created_at' ? 'created_at' : $sortBy, $sortDir)
+            ->paginate($perPage)
+            ->appends(request()->query());
+
+        return view('backend.admin_carts', compact('carts', 'sortBy', 'sortDir'));
+    }
+
+    public function getProducts(Request $request)
+    {
+
+        $products = CartItem::with('product')
+            ->where('cart_token', $request->query('cart_token'))
+            ->get();
+
+        dd($products);
+
     }
 }

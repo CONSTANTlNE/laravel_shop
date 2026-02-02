@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('order')->nullable();
             $table->boolean('active')->default(1);
             $table->string('slug')->unique()->index();
-            $table->softDeletes();
             $table->timestamps();
         });
     }

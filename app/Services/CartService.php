@@ -137,12 +137,12 @@ class CartService
         $owner = $this->getCartOwner();
         if ($owner) {
             return CartItem::where('owner_id', $owner->id)->where('owner_type', get_class($owner))
-                ->with('product.coupon', 'product.discount')
+                ->with('product.coupon', 'product.discount', 'product.presents')
                 ->get();
         } else {
             return CartItem::with('product.media')->where('cart_token', $this->getToken())
                 ->where('owner_id', null)
-                ->with('product.coupon')
+                ->with('product.coupon', 'product.presents')
                 ->get();
         }
     }
@@ -264,14 +264,12 @@ class CartService
         }
 
         $shipping_calc = $shipping_prices
-            ->filter(fn ($item) =>
-                $item->city_id == $city_id &&
+            ->filter(fn ($item) => $item->city_id == $city_id &&
                 $item->upper_range <= $total_value
             )
             ->sortByDesc('upper_range')
 //            ->sortBy('upper_range')
             ->first();
-
 
         if ($shipping_calc == null) {
             $shipping_cost = round($shipping_prices->where('city_id', $city_id)->last()?->rate);
@@ -280,7 +278,8 @@ class CartService
         }
 
         $grand_total = $total_value + $shipping_cost;
-//dd($shipping_cost,$shipping_calc?->rate);
+
+        // dd($shipping_cost,$shipping_calc?->rate);
         // --- Return everything in a clean structure ---
         return [
             'total_value' => $total_value,
@@ -295,6 +294,7 @@ class CartService
             'grand_total' => $grand_total,
             'cart_token' => $cartItems->first()?->cart_token,
             'cart_items' => $cartItems,
+            'first_cart_item' => $cartItems->first(),
         ];
     }
 }

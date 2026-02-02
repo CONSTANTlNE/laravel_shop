@@ -13,21 +13,21 @@
       hx-trigger="submit"
       hx-target="#menu-verification">
     @csrf
-    <h5 class="font-24 font-800 mb-3 text-center">Enter Code</h5>
+    <h5 class="font-24 font-800 mb-3 text-center">{{__('Enter Code')}}</h5>
     <div class="form-custom form-label form-border form-icon mb-3 bg-transparent">
         <i class="bi bi-phone font-20"></i>
         <input name="code" type="text" class="form-control rounded-xs" id="code" placeholder="Code">
-        <label for="code" class="color-theme">Code</label>
-        <span>(required)</span>
+        <label for="code" class="color-theme">{{__('Code')}}</label>
+        <span>({{__('required')}})</span>
     </div>
     <div class="d-flex justify-content-center gap-2">
         <button style="width: 100%" class="btn btn-full gradient-blue shadow-bg shadow-bg-s mt-4"
                 hx-post="{{route('mobile.change.htmx')}}"
                 hx-vals='{"_token": "{{csrf_token()}}"}'>
-            Change Mobile
+            {{__('Change Mobile')}}
         </button>
         <button style="width: 100%" class="btn btn-full gradient-blue shadow-bg shadow-bg-s mt-4">
-            Verify
+            {{__('Verify')}}
         </button>
     </div>
 </form>

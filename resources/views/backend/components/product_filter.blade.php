@@ -58,6 +58,38 @@
                 </option>
             </select>
         </div>
+        <div>
+            <label class="d-block small mb-1 text-center">Filter By</label>
+            <select name="status_filter" class="form-select rounded-xs">
+                <option value="" {{ request()->query('status_filter') === null || request()->query('status_filter') === '' ? 'selected' : '' }}>
+                    All
+                </option>
+                <option value="in_stock" {{ request()->query('status_filter') === 'in_stock' ? 'selected' : '' }}>
+                    In Stock
+                </option>
+                <option value="show_in_main" {{ request()->query('status_filter') === 'show_in_main' ? 'selected' : '' }}>
+                    Show In Main
+                </option>
+                <option value="featured" {{ request()->query('status_filter') === 'featured' ? 'selected' : '' }}>
+                    Featured
+                </option>
+                <option value="is_present" {{ request()->query('status_filter') === 'is_present' ? 'selected' : '' }}>
+                    Is Present
+                </option>
+                <option value="has_presents" {{ request()->query('status_filter') === 'has_presents' ? 'selected' : '' }}>
+                    Has Presents
+                </option>
+                <option value="discounted" {{ request()->query('status_filter') === 'discounted' ? 'selected' : '' }}>
+                    Discounted
+                </option>
+                <option value="show_in_similar" {{ request()->query('status_filter') === 'show_in_similar' ? 'selected' : '' }}>
+                    Show In Similar
+                </option>
+                <option value="removed_from_store" {{ request()->query('status_filter') === 'removed_from_store' ? 'selected' : '' }}>
+                    Removed From Store
+                </option>
+            </select>
+        </div>
         <div class="d-flex flex-wrap gap-2 justify-content-center align-items-end">
             <div>
                 <label class="d-block small mb-1 text-center">Min Price</label>

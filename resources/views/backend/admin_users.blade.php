@@ -62,8 +62,10 @@
                             <td class="text-center">{{$user->email}}</td>
                             <td class="text-center">{{$user->mobile}}</td>
                             <td class="text-center">
-                                @include('backend.components.modals.user_orders_modal')
-                                @include('backend.components.modals.user_order_items_modal')
+                                <div class="d-flex justify-content-center">
+                                    @include('backend.components.modals.user_orders_modal')
+                                    @include('backend.components.modals.user_order_items_modal')
+                                </div>
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center">

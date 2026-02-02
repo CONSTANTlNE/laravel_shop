@@ -52,7 +52,7 @@ class ShowSingleCategory
             $productsCount = $category->products()->where('removed_from_store', false)->count();
 
             // Build products query for the category with filters
-            $productsQuery = $category->products()->with('media')->where('removed_from_store', false);
+            $productsQuery = $category->products()->with(['media','presents','coupon'])->where('removed_from_store', false);
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);
             }
@@ -80,15 +80,17 @@ class ShowSingleCategory
             $productsCount = $subcategory->products()->where('removed_from_store', false)->count();
 
             // Build products query for the subcategory with filters
-            $productsQuery = $subcategory->products()->with('media')->where('removed_from_store', false);
+            $productsQuery = $subcategory->products()->with(['media','presents','coupon'])->where('removed_from_store', false);
+
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);
             }
+
             if (! is_null($maxPrice)) {
                 $productsQuery->where('price', '<=', $maxPrice);
             }
+
             if ($request->has('sort')) {
-                // Override default relationship ordering when sorting by price
                 $productsQuery->reorder('price', $sortDir);
             }
 

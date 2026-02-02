@@ -14,7 +14,11 @@
     {{-- add images modal --}}
     <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
          style="width:100%;max-width :400px" id="add_images_{{$product->id}}">
-        <form class="content" action="{{route('product.image.add')}}" method="post"
+        <form class="content" method="post"
+              {{--              action="{{route('product.image.add')}}" --}}
+              hx-post="{{route('product.image.add')}}"
+              hx-target="#htmx_messages"
+              hx-encoding="multipart/form-data"
               enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="product_id" value="{{$product->id}}">
@@ -24,13 +28,15 @@
                 <label for="fileInput_products_{{$product->id}}" type="button"
                        class="btn btn-full btn-m text-uppercase font-700 rounded-s upload-file-text bg-highlight">
                     {{__('Choose')}}
-                    <input type="file" id="fileInput_products_{{$product->id}}" class="upload-file" name="files[]" multiple
+                    <input type="file" id="fileInput_products_{{$product->id}}" class="upload-file" name="files[]"
+                           multiple
                            accept="image/*">
                 </label>
             </div>
             <div class="d-flex justify-content-center">
                 <button
-                    onclick="showOverlay()"
+                    {{--                    onclick="showOverlay()"--}}
+                    data-bs-dismiss="offcanvas"
                     class="btn btn-full bg-highlight shadow-bg shadow-bg-s mt-4">
                     {{__('Upload')}}
                 </button>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\Services\Category\ChangeCategoryMain;
 use App\Services\Category\ShowSingleCategory;
 use App\Services\Category\StoreCategory;
@@ -79,6 +80,40 @@ class CategoryController extends BaseController
         new ChangeCategoryMain()->changeMain($request);
 
         return back()->with('alert_success', 'updated successfully');
+
+    }
+
+    public function categorySlider(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+        ]);
+
+        if ($request->input('category_id')) {
+            $category = Category::where('id', $request->input('category_id'))->first();
+            if ($category->is_slider == true) {
+                $category->is_slider = false;
+            } else {
+                $category->is_slider = true;
+            }
+            $category->save();
+        }
+
+        if ($request->input('subcategory_id')) {
+            $subcategory = Subcategory::where('id', $request->input('subcategory_id'))->first();
+            if ($subcategory->is_slider == true) {
+                $subcategory->is_slider = false;
+            } else {
+                $subcategory->is_slider = true;
+            }
+            $subcategory->save();
+        }
+        //             dd($category->name);
+
+        //        return  view('frontend.htmx.htmx_notification')->with('alert_success',__('Updated successfully'));
+
+        return back()->with('alert_success', __('Updated successfully'));
 
     }
 }

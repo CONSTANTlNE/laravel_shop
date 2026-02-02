@@ -47,6 +47,16 @@
         <div class="d-flex gap-3 mb-3">
             <label for="sku"
                    style="width: 100%"
+                   class="color-theme text-start">PID
+                <input type="text"
+                       name="pid"
+                       value="{{$user->pid}}"
+                       class="form-control rounded-xs"/>
+            </label>
+        </div>
+        <div class="d-flex gap-3 mb-3">
+            <label for="sku"
+                   style="width: 100%"
                    class="color-theme text-start">Password
                 <input type="text"
                        name="password"

@@ -41,6 +41,7 @@ class MainBannerController extends Controller
             'header' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
             'image' => 'required|mimes:jpeg,jpg,png,gif,webp|max:5024',
+            'link' => 'nullable|string|max:500',
         ]);
 
         $banner = new MainBanner;
@@ -53,7 +54,7 @@ class MainBannerController extends Controller
             $banner->setTranslation('header', $locale->abbr, $trimmed);
             $banner->setTranslation('description', $locale->abbr, $trimmed_descr);
         }
-
+        $banner->url = $request->input('link');
         $banner->save();
 
         $uploadedFile = $request->file('image');
@@ -75,10 +76,11 @@ class MainBannerController extends Controller
             'header' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
             'image' => 'nullable|mimes:jpeg,jpg,png,gif,webp|max:5024',
+            'link' => 'nullable|string|max:500',
         ]);
 
         $banner = MainBanner::find($request->input('banner_id'));
-
+        $banner->url = $request->input('link');
         foreach ($this->locales as $locale) {
             $cleaned = preg_replace('/\s+/', ' ', $request->input('header_'.$locale->abbr));
             $trimmed = trim($cleaned);

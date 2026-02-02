@@ -2,16 +2,16 @@
     <thead class="rounded-s bg-blue-dark border-l">
     <tr class="color-white rounded-sm">
         <th scope="col">
-            <h5 class="color-white font-15 mb-0">{{__('Name')}}</h5>
+            <h5 class="color-black font-15 mb-0">{{__('Name')}}</h5>
         </th>
         <th scope="col">
-            <h5 class="color-white font-15 mb-0">{{__('Price')}} No</h5>
+            <h5 class="color-black font-15 mb-0">{{__('Price')}} No</h5>
         </th>
         <th scope="col">
-            <h5 class="color-white font-15 mb-0">{{__('QTY')}}</h5>
+            <h5 class="color-black font-15 mb-0">{{__('QTY')}}</h5>
         </th>
         <th scope="col">
-            <h5 class="color-white font-15 mb-0">{{__('Image')}}</h5>
+            <h5 class="color-black font-15 mb-0">{{__('Image')}}</h5>
         </th>
     </tr>
     </thead>

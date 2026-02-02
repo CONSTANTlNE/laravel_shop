@@ -104,10 +104,10 @@
                             </a>
                         </th>
                         <th scope="col">
-                           {{__('Category Image')}}
+                            {{__('Category Image')}}
                         </th>
                         <th scope="col" class=" text-center">
-                           {{__('Add Product')}}
+                            {{__('Add Product')}}
                         </th>
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('subcategory_count') }}"
@@ -121,7 +121,7 @@
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> {{__('Show on Main')}}
+                               class="text-decoration-none"> {{__('Slider')}}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
@@ -147,7 +147,7 @@
                             <td>{{$category->name}}</td>
                             <td>
                                 <img width="100" height="100"
-                                     src="{{$category->getMedia('category_thumbnail')->first()?->getUrl()}}" alt="">
+                                     src="{{$category->getMedia('category_image')->first()?->getUrl('thumbnail')}}" alt="">
                             </td>
                             <td>
                                 @if($category->subcategories->isEmpty())
@@ -170,16 +170,29 @@
                                 @if($category->subcategories->isNotEmpty())
                                     ------
                                 @else
+{{--                                    <form class="d-flex justify-content-center"--}}
+{{--                                          action="{{route('category.change.main')}}" method="post">--}}
+{{--                                        @csrf--}}
+{{--                                        <input type="hidden" name="category_id" value="{{$category->id}}">--}}
+{{--                                        <div class="form-switch ios-switch switch-green switch-l">--}}
+{{--                                            <input type="checkbox" class="ios-input" id="switch-4c{{$category->slug}}"--}}
+{{--                                                   @checked($category->categoryOrder?->active==1)--}}
+{{--                                                   onchange="this.form.submit()">--}}
+{{--                                            <label class="custom-control-label"--}}
+{{--                                                   for="switch-4c{{$category->slug}}"></label>--}}
+{{--                                        </div>--}}
+{{--                                    </form>--}}
+{{--                                    <p class="mt-3 mb-2 text-center">{{__('As Slider')}}</p>--}}
                                     <form class="d-flex justify-content-center"
-                                          action="{{route('category.change.main')}}" method="post">
+                                          action="{{route('category.change.slider')}}" method="post">
                                         @csrf
                                         <input type="hidden" name="category_id" value="{{$category->id}}">
                                         <div class="form-switch ios-switch switch-green switch-l">
-                                            <input type="checkbox" class="ios-input" id="switch-4c{{$category->slug}}"
-                                                   @checked($category->categoryOrder?->active==1)
+                                            <input type="checkbox" class="ios-input" id="switch-4cn{{$category->slug}}"
+                                                   @checked($category->is_slider==true)
                                                    onchange="this.form.submit()">
                                             <label class="custom-control-label"
-                                                   for="switch-4c{{$category->slug}}"></label>
+                                                   for="switch-4cn{{$category->slug}}"></label>
                                         </div>
                                     </form>
                                 @endif
@@ -230,18 +243,33 @@
                                         </a>
                                     </td>
                                     <td>
+{{--                                        <form class="d-flex justify-content-center"--}}
+{{--                                              action="{{route('category.change.main')}}" method="post">--}}
+{{--                                            @csrf--}}
+{{--                                            <input type="hidden" name="subcategory_id" value="{{$subcategory->id}}">--}}
+
+{{--                                            <div class="form-switch ios-switch switch-green switch-l">--}}
+{{--                                                <input type="checkbox" class="ios-input"--}}
+{{--                                                       id="switch-4c{{$subcategory->slug}}"--}}
+{{--                                                       @checked($subcategory->categoryOrder?->active==1)--}}
+{{--                                                       onchange="this.form.submit()">--}}
+{{--                                                <label class="custom-control-label"--}}
+{{--                                                       for="switch-4c{{$subcategory->slug}}"></label>--}}
+{{--                                            </div>--}}
+{{--                                        </form>--}}
+{{--                                        <p class="mt-3 mb-2 text-center">{{__('As Slider')}}</p>--}}
                                         <form class="d-flex justify-content-center"
-                                              action="{{route('category.change.main')}}" method="post">
+                                              action="{{route('category.change.slider')}}" method="post">
                                             @csrf
                                             <input type="hidden" name="subcategory_id" value="{{$subcategory->id}}">
 
                                             <div class="form-switch ios-switch switch-green switch-l">
                                                 <input type="checkbox" class="ios-input"
-                                                       id="switch-4c{{$subcategory->slug}}"
-                                                       @checked($subcategory->categoryOrder?->active==1)
+                                                       id="switch-4cl{{$subcategory->slug}}"
+                                                       @checked($subcategory->is_slider==true)
                                                        onchange="this.form.submit()">
                                                 <label class="custom-control-label"
-                                                       for="switch-4c{{$subcategory->slug}}"></label>
+                                                       for="switch-4cl{{$subcategory->slug}}"></label>
                                             </div>
                                         </form>
                                     </td>

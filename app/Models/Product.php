@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -15,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([ProductObserver::class])]
 class Product extends Model implements HasMedia
 {
-    use HasTranslations,InteractsWithMedia,SoftDeletes;
+    use HasTranslations,InteractsWithMedia;
 
     public array $translatable = ['name', 'description'];
 
@@ -89,6 +88,37 @@ class Product extends Model implements HasMedia
         return $this->hasMany(OrderItem::class);
     }
 
+    public function presents()
+    {
+        // We point back to the Product class, using our pivot table
+        return $this->belongsToMany(
+            Product::class,      // The related model
+            'product_present',   // The pivot table name
+            'product_id',        // Foreign key on pivot for THIS model
+            'present_id'         // Foreign key on pivot for RELATED model
+        );
+    }
+
+    /**
+     * Reverse: Products that have this item as a present.
+     * (Optional, but useful if you want to see where a gift is being used)
+     */
+    public function presentToProducts()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_present',
+            'present_id',
+            'product_id'
+        );
+    }
+
+    // Scope to hide presents from the main shop list
+    public function scopeVisible($query)
+    {
+        return $query->where('is_present', false);
+    }
+
     private static function cleanUnicodeAndSlug($string, $ignoreId = null): string
     {
         // If null given, return empty slug base
@@ -152,16 +182,19 @@ class Product extends Model implements HasMedia
                 $oldOrder = $product->getOriginal('order');
                 $newOrder = $product->order;
 
-                if ($oldOrder < $newOrder) {
-                    // Moving down: shift others up
-                    Product::where('order', '>', $oldOrder)
-                        ->where('order', '<=', $newOrder)
-                        ->decrement('order');
-                } elseif ($oldOrder > $newOrder) {
-                    // Moving up: shift others down
-                    Product::where('order', '<', $oldOrder)
-                        ->where('order', '>=', $newOrder)
-                        ->increment('order');
+                // Ensure we have valid numbers to compare
+                if ($oldOrder !== null && is_numeric($oldOrder) && is_numeric($newOrder)) {
+                    if ($oldOrder < $newOrder) {
+                        // Moving down: shift others up
+                        Product::where('order', '>', $oldOrder)
+                            ->where('order', '<=', $newOrder)
+                            ->decrement('order');
+                    } elseif ($oldOrder > $newOrder) {
+                        // Moving up: shift others down
+                        Product::where('order', '<', $oldOrder)
+                            ->where('order', '>=', $newOrder)
+                            ->increment('order');
+                    }
                 }
             }
 

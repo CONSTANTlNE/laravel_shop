@@ -1,23 +1,20 @@
 
-<div style="height: 98%" class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-terms">
-    <div class="content">
+<div style="height: 96%" class="offcanvas offcanvas-bottom rounded-m offcanvas-detached d-flex flex-column" id="menu-terms">
+    <div style="height: 96%" class="content d-flex flex-column  mb-0">
         <div class="d-flex justify-content-center pb-2">
             <div class="align-self-center">
                 <h2 class="font-800 font-22 text-center">{{__('Terms & Conditions')}}</h2>
             </div>
-{{--            <div class="align-self-center ms-auto">--}}
-{{--                <a href="#"  data-bs-dismiss="offcanvas" class="icon icon-m">--}}
-{{--                    <i class="bi bi-x-circle-fill color-red-dark font-18 me-n4"></i>--}}
-{{--                </a>--}}
-{{--            </div>--}}
         </div>
-        <div class="divider"></div>
+        <div class="divider mb-3"></div>
 
-        {!! $terms?->text !!}
+        <div class="flex-grow-1 overflow-auto mb-3">
+            {!! $terms?->text !!}
+        </div>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mt-auto mb-2">
             <button data-bs-dismiss="offcanvas"
-                    class="gradient-highlight btn-full btn  shadow-bg shadow-bg-m pt-1 pb-2">
+                    class="gradient-highlight btn-full btn shadow-bg shadow-bg-m pt-1 pb-2">
                 {{__('Close')}}
             </button>
         </div>

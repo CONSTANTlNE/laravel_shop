@@ -72,6 +72,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'waybill' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/waybill.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
         'bog' => [
             'driver' => 'single',
             'path' => storage_path('logs/bog.log'),
@@ -156,6 +163,16 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        //        'mail' => [
+        //            'driver' => 'monolog',
+        //            'handler' => Monolog\Handler\NativeMailerHandler::class,
+        //            'level' => 'error', // Only send emails for errors and higher
+        //            'with' => [
+        //                'to' => 'shopzgestore@gmail.com',
+        //                'subject' => 'Exception !',
+        //                'from' => 'shopzgestore@gmail.com',
+        //            ],
+        //        ],
     ],
 
 ];

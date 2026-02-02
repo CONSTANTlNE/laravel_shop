@@ -2,6 +2,8 @@
    hx-post="{{route('product.htmx.images')}}"
    hx-vals='{"_token":"{{csrf_token()}}","product_id":"{{$product->id}}"}'
    hx-target="#gallery_target_{{$product->id}}"
+   hx-indicator="#gallery_{{$product->slug}}"
+   hx-on::before-request="document.getElementById('gallery_target_{{$product->id}}').innerHTML = '';"
    href="#"
    data-bs-toggle="offcanvas"
    data-bs-target="#gallery_product_{{$product->id}}"
@@ -23,6 +25,7 @@
             </div>
         </div>
         <div class="divider"></div>
+        <div id="gallery_{{$product->slug}}"  class="htmx-indicator"></div>
         <div class="row text-center row-cols-3 mb-n3" id="gallery_target_{{$product->id}}">
 
         </div>

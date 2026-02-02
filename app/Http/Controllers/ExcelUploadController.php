@@ -43,20 +43,25 @@ class ExcelUploadController extends Controller
                     }
                     if (trim($value[0]) != null) {
 
-                        $category = new Category;
-                        $category_order = new CategoryOrder;
-                        $category_order->save();
-
                         $cleaned = preg_replace('/\s+/', ' ', $value[0]);
                         $trimmed = trim($cleaned);
-                        $category->setTranslation('name', 'ka', $trimmed);
 
-                        $cleaned2 = preg_replace('/\s+/', ' ', $value[1]);
-                        $trimmed2 = trim($cleaned2);
-                        $category->setTranslation('name', 'en', $trimmed2);
+                        $category = Category::where('name->ka', $trimmed)->first();
 
-                        $category->category_order_id = $category_order->id;
-                        $category->save();
+                        if (! $category) {
+                            $category = new Category;
+                            $category_order = new CategoryOrder;
+                            $category_order->save();
+                            $category->category_order_id = $category_order->id;
+
+                            $category->setTranslation('name', 'ka', $trimmed);
+
+                            $cleaned2 = preg_replace('/\s+/', ' ', $value[1]);
+                            $trimmed2 = trim($cleaned2);
+                            $category->setTranslation('name', 'en', $trimmed2);
+
+                            $category->save();
+                        }
                     }
                 }
 
@@ -70,22 +75,26 @@ class ExcelUploadController extends Controller
 
                         $trimmed = trim($value[0]);
                         $category = Category::where('name->ka', $trimmed)->first();
-                        $subcategory = new Subcategory;
-                        $category_order = new CategoryOrder;
-                        $category_order->save();
 
-                        $cleaned = preg_replace('/\s+/', ' ', $value[1]);
-                        $trimmed = trim($cleaned);
-                        $subcategory->setTranslation('name', 'ka', $trimmed);
+                        $subcategory = Subcategory::where('name->ka', $trimmed)->first();
+                        if (! $subcategory) {
+                            $subcategory = new Subcategory;
+                            $category_order = new CategoryOrder;
+                            $category_order->save();
+                            $subcategory->category_order_id = $category_order->id;
 
-                        $cleaned2 = preg_replace('/\s+/', ' ', $value[2]);
-                        $trimmed2 = trim($cleaned2);
-                        $subcategory->setTranslation('name', 'en', $trimmed2);
+                            $cleaned = preg_replace('/\s+/', ' ', $value[1]);
+                            $trimmed = trim($cleaned);
+                            $subcategory->setTranslation('name', 'ka', $trimmed);
 
-                        $subcategory->category_order_id = $category_order->id;
-                        $subcategory->category_id = $category->id;
-                        $category->categoryOrder()?->delete();
-                        $subcategory->save();
+                            $cleaned2 = preg_replace('/\s+/', ' ', $value[2]);
+                            $trimmed2 = trim($cleaned2);
+                            $subcategory->setTranslation('name', 'en', $trimmed2);
+
+                            $subcategory->category_id = $category->id;
+                            $category->categoryOrder()?->delete();
+                            $subcategory->save();
+                        }
                     }
                 }
 

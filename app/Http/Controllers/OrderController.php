@@ -30,7 +30,7 @@ class OrderController extends Controller
             : 'created_at';
         $sortDir = strtolower($request->query('sort_dir')) === 'asc' ? 'asc' : 'desc';
 
-        $ordersQuery = Order::with(['orderItems.product', 'owner', 'city']);
+        $ordersQuery = Order::with(['orderItems.product', 'owner', 'city', 'presentsRelation', 'waybill']);
 
         // Search across amount (grand_total), address, and bank order id
         if ($q = trim((string) $request->query('q', ''))) {
@@ -59,11 +59,18 @@ class OrderController extends Controller
 
     public function delivery(Request $request)
     {
-        $order = Order::find($request->input('order_id'));
+        $order = Order::where('id', $request->input('order_id'))->with('waybill')->first();
+
         if ($order) {
             if ($order->is_delivered == 0) {
+                if ($order->waybill != null) {
+                    return back()->with('alert_error', 'Waybill issued, you must finish waybill');
+                }
                 $order->is_delivered = 1;
             } else {
+                if ($order->waybill != null && $order->waybill->is_finished == true) {
+                    return back()->with('alert_error', 'Waybill finished, cant change to "not delivered"');
+                }
                 $order->is_delivered = 0;
             }
             $order->save();
@@ -72,5 +79,20 @@ class OrderController extends Controller
         }
 
         return back()->with('alert_error', 'Order not found');
+    }
+
+    public function invoice(Request $request, $locale, $order)
+    {
+
+        $order = Order::where('owner_id', auth()->id())
+            ->where('order_token', $order)
+            ->with('orderItems', 'presentsRelation', 'city')
+            ->first();
+
+        if (! $order) {
+            return back()->with('alert_error', __('Order not found'));
+        }
+
+        return view('frontend.invoice.invoice_template', compact('order'));
     }
 }

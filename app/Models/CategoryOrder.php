@@ -32,16 +32,19 @@ class CategoryOrder extends Model
                 $oldOrder = $category->getOriginal('order');
                 $newOrder = $category->order;
 
-                if ($oldOrder < $newOrder) {
-                    // Moving down: shift others up
-                    CategoryOrder::where('order', '>', $oldOrder)
-                        ->where('order', '<=', $newOrder)
-                        ->decrement('order');
-                } elseif ($oldOrder > $newOrder) {
-                    // Moving up: shift others down
-                    CategoryOrder::where('order', '<', $oldOrder)
-                        ->where('order', '>=', $newOrder)
-                        ->increment('order');
+                // Ensure we have valid numbers to compare
+                if ($oldOrder !== null && is_numeric($oldOrder) && is_numeric($newOrder)) {
+                    if ($oldOrder < $newOrder) {
+                        // Moving down: shift others up
+                        CategoryOrder::where('order', '>', $oldOrder)
+                            ->where('order', '<=', $newOrder)
+                            ->decrement('order');
+                    } elseif ($oldOrder > $newOrder) {
+                        // Moving up: shift others down
+                        CategoryOrder::where('order', '<', $oldOrder)
+                            ->where('order', '>=', $newOrder)
+                            ->increment('order');
+                    }
                 }
             }
 

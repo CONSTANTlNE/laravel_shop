@@ -21,9 +21,21 @@
                        placeholder="Category Name"/>
                 <label for="c1{{$locale->abbr}}"
                        class="color-theme">Name {{$locale->language}} </label>
-                <span>(required)</span>
+                <span>({{_('required')}})</span>
             </div>
         @endforeach
+        <div class="form-check form-check-custom  mb-2 justify-content-center">
+            <input class="form-check-input"
+                   name="for_main"
+                   type="checkbox"
+                   @checked($category->categoryOrder?->active==1)
+                   id="c2a2{{$category->slug}}">
+            <label class="form-check-label" for="c2a2{{$category->slug}}">
+                {{__('Show on Main Page')}}
+            </label>
+            <i class="is-checked color-green-dark bi bi-check-square"></i>
+            <i class="is-unchecked color-red-dark bi bi-x-square"></i>
+        </div>
         <div class="">
             <div id="previewEdit_{{$category->id}}" class="preview"></div>
             <label for="fileInputEdit_{{$category->name}}" type="button"

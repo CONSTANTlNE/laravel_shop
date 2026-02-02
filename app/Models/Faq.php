@@ -9,5 +9,5 @@ class Faq extends Model
 {
     use HasTranslations;
 
-    public array $translatable = ['question', 'answer','subject'];
+    public array $translatable = ['question', 'answer', 'subject'];
 }

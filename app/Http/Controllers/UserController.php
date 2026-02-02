@@ -47,7 +47,7 @@ class UserController extends Controller
 
         if ($request->filled('mobile') && $request->mobile != $user->mobile) {
             $user->mobile = trim($request->mobile);
-            $user->mobile_verified=null;
+            $user->mobile_verified = false;
         }
 
         $user->save();

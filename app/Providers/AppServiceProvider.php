@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\ButtonColor;
 use App\Models\Category;
+use App\Models\Export;
 use App\Models\Language;
 use App\Models\Setting;
 use App\Models\Term;
@@ -69,8 +70,11 @@ class AppServiceProvider extends ServiceProvider
 
         View()->composer('frontend.components.layout', function ($view) {
             $active_color = ButtonColor::where('is_active', 1)->first();
+            $export = Export::where('admin_id', auth('admin')->id())
+                ->where('status', 'completed')
+                ->with('media')->first();
 
-            return $view->with(compact('active_color'));
+            return $view->with(compact('active_color', 'export'));
         });
 
         view()->composer('frontend.components.categories', function ($view) {

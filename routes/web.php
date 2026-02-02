@@ -16,8 +16,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 
+Route::get('/test-error', function () {
+    return 1 / 0;
+});
 Route::post('/login/htmx', [MainController::class, 'loginHtmx'])->name('login.htmx');
 Route::post('/register/htmx', [MainController::class, 'registerHtmx'])->name('register.htmx');
+
+Route::get('invoice', function () {
+    return view('frontend.invoice.invoice');
+});
 
 Route::prefix('{locale?}')
     ->where(['locale' => '[a-zA-Z]{2}'])
@@ -43,7 +50,9 @@ Route::prefix('{locale?}')
             Route::post('/mobile/store', 'storeMobile')->name('store.mobile.htmx');
             Route::post('/mobile/change', 'changeMobile')->name('mobile.change.htmx');
             Route::post('/code/resend', 'codeResend')->name('sms.resend');
-            Route::post('/mobile/verify', 'verify')->name('sms.verify.htmx');
+            Route::post('/mobile/verify', 'verify')
+                ->middleware('throttle:5,1')
+                ->name('sms.verify.htmx');
         });
 
     });
@@ -53,38 +62,40 @@ Route::prefix('{locale?}')
     ->middleware(['localization', 'cartToken', 'auth:web'])
     ->group(function () {
 
-        Route::post('/purchase/test', [PurchaseController::class, 'testCallback'])->name('purchase.test')
-            ->middleware('user.lock');
+        Route::controller(PurchaseController::class)->group(function () {
+            Route::post('/purchase/test', 'testCallback')->name('purchase.test')
+                ->middleware('user.lock');
+        });
 
         Route::controller(OrderController::class)->group(function () {
             Route::get('/user/orders', 'index')->name('customer.orders');
+            Route::get('/user/orders/invoice/{order}', 'invoice')->name('customer.orders.invoice');
         });
 
         Route::controller(UserController::class)->group(function () {
             Route::get('/user/profile', 'index')->name('customer.profile');
             Route::get('/user/profile/htmx', 'profileHtmx')->name('customer.profile.htmx');
             Route::post('/user/profile/update', 'updateProfile')->name('customer.profile.update');
-
         });
     });
 
-route::get('/role', function () {
+Route::get('/role', function () {
     $user = Admin::find(1);
     $user->assignRole('admin');
 });
 
-route::get('/php', function () {
+Route::get('/php', function () {
     return phpinfo();
 });
 
-route::get('/test', function () {
+Route::get('/test', function () {
 
     $storagePath1 = base_path('seeding_images/home/home_decor/1');
     $files1 = File::files($storagePath1);
     dd($files1);
 });
 
-route::get('/pricehistory', function () {
+Route::get('/pricehistory', function () {
 
     $products = Product::where('price_history', '=', '"{}"')->get();
     //    dd($products);
@@ -94,15 +105,15 @@ route::get('/pricehistory', function () {
     }
 });
 
-route::get('codetest', function () {
+Route::get('codetest', function () {
     return strtoupper(substr(md5(uniqid()), 0, 6));
 });
 
-route::get('/lock', function () {
+Route::get('/lock', function () {
     return view('lock');
 });
 
-route::post('/lock/test', function (Request $request) {
+Route::post('/lock/test', function (Request $request) {
     //    $user = auth('web')->user();
     //    $userId = $user ? $user->id : $request->ip();
     //    $routeName = $request->route()?->getName() ?? $request->path();
@@ -148,5 +159,5 @@ Route::get('mail/test', function () {
 });
 
 Route::fallback(function () {
-    return to_route('home')->with('alert_error', __('Session expired'));
+    return to_route('home')->with('alert_error', __('Page not found'));
 });

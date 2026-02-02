@@ -49,7 +49,16 @@
                                 @endif
                             </div>
                         @endforeach
-
+                        <div class="form-custom mb-3 form-floating">
+                            <input type="text" name="link"
+                                   class="form-control rounded-xs"
+                                   id="link"
+                                   {{--                                       @required($locale->main==1)--}}
+                                   value="{{old('link')}}"
+                                   placeholder="Link"/>
+                            <label for="link"
+                                   class="color-theme">{{__('Link')}}</label>
+                        </div>
                         <input type="file" name="image"
                                class="form-control rounded-xs mt-4"
                                id="image"/>
@@ -160,7 +169,16 @@
                                                     @endif
                                                 </div>
                                             @endforeach
-
+                                            <div class="form-custom mb-3 form-floating">
+                                                <input type="text" name="link"
+                                                       class="form-control rounded-xs"
+                                                       id="link{{$banner->id}}"
+                                                       {{-- @required($locale->main==1) --}}
+                                                       value="{{$banner->url}}"
+                                                       placeholder="Link"/>
+                                                <label for="link{{$banner->id}}"
+                                                       class="color-theme">{{__('Link')}}</label>
+                                            </div>
                                             <input type="file" name="image"
                                                    class="form-control rounded-xs mt-4"
                                                    id="image"/>

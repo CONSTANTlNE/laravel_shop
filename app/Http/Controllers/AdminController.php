@@ -23,6 +23,20 @@ use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
+    public function soldProducts(Request $request)
+    {
+        $data = (new AdminService)->soldProducts($request);
+        $order_items = $data['order_items'];
+        $sortBy = $data['sortBy'];
+        $sortDir = $data['sortDir'];
+
+        // For filters dropdowns
+        $categories = Category::orderBy('order')->get(['id', 'name']);
+        $subcategories = Subcategory::orderBy('order')->get(['id', 'name', 'category_id']);
+
+        return view('backend.admin_sold_products', compact('order_items', 'sortBy', 'sortDir', 'categories', 'subcategories'));
+    }
+
     public function allProducts(Request $request)
     {
 
@@ -39,20 +53,6 @@ class AdminController extends Controller
         $sortDir = $data['sortDir'];
 
         return view('backend.admin_products', compact('products', 'categories', 'subcategories', 'sortBy', 'sortDir', 'count', 'discounts', 'coupons'));
-    }
-
-    public function soldProducts(Request $request)
-    {
-        $data = (new AdminService)->soldProducts($request);
-        $order_items = $data['order_items'];
-        $sortBy = $data['sortBy'];
-        $sortDir = $data['sortDir'];
-
-        // For filters dropdowns
-        $categories = Category::orderBy('order')->get(['id', 'name']);
-        $subcategories = Subcategory::orderBy('order')->get(['id', 'name', 'category_id']);
-
-        return view('backend.admin_sold_products', compact('order_items', 'sortBy', 'sortDir', 'categories', 'subcategories'));
     }
 
     public function removedProducts(Request $request)
@@ -306,6 +306,10 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'nullable|string|min:8',
             'mobile' => 'required',
+            'pid' => [
+                'nullable',
+                'regex:/^(\d{9}|\d{11})$/',
+            ],
         ]);
 
         $user = User::find($request->id);
@@ -320,6 +324,7 @@ class AdminController extends Controller
         if ($request->password) {
             $user->password = bcrypt($request->password);
         }
+        $user->pid = $request->pid;
         $user->save();
 
         return back()->with('success', 'User created successfully');

@@ -1,7 +1,7 @@
 <div class="content">
     <div class="row mb-0" >
     @foreach($search_products as $search_product)
-    <div class="col-6">
+    <div class="col-6 mt-1">
         <a href="{{route('product.single',[app()->getLocale(),$search_product->slug])}}">
             <div class="card card-style custom-card m-0 bg-21"
                  data-card-height="140"
@@ -12,16 +12,16 @@
                                          background-image: url({{$search_product->getFirstMediaUrl('product_image')}})
                                       @endif">
                 @if($search_product->price_before_discount)
-                    <div class="card-top p-2 text-start">
-                <span
-                    class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">-{{$search_product->discount_percentage}}%</span>
-                    </div>
+            <div class="card-top p-2 text-start">
+                <span class="bg-green-dark p-2 py-1 rounded-1 font-13 font-600">
+                    -{{$search_product->discount_percentage}}%
+                </span>
+            </div>
                 @endif
             </div>
             <h5 class="font-600 font-16 line-height-sm pt-3 text-center">
                 {{$search_product->name}}
             </h5>
-
             <div class="d-flex justify-content-center align-items-center gap-2">
                 <div class="d-flex justify-content-center gap-2">
                     <h5 class=" font-14">{{$search_product->price}}
