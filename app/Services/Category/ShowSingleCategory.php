@@ -20,13 +20,14 @@ class ShowSingleCategory
     {
         // Try to resolve a Category by slug first (with subcategories for the view)
         $category = Category::where('slug', $slug)
+            ->where('removed_from_store', false)
             ->with(['subcategories' => function ($query) {
-                $query->with('media', 'categoryOrder')->orderBy('order');
+                $query->where('removed_from_store', false)->with('media', 'categoryOrder')->orderBy('order');
             }])
             ->first();
 
         $category_orders = CategoryOrder::orderBy('order')->get();
-        $categoriesCount = Subcategory::count();
+        $categoriesCount = Subcategory::where('removed_from_store', false)->count();
 
         // Extract optional filters from query string
         $minPrice = $request->query('min_price');
@@ -52,7 +53,7 @@ class ShowSingleCategory
             $productsCount = $category->products()->where('removed_from_store', false)->count();
 
             // Build products query for the category with filters
-            $productsQuery = $category->products()->with(['media','presents','coupon'])->where('removed_from_store', false);
+            $productsQuery = $category->products()->with(['media', 'presents', 'coupon'])->where('removed_from_store', false);
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);
             }
@@ -70,6 +71,7 @@ class ShowSingleCategory
 
             // Fallback: resolve a Subcategory by slug
             $subcategory = Subcategory::where('slug', $slug)
+                ->where('removed_from_store', false)
                 ->with(['category', 'categoryOrder'])
                 ->first();
 
@@ -80,7 +82,7 @@ class ShowSingleCategory
             $productsCount = $subcategory->products()->where('removed_from_store', false)->count();
 
             // Build products query for the subcategory with filters
-            $productsQuery = $subcategory->products()->with(['media','presents','coupon'])->where('removed_from_store', false);
+            $productsQuery = $subcategory->products()->with(['media', 'presents', 'coupon'])->where('removed_from_store', false);
 
             if (! is_null($minPrice)) {
                 $productsQuery->where('price', '>=', $minPrice);

@@ -38,24 +38,23 @@ class FortifyServiceProvider extends ServiceProvider
             return redirect('/');
         });
 
-//        Fortify::requestPasswordResetLinkView(function () {
-//
-//            return redirect('/');
-//        });
+        //        Fortify::requestPasswordResetLinkView(function () {
+        //
+        //            return redirect('/');
+        //        });
 
         Fortify::resetPasswordView(function (Request $request) {
             return view('frontend.auth.reset-password', ['request' => $request]);
         });
-
 
         $this->app->instance(LoginResponse::class, new class implements LoginResponse
         {
             public function toResponse($request)
             {
 
-                if ($request->has('checkout') && $request->checkout == 1) {
-                    return to_route('checkout', ['locale' => app()->getLocale()]);
-                }
+                //                if ($request->has('checkout') && $request->checkout == 1) {
+                //                    return to_route('checkout', ['locale' => app()->getLocale()]);
+                //                }
 
                 //                if (auth('admin')->check()) {
                 //                    //                    return redirect(route('admin.dashboard',['locale' => app()->getLocale()]));

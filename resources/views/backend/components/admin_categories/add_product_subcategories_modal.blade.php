@@ -6,17 +6,17 @@
         class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-2">
         {{__('Add Product')}}
     </button>
-    <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
-         style="width:100%;max-width :400px" id="create-subcat_product-modal{{$category->id}}">
+    <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme overflow-x-auto whitespace-nowrap"
+         style=";width:100%;max-width :400px;" id="create-subcat_product-modal{{$category->id}}">
         <form class="content" action="{{route('product.store')}}" method="post"
               enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="category_id" value="{{$category->id}}">
             <input type="hidden" name="category_slug" value="{{$category->slug}}">
-            <p class="font-24 font-800 mb-3 text-center">
+            <p class="font-24 font-800 mb-1 text-center">
                 {{__('Add Product')}}
             </p>
-            <p class="font-24 font-800 mb-3 text-center">
+            <p class="font-24 font-800 mb-1 text-center">
                 ({{$category->name}})
             </p>
             <div class="d-flex gap-3 mb-3">
@@ -110,7 +110,10 @@
                            accept="image/*">
                 </label>
             </div>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center gap-2">
+                <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full bg-highlight shadow-bg shadow-bg-s mt-4">
+                    {{__('Close')}}
+                </button>
                 <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
                     {{__('Create')}}
                 </button>

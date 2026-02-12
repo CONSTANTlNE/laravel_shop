@@ -10,6 +10,7 @@ use App\Models\Discount;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\Social;
 use App\Models\Subcategory;
 use App\Models\User;
 use App\Services\AdminService;
@@ -46,7 +47,7 @@ class AdminController extends Controller
         $subcategories = Subcategory::orderBy('order')->get(['id', 'name', 'category_id']);
         $discounts = Discount::where('active', 1)->get();
         $count = Product::count();
-        $coupons = Coupon::where('active', 1)->get();
+        $coupons = Coupon::where('active', 1)->with('promoter')->get();
 
         $products = $data['products'];
         $sortBy = $data['sortBy'];
@@ -283,6 +284,10 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:admins',
             'password' => 'required|string|min:8',
             'mobile' => 'required',
+            'pid' => [
+                'nullable',
+                'regex:/^(\d{9}|\d{11})$/',
+            ],
         ]);
 
         $user = User::create([
@@ -290,6 +295,7 @@ class AdminController extends Controller
             'email' => $request->email,
             'mobile' => $request->mobile,
             'password' => bcrypt($request->password),
+            'pid' => $request->pid,
         ]);
 
         $user->assignRole('admin');
@@ -353,5 +359,12 @@ class AdminController extends Controller
     public function export()
     {
         //        return Excel::download(new TotalSalesExport(), 'users.xlsx');
+    }
+
+    public function siteData(Request $request)
+    {
+        $socials = Social::orderBy('id')->get();
+
+        return view('backend.site_data', compact('socials'));
     }
 }

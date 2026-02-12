@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->jsonb('name')->index();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
-            $table->foreignId('category_order_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('order')->nullable();
             $table->boolean('active')->default(1);
             $table->string('slug')->unique()->index();
+            $table->boolean('is_slider')->default(false);
             $table->timestamps();
         });
     }

@@ -8,12 +8,12 @@ class CategoryOrder extends Model
 {
     public function category()
     {
-        return $this->hasMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function subcategory()
     {
-        return $this->hasMany(Subcategory::class);
+        return $this->belongsTo(Subcategory::class);
     }
 
     protected static function boot()
@@ -47,7 +47,6 @@ class CategoryOrder extends Model
                     }
                 }
             }
-
         });
 
         static::deleting(function ($category) {

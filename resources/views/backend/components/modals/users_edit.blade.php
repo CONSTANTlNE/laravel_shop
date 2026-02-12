@@ -1,7 +1,7 @@
 <button href="#"
         data-bs-toggle="offcanvas"
         data-bs-target="#edit_user_{{$user->id}}"
-        class="btn btn-full btn-s font-900  rounded-sm shadow-l bg-blue-dark  mb-1 pt-2 pb-2">
+        class="btn btn-full btn-s font-900  rounded-sm shadow-l bg-highlight mb-1 pt-2 pb-2">
             {{__('Edit')}}
 </button>
 
@@ -64,9 +64,11 @@
             </label>
         </div>
 
-
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
+        <div class="d-flex justify-content-center gap-2 mt-2">
+            <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full bg-highlight shadow-bg shadow-bg-s">
+                დახურვა
+            </button>
+            <button onclick="onSubmit(this.form,this,'{{__('Updating')}}')" class="btn btn-full gradient-green shadow-bg shadow-bg-s ">
                 {{__('Create')}}
             </button>
         </div>

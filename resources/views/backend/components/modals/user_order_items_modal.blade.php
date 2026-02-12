@@ -10,6 +10,12 @@
 
 
             </div>
+            <div class="d-flex justify-content-center gap-2 mt-2">
+                <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full bg-highlight shadow-bg shadow-bg-s">
+                    დახურვა
+                </button>
+            </div>
         </div>
+
     </div>
 </div>

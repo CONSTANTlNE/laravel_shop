@@ -29,7 +29,11 @@
 {{--        </div>--}}
 {{--    </div>--}}
 {{--</div>--}}
-
+<a href="#" data-bs-toggle="offcanvas"
+   data-bs-target="#order_presents_{{$order->order_token}}"
+   class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+    {{__('Presents')}}
+</a>
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme w-100"
      style=" max-width:800px; max-height: 78vh; overflow-y: auto; overflow-x: hidden;"
      id="order_presents_{{$order->order_token}}">

@@ -8,7 +8,7 @@ class Coupon extends Model
 {
     public function promoter()
     {
-        return $this->belongsTo(Promoter::class);
+        return $this->belongsTo(Promoter::class, 'promoter_id');
     }
 
     public function products()

@@ -18,9 +18,11 @@ use App\Http\Controllers\PresentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductFeatureController;
 use App\Http\Controllers\PromoterController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShippingPriceController;
+use App\Http\Controllers\SocialController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +52,7 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/users/delete', 'deleteUser')->name('admin.user.delete');
             Route::post('/user/autologin', 'autoLogin')->name('customer.autologin');
             Route::post('/user/order/items', 'orderItemsHtmx')->name('customer.orderitems.htmx');
+            Route::get('/site/data', 'siteData')->name('site.data');
         });
 
         Route::controller(CategoryController::class)->group(function () {
@@ -58,6 +61,7 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/category/delete', 'delete')->name('category.delete');
             Route::post('/category/change/main', 'changeMain')->name('category.change.main');
             Route::post('/category/change/slider', 'categorySlider')->name('category.change.slider');
+            Route::post('/category/removed', 'removed')->name('category.removed');
         });
 
         Route::controller(SubCategoryController::class)->group(function () {
@@ -84,6 +88,7 @@ Route::prefix('{locale}'.'/admin')
             Route::post('/product/video/delete', 'deleteVideo')->name('product.video.delete');
             Route::post('/product/featured', 'featured')->name('product.featured');
             Route::post('/product/onmain', 'onMain')->name('product.onmain');
+            Route::post('/product/formain', 'forMain')->name('product.formain');
             Route::post('/product/htm/images', 'htmxImages')->name('product.htmx.images');
             Route::post('/product/for-sale', 'toggleForSale')->name('product.for_sale');
 
@@ -106,6 +111,12 @@ Route::prefix('{locale}'.'/admin')
             Route::post('faqs/store', 'store')->name('faqs.store');
             Route::post('faqs/update', 'update')->name('faqs.update');
             Route::post('faqs/delete', 'delete')->name('faqs.delete');
+        });
+
+        Route::controller(SocialController::class)->group(function () {
+            Route::post('socials/store', 'store')->name('socials.store');
+            Route::post('socials/update', 'update')->name('socials.update');
+            Route::post('socials/delete', 'delete')->name('socials.delete');
         });
 
         Route::controller(DiscountController::class)->group(function () {
@@ -153,6 +164,10 @@ Route::prefix('{locale}'.'/admin')
         Route::controller(OrderController::class)->group(function () {
             route::get('orders', 'adminIndex')->name('admin.orders');
             route::post('delivery', 'delivery')->name('admin.orders.delivery');
+        });
+
+        Route::controller(PurchaseController::class)->group(function () {
+            route::post('orders/refund', 'refund')->name('admin.orders.refund');
         });
 
         Route::controller(CartController::class)->group(function () {

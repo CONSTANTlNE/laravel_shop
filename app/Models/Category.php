@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -21,6 +21,7 @@ class Category extends Model implements HasMedia
         'category_id' => 'integer',
         'active' => 'boolean',
         'order' => 'integer',
+        'removed_from_store' => 'boolean',
     ];
 
     public array $translatable = ['name'];
@@ -52,9 +53,9 @@ class Category extends Model implements HasMedia
     //        return $this->belongsToMany(Product::class);
     //    }
 
-    public function categoryOrder(): BelongsTo
+    public function categoryOrder(): HasOne
     {
-        return $this->belongsTo(CategoryOrder::class)->orderBy('order');
+        return $this->hasOne(CategoryOrder::class);
     }
 
     private static function cleanUnicodeAndSlug($string, $ignoreId = null): string

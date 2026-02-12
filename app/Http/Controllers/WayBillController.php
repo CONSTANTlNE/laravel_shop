@@ -634,7 +634,10 @@ class WayBillController extends Controller
     {
         $order = Order::find($request->order_id);
         // ტრანსპორტირებით
-        $waybill_type = 2;
+
+        if ($order->owner->pid == null) {
+            return back()->with('alert_error', 'Customer not have PID');
+        }
 
         if ($order) {
             $goodsXml = '';

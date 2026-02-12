@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Opcodes\LogViewer\Facades\Cache;
 
 class SettingController extends Controller
 {
@@ -87,6 +88,7 @@ class SettingController extends Controller
         $settings->min_order_amount = $request->min_order_amount ?? 0;
 
         $settings->save();
+        Cache::forget('site_settings');
 
         $message = 'Settings updated';
 

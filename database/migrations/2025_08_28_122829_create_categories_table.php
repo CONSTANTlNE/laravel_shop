@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('active')->default(1);
             $table->string('slug')->unique()->index();
             $table->integer('order')->nullable();
-            $table->foreignId('category_order_id')->nullable()->constrained()->onDelete('set null');
+            $table->boolean('is_slider')->default(false);
             $table->timestamps();
         });
     }

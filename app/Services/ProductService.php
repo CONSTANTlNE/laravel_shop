@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductService
@@ -47,80 +48,84 @@ class ProductService
             $videoId = null;
         }
 
-        $findcategory = Category::where('id', $request->input('category_id'))
-            ->where('slug', $request->input('category_slug'))
-            ->first();
-        if ($findcategory) {
-            $category = $findcategory;
-            $subcategory = null;
-        } else {
-            $findsubcategory = Subcategory::where('id', $request->input('category_id'))
+        DB::transaction(function () use ($request, $locales, $videoId) {
+
+            $findcategory = Category::where('id', $request->input('category_id'))
                 ->where('slug', $request->input('category_slug'))
                 ->first();
-            if ($findsubcategory) {
-                $category = $findsubcategory->category;
-                $subcategory = $findsubcategory->id;
+            if ($findcategory) {
+                $category = $findcategory;
+                $subcategory = null;
             } else {
-                return back()->with('alert_error', 'Category or Subcategory not found');
+                $findsubcategory = Subcategory::where('id', $request->input('category_id'))
+                    ->where('slug', $request->input('category_slug'))
+                    ->first();
+                if ($findsubcategory) {
+                    $category = $findsubcategory->category;
+                    $subcategory = $findsubcategory->id;
+                } else {
+                    return back()->with('alert_error', 'Category or Subcategory not found');
+                }
             }
-        }
 
-        $product = new Product;
+            $product = new Product;
 
-        foreach ($locales as $locale) {
-            $cleaned = preg_replace('/\s+/', ' ', $request->input('product_name_'.$locale->abbr));
-            $trimmed = trim($cleaned);
-            $cleaned_descr = preg_replace('/\s+/', ' ', $request->input('description_'.$locale->abbr));
-            $trimmed_descr = trim($cleaned_descr);
-            $product->setTranslation('name', $locale->abbr, $trimmed);
-            $product->setTranslation('description', $locale->abbr, $trimmed_descr);
-        }
+            foreach ($locales as $locale) {
+                $cleaned = preg_replace('/\s+/', ' ', $request->input('product_name_'.$locale->abbr));
+                $trimmed = trim($cleaned);
+                $cleaned_descr = preg_replace('/\s+/', ' ', $request->input('description_'.$locale->abbr));
+                $trimmed_descr = trim($cleaned_descr);
+                $product->setTranslation('name', $locale->abbr, $trimmed);
+                $product->setTranslation('description', $locale->abbr, $trimmed_descr);
+            }
 
-        $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        $historyEntry = [
-            'id' => $code,
-            'update_date' => now()->format('d-m-Y'),
-            'price' => $request->price,
-            'user_id' => auth()->id(),
-            'discount_id' => '',
-            'discount%' => '',
-            'reason' => 'Initial Price',
-        ];
+            $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            $historyEntry = [
+                'id' => $code,
+                'update_date' => now()->format('d-m-Y'),
+                'price' => $request->price,
+                'user_id' => auth()->id(),
+                'discount_id' => '',
+                'discount%' => '',
+                'reason' => 'Initial Price',
+            ];
 
-        $history = $product->price_history ?? [];
-        $history[] = $historyEntry;
+            $history = $product->price_history ?? [];
+            $history[] = $historyEntry;
 
-        $product->price_history = $history;
-        $product->sku = $request->input('sku');
-        $product->subcategory_id = $subcategory;
-        $product->category_id = $category->id;
-        $product->stock = $request->input('stock');
-        $product->featured = 0;
-        $product->price = $request->input('price');
-        $product->embed_video = $videoId;
-        $product->admin_id = auth('admin')->id();
-        if ($request->has('is_present')) {
-            $product->is_present = true;
-        }
-        $product->save();
-        $product->categories()->attach($category->id);
+            $product->price_history = $history;
+            $product->sku = $request->input('sku');
+            $product->subcategory_id = $subcategory;
+            $product->category_id = $category->id;
+            $product->stock = $request->input('stock');
+            $product->featured = 0;
+            $product->price = $request->input('price');
+            $product->embed_video = $videoId;
+            $product->admin_id = auth('admin')->id();
+            if ($request->has('is_present')) {
+                $product->is_present = true;
+            }
 
-        $uploadedFile = $request->file('files');
+            $product->save();
 
-        foreach ($uploadedFile as $file) {
+            $uploadedFile = $request->file('files');
 
-            $mainImage = new Conversion()->convert($file);
-            //                // save thumbnail
-            //                Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
-            //                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
-            //                Storage::disk('public')->delete($product->slug.'.webp');
-            //                // save main image
+            foreach ($uploadedFile as $file) {
 
-            Storage::disk('public')->put($product->slug.'.webp', $mainImage);
-            $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_image');
-            Storage::disk('public')->delete($product->slug.'.webp');
+                $mainImage = new Conversion()->convert($file);
+                //                // save thumbnail
+                //                Storage::disk('public')->put($product->slug.'.webp', $thumbnail);
+                //                $product->addMedia(storage_path('app/public/'.$product->slug.'.webp'))->toMediaCollection('product_thumbnail');
+                //                Storage::disk('public')->delete($product->slug.'.webp');
+                //                // save main image
 
-        }
+                Storage::disk('public')->put($product->slug.'.webp', (string) $mainImage);
+                $product->addMedia(Storage::disk('public')->path($product->slug.'.webp'))->toMediaCollection('product_image');
+                Storage::disk('public')->delete($product->slug.'.webp');
+
+            }
+
+        });
     }
 
     public function priceUpdate($request)
@@ -172,7 +177,7 @@ class ProductService
         $product->stock = $request->input('stock');
 
         // If stock becomes 0, set in_stock to 0
-        if ($product->stock === 0) {
+        if ($request->input('stock') == 0 || $request->input('stock') < 0) {
             $product->in_stock = 0;
         }
 

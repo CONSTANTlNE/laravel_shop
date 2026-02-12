@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('subcategories', function (Blueprint $table) {
-            $table->boolean('is_slider')->default(false);
+        Schema::create('product_orders', function (Blueprint $table) {
+            $table->id();
+            $table->integer('order');
+            $table->boolean('active')->default(1);
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('subcategories', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('product_orders');
     }
 };

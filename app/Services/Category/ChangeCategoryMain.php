@@ -25,27 +25,25 @@ class ChangeCategoryMain
 
         if ($request->input('category_id')) {
             $category = Category::where('id', $request->input('category_id'))->first();
-            $catorder = CategoryOrder::where('id', $category->category_order_id)->first();
+            $catorder = CategoryOrder::where('category_id', $category->id)->first();
             if ($catorder) {
                 $catorder->delete();
             } else {
                 $newcatorder = new CategoryOrder;
+                $newcatorder->category_id = $request->input('category_id');
                 $newcatorder->save();
-                $category->category_order_id = $newcatorder->id;
-                $category->save();
             }
         }
 
         if ($request->input('subcategory_id')) {
             $subcategory = Subcategory::where('id', $request->input('subcategory_id'))->first();
-            $catorder = CategoryOrder::where('id', $subcategory->category_order_id)->first();
+            $catorder = CategoryOrder::where('subcategory_id', $subcategory->id)->first();
             if ($catorder) {
                 $catorder->delete();
             } else {
                 $newcatorder = new CategoryOrder;
+                $newcatorder->subcategory_id = $request->input('subcategory_id');
                 $newcatorder->save();
-                $subcategory->category_order_id = $newcatorder->id;
-                $subcategory->save();
             }
         }
     }

@@ -5,6 +5,7 @@
     {{__('Coupon')}}
 </button>
 
+
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="apply_coupon_subcat{{$subcategory->id}}">
     <form class="content" action="{{route('coupon.apply.category')}}" method="post"

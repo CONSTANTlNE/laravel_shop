@@ -22,18 +22,22 @@ class UpdateCategory
         //        dd($request->all());
         $category = Category::findOrFail($request->input('category_id'));
 
-        $category_order = $category->categoryOrder?->first();
-        //        dd($category_order);
+        $category_order = CategoryOrder::where('category_id', $category->id)->first();
 
-        if ($category_order == null && $request->has('for_main')) {
-            $newcatorder = new CategoryOrder;
-            $newcatorder->save();
-            $category->category_order_id = $newcatorder->id;
-            $category->save();
-
+        if ($request->has('for_main')) {
+            if ($category_order == null) {
+                $newcatorder = new CategoryOrder;
+                $newcatorder->active = 1;
+                $newcatorder->category_id = $category->id;
+                $newcatorder->save();
+            } else {
+                $category_order->active = 1;
+                $category_order->save();
+            }
         } else {
             if ($category_order != null) {
-                $category_order->delete();
+                $category_order->active = 0;
+                $category_order->save();
             }
         }
 

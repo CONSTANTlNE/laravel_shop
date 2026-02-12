@@ -1,0 +1,18 @@
+HTTP/1.0 302 Found
+Cache-Control: no-cache, private
+Content-Type:  text/html; charset=utf-8
+Date:          Tue, 03 Feb 2026 12:49:17 GMT
+Location:      https://local2.ews.ge/ka/admin/excel
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="refresh" content="0;url='https://local2.ews.ge/ka/admin/excel'" />
+
+        <title>Redirecting to https://local2.ews.ge/ka/admin/excel</title>
+    </head>
+    <body>
+        Redirecting to <a href="https://local2.ews.ge/ka/admin/excel">https://local2.ews.ge/ka/admin/excel</a>.
+    </body>
+</html>

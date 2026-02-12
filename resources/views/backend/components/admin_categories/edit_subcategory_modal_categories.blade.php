@@ -1,13 +1,13 @@
 <a href="#"
    data-bs-toggle="offcanvas"
-   data-bs-target="#edit-category-modal_{{$subcategory->id}}"
+   data-bs-target="#edit-subcategoory-modal_{{$subcategory->id}}"
    class="list-group-item">
     <i class="bi bi-pencil-square color-blue-dark font-30"></i>
 </a>
 
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px"
-     id="edit-category-modal_{{$subcategory->id}}">
+     id="edit-subcategoory-modal_{{$subcategory->id}}">
     <form class="content" action="{{route('subcategory.update')}}" method="post"
           enctype="multipart/form-data">
         @csrf
@@ -51,9 +51,9 @@
             </label>
         </div>
         <div class="d-flex justify-content-center">
-            <button
+            <button onclick="onSubmit(this.form,this,'{{__('Please Wait')}}')"
                 class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                Update
+                {{__('Update')}}
             </button>
         </div>
     </form>

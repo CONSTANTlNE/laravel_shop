@@ -4,9 +4,9 @@ namespace App\Providers;
 
 use App\Models\ButtonColor;
 use App\Models\Category;
-use App\Models\Export;
 use App\Models\Language;
 use App\Models\Setting;
+use App\Models\Social;
 use App\Models\Term;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
@@ -56,29 +56,50 @@ class AppServiceProvider extends ServiceProvider
         //        });
 
         if (Schema::hasTable('languages')) {
-            $locales = Language::all();
+            $locales = cache()->rememberForever('locales', function () {
+                return Language::all();
+            });
             View::share('locales', $locales);
         }
         if (Schema::hasTable('terms')) {
             $terms = Term::first();
             View::share('terms', $terms);
         }
-        if (Schema::hasTable('terms')) {
-            $site_settings = Setting::first();
-            View::share('site_settings', $site_settings);
-        }
 
-        View()->composer('frontend.components.layout', function ($view) {
-            $active_color = ButtonColor::where('is_active', 1)->first();
-            $export = Export::where('admin_id', auth('admin')->id())
-                ->where('status', 'completed')
-                ->with('media')->first();
+        View::composer('frontend.components.contact', function ($view) {
 
-            return $view->with(compact('active_color', 'export'));
+            $socials = Social::where('is_active', true)->orderBy('id')->get();
+
+            $view->with([
+                'socials' => $socials,
+            ]);
+        });
+
+        View::composer('frontend.*', function ($view) {
+            // These variables stay in memory for the single request
+            static $activeColor, $siteSettings;
+            // 1. Only fetch Color if we haven't already this request
+            $activeColor ??= cache()->rememberForever('active_button_color', function () {
+                return ButtonColor::where('is_active', 1)->first();
+            });
+
+            // 3. Only fetch Settings if we haven't already
+            $siteSettings ??= cache()->rememberForever('site_settings', function () {
+                return Setting::first();
+            });
+
+            // Inject into whatever view is currently being rendered (Layout, Yield, or Include)
+            $view->with([
+                'active_color' => $activeColor,
+                'site_settings' => $siteSettings,
+            ]);
         });
 
         view()->composer('frontend.components.categories', function ($view) {
-            $categories = Category::with(['subcategories:id,category_id,name,slug'])
+            $categories = Category::where('removed_from_store', false)
+                ->with(['subcategories' => function ($query) {
+                    $query->where('removed_from_store', false)->select('id', 'category_id', 'name', 'slug');
+                }])
                 ->get(['id', 'name', 'slug'])
                 ->map(function ($cat) {
                     return (object) [

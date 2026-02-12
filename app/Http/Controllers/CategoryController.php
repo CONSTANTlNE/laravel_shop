@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\CategoryOrder;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Services\Category\ChangeCategoryMain;
 use App\Services\Category\ShowSingleCategory;
 use App\Services\Category\StoreCategory;
 use App\Services\Category\UpdateCategory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,7 +18,10 @@ class CategoryController extends BaseController
 {
     public function index()
     {
-        $categories = Category::with(['subcategories.media', 'categoryOrder'])
+        $categories = Category::where('removed_from_store', false)
+            ->with(['subcategories' => function ($query) {
+                $query->where('removed_from_store', false)->with('media');
+            }, 'categoryOrder'])
             ->orderBy('order')
             ->get();
         $cacheTime = 600; // seconds
@@ -36,6 +41,11 @@ class CategoryController extends BaseController
     {
 
         $data = new ShowSingleCategory()->showSingle($request, $locale, $slug);
+
+        if ($data instanceof RedirectResponse) {
+            return $data;
+        }
+
         $productsCount = $data['productsCount'];
         $categoriesCount = $data['categoriesCount'];
         $category_orders = $data['category_orders'];
@@ -60,7 +70,6 @@ class CategoryController extends BaseController
 
     public function update(Request $request)
     {
-
         (new UpdateCategory)($request, $this->locales, $this->mainLocale);
 
         return back();
@@ -81,6 +90,52 @@ class CategoryController extends BaseController
 
         return back()->with('alert_success', 'updated successfully');
 
+    }
+
+    public function removed(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+        ]);
+
+        if ($request->filled('category_id')) {
+            $category = Category::findOrFail($request->input('category_id'));
+            $category->removed_from_store = ! $category->removed_from_store;
+            $category->save();
+
+            $category->products()->update([
+                'removed_from_store' => $category->removed_from_store,
+            ]);
+
+            $category_order = CategoryOrder::where('category_id', $category->id)->first();
+            $category_order->active = ! $category->removed_from_store;
+            $category_order->save();
+
+            $message = $category->removed_from_store
+                ? __('Category removed from store.')
+                : __('Category restored to store.');
+        } elseif ($request->filled('subcategory_id')) {
+            $subcategory = Subcategory::findOrFail($request->input('subcategory_id'));
+            $subcategory->removed_from_store = ! $subcategory->removed_from_store;
+            $subcategory->save();
+
+            $subcategory->products()->update([
+                'removed_from_store' => $subcategory->removed_from_store,
+            ]);
+
+            $category_order = CategoryOrder::where('subcategory_id', $subcategory->id)->first();
+            $category_order->active = ! $subcategory->removed_from_store;
+            $category_order->save();
+
+            $message = $subcategory->removed_from_store
+                ? __('Subcategory removed from store.')
+                : __('Subcategory restored to store.');
+        } else {
+            return back()->with('alert_error', __('Invalid request.'));
+        }
+
+        return back()->with('alert_success', $message);
     }
 
     public function categorySlider(Request $request)

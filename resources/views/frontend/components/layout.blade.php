@@ -113,6 +113,11 @@
             }
         }
 
+        .offcanvas-modal {
+            -webkit-overflow-scrolling: touch;
+            max-height: 700px;
+        }
+
     </style>
 </head>
 
@@ -186,23 +191,23 @@
 
         @include('frontend.components.session_messages')
 
-        @if($export!=null)
-            <div class="d-flex justify-content-center mb-3">
-                <div hx-get="{{route('exports.message')}}"
-                     id="export_status"
-                     hx-trigger="load delay:2s"
-                     hx-swap="outerHTML">
-                    @if($export!=null)
-                        Ready
-                        <a href="{{ route('exports.download') }}" target="_blank">
-                            Download Export
-                        </a>
-                    @else
-                        Preparing download
-                    @endif
-                </div>
-            </div>
-        @endif
+{{--        @if($export!=null)--}}
+{{--            <div class="d-flex justify-content-center mb-3">--}}
+{{--                <div hx-get="{{route('exports.message')}}"--}}
+{{--                     id="export_status"--}}
+{{--                     hx-trigger="load delay:2s"--}}
+{{--                     hx-swap="outerHTML">--}}
+{{--                    @if($export!=null)--}}
+{{--                        Ready--}}
+{{--                        <a href="{{ route('exports.download') }}" target="_blank">--}}
+{{--                            Download Export--}}
+{{--                        </a>--}}
+{{--                    @else--}}
+{{--                        Preparing download--}}
+{{--                    @endif--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        @endif--}}
 
         @yield('index')
         @yield('product-single')
@@ -230,6 +235,7 @@
         @yield('admin-users')
         @yield('admin-admins')
         @yield('admin-excel')
+        @yield('site-data')
 
         @if(request()->routeIs('customer.dashboard'))
             <div class="card card-style py-3">
@@ -422,7 +428,7 @@
     }
 
     @if($site_settings->use_main_banner && !request()->routeIs('checkout') && !request()->routeIs('product.single') && !request()->routeIs('customer.orders'))
-    document.addEventListener('DOMContentLoaded', function () {
+       document.addEventListener('DOMContentLoaded', function () {
         new Splide('#banner-slider', {
             arrows: false,
             lazyLoad: 'nearby',
@@ -433,7 +439,6 @@
         }).mount();
     });
     @endif
-
 
 </script>
 
@@ -482,6 +487,50 @@
     //     }
     // }
 
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const footer_bar=document.getElementById('footer-bar');
+// 1. Select all offcanvas elements (not the triggers, the actual menus)
+        const myOffcanvasElements = document.querySelectorAll('.offcanvas');
+
+        myOffcanvasElements.forEach(offcanvas => {
+
+            // Triggered immediately when 'show' is called
+            offcanvas.addEventListener('show.bs.offcanvas', () => {
+                console.log('Offcanvas is starting to open...');
+            });
+
+            // Triggered when it is fully visible (after CSS transitions)
+            offcanvas.addEventListener('shown.bs.offcanvas', () => {
+                footer_bar.style.display = 'none';
+            });
+
+            // Triggered immediately when 'hide' is called
+            offcanvas.addEventListener('hide.bs.offcanvas', () => {
+                console.log('Offcanvas is starting to close...');
+            });
+
+            // Triggered when it is fully hidden
+            offcanvas.addEventListener('hidden.bs.offcanvas', () => {
+                footer_bar.style.display = 'flex';
+            });
+        });
+    })
+
+    {{-- onSubmit(this.form,this,'{{__('Please Wait')}}') --}}
+    function onSubmit(form, button , text) {
+        form.onsubmit = function() {
+            button.disabled = true;
+
+            // Define your SVG (a simple loading spinner)
+            const spinnerSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="4" cy="12" r="3" fill="currentColor"><animate id="SVG9IgbRbsl" attributeName="r" begin="0;SVGFUNpCWdG.end-0.25s" dur="0.75s" values="3;.2;3"/></circle><circle cx="12" cy="12" r="3" fill="currentColor"><animate attributeName="r" begin="SVG9IgbRbsl.end-0.6s" dur="0.75s" values="3;.2;3"/></circle><circle cx="20" cy="12" r="3" fill="currentColor"><animate id="SVGFUNpCWdG" attributeName="r" begin="SVG9IgbRbsl.end-0.45s" dur="0.75s" values="3;.2;3"/></circle></svg>
+`;
+
+            // Use innerHTML to combine text and SVG
+            button.innerHTML = text + spinnerSvg;
+        };
+    }
 
     // Initialize Notyf
     let notyf;
@@ -503,7 +552,7 @@
         });
     })
 
-
+    // show success message via HTMX and notif
     document.body.addEventListener('showSuccess', function (evt) {
 
         notyf.open({
@@ -512,6 +561,7 @@
         });
     });
 
+    // show error message via HTMX and notif
     document.body.addEventListener('showError', function (evt) {
         Swal.fire({
             icon: evt.detail.icon,
@@ -521,6 +571,7 @@
         });
     });
 
+    // show validation errors via HTMX and swal
     document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
         if (evt.detail.xhr.status === 422) {
             // Prevent HTMX from trying to swap the error response into the DOM

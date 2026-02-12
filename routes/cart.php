@@ -21,7 +21,7 @@ Route::prefix('{locale?}')
     });
 Route::prefix('{locale?}')
     ->where(['locale' => '[a-zA-Z]{2}'])
-    ->middleware(['localization', 'cartToken', 'auth'])
+    ->middleware(['localization', 'cartToken', 'auth:web,admin'])
     ->group(function () {
 
         Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
@@ -36,11 +36,13 @@ Route::prefix('{locale?}')
 
     });
 
-Route::middleware(['cartToken', 'auth'])
+Route::middleware(['cartToken', 'auth:web,admin'])
     ->group(function () {
         Route::controller(PurchaseController::class)->group(function () {
             Route::post('/purchase', 'payment')->name('purchase');
             Route::post('/purchase/nawilnawil', 'nawilNawili')->name('nawilnawili');
+            Route::post('/purchase/test', 'testCallback')->name('purchase.test');
+
         });
 
     });

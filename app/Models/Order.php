@@ -8,6 +8,7 @@ class Order extends Model
 {
     protected $casts = [
         'products_details' => 'array',
+        'refund_details' => 'array',
         'callback_data' => 'array',
         'presents' => 'array',
     ];
@@ -41,5 +42,10 @@ class Order extends Model
             'order_id',        // The column for the product "owning" the presents
             'present_id'       // The column for the product "acting" as the present
         );
+    }
+
+    public function adminComments()
+    {
+        return $this->morphMany(AdminComment::class, 'commentable');
     }
 }

@@ -1,9 +1,4 @@
-<button
-    data-bs-toggle="offcanvas"
-    data-bs-target="#create_user"
-    class="btn  gradient-green shadow-bg shadow-bg-s pt-0 pb-0">
-    {{__('Create User')}}
-</button>
+
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="create_user">
     <form class="content" action="{{route('admin.user.store')}}" method="post"
@@ -49,10 +44,21 @@
                        class="form-control rounded-xs"/>
             </label>
         </div>
+        <div class="d-flex gap-3 mb-3">
+            <label for="sku"
+                   style="width: 100%"
+                   class="color-theme text-start">{{__('PID')}}
+                <input type="text"
+                       name="pid"
+                       class="form-control rounded-xs"/>
+            </label>
+        </div>
 
-
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-full gradient-green shadow-bg shadow-bg-s  pb-2 pt-2">
+        <div class="d-flex justify-content-center mt-2 gap-2">
+            <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full bg-highlight shadow-bg shadow-bg-s">
+                დახურვა
+            </button>
+            <button onclick="onSubmit(this.form,this,'{{__('Creating')}}')" class="btn btn-full gradient-green shadow-bg shadow-bg-s">
                 {{__('Create')}}
             </button>
         </div>

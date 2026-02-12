@@ -20,7 +20,7 @@
             <span>({{__('required')}})</span>
         </div>
 
-        <button  class="btn btn-full gradient-blue shadow-bg shadow-bg-s mt-4 w-100 action-button ">{{__('Login')}}</button>
+        <button onclick="onSubmit(this.form,this,'{{__('Logging in')}}')"  class="btn btn-full gradient-blue shadow-bg shadow-bg-s mt-4 w-100 action-button ">{{__('Login')}}</button>
         <br>
         <a href="{{route('google.login')}}" class="btn-full btn border-blue-dark color-blue-dark">
             <svg viewBox="0 0 256 262" preserveAspectRatio="xMidYMid" width="25" height="25">

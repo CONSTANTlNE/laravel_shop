@@ -36,7 +36,6 @@ test('categories index shows categories list view', function () {
         'active' => 1,
         'slug' => 'home',
         'order' => 1,
-        'category_order_id' => $order->id,
     ]);
 
     Category::create([
@@ -44,7 +43,6 @@ test('categories index shows categories list view', function () {
         'active' => 1,
         'slug' => 'garden',
         'order' => 2,
-        'category_order_id' => $order->id,
     ]);
 
     $this->withoutMiddleware();
@@ -61,14 +59,13 @@ test('category page by category slug returns products with filters and sorting',
     seedBasics();
 
     $admin = Admin::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => bcrypt('secret')]);
-    $order = CategoryOrder::create(['name' => 'Default', 'order' => 1]);
+    $order = CategoryOrder::create(['order' => 1]);
 
     $category = Category::create([
         'name' => ['en' => 'Electronics'],
         'active' => 1,
         'slug' => 'electronics',
         'order' => 1,
-        'category_order_id' => $order->id,
     ]);
 
     // Two products attached via pivot to the category
@@ -95,7 +92,7 @@ test('category page by category slug returns products with filters and sorting',
     ]);
 
     // Attach via pivot so Category::products() sees them
-    $category->categories()->sync([]); // no-op safeguard
+    // $category->categories()->sync([]); // no-op safeguard
     $category->products()->attach([$pCheap->id, $pExp->id]);
 
     $this->withoutMiddleware();
@@ -133,20 +130,18 @@ test('category page falls back to subcategory slug and sets empty subcategories 
     seedBasics();
 
     $admin = Admin::create(['name' => 'Admin', 'email' => 'admin2@example.com', 'password' => bcrypt('secret')]);
-    $order = CategoryOrder::create(['name' => 'Default', 'order' => 1]);
+    $order = CategoryOrder::create(['order' => 1]);
 
     $category = Category::create([
         'name' => ['en' => 'Home'],
         'active' => 1,
         'slug' => 'home',
         'order' => 1,
-        'category_order_id' => $order->id,
     ]);
 
     $subcategory = Subcategory::create([
         'name' => ['en' => 'Kitchen'],
         'category_id' => $category->id,
-        'category_order_id' => $order->id,
         'order' => 1,
         'active' => 1,
         'slug' => 'kitchen-sub',

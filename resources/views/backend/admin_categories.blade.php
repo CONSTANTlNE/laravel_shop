@@ -128,6 +128,9 @@
                             {{__('Discount')}}
                         </th>
                         <th scope="col" class="text-center">
+                            {{__('Removed')}}
+                        </th>
+                        <th scope="col" class="text-center">
                             {{_('Coupon')}}
                         </th>
                         <th scope="col" class="text-center">
@@ -203,6 +206,21 @@
                                     @include('backend.components.admin_categories.discount_modal_categories')
                                 @endif
                             </td>
+                            <td class="text-center">
+                                <form action="{{route('category.removed')}}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="category_id" value="{{$category->id}}">
+
+                                    <div class="form-switch ios-switch switch-red switch-l">
+                                        <input type="checkbox" class="ios-input"
+                                               id="removed_cat_{{$category->id}}"
+                                               @checked($category->removed_from_store==1)
+                                               onchange="this.form.submit()">
+                                        <label class="custom-control-label"
+                                               for="removed_cat_{{$category->id}}"></label>
+                                    </div>
+                                </form>
+                            </td>
                             <td>
                                 {{--  apply coupon modal --}}
                                 @if($category->subcategories->isEmpty())
@@ -227,7 +245,7 @@
                                     <td>{{$category->name}} --> {{$subcategory->name}}</td>
                                     <td>
                                         <img width="100" height="100"
-                                             src="{{$subcategory->getMedia('category_thumbnail')->first()?->getUrl()}}"
+                                             src="{{$subcategory->getMedia('category_image')->first()?->getUrl('thumbnail')}}"
                                              alt="">
                                     </td>
                                     <td>
@@ -275,6 +293,21 @@
                                     </td>
                                     <td>
                                         @include('backend.components.admin_categories.discount_modal_subcategories')
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="{{route('category.removed')}}" method="post">
+                                            @csrf
+                                            <input type="hidden" name="subcategory_id" value="{{$subcategory->id}}">
+
+                                            <div class="form-switch ios-switch switch-red switch-l">
+                                                <input type="checkbox" class="ios-input"
+                                                       id="removed_sub_{{$subcategory->id}}"
+                                                       @checked($subcategory->removed_from_store==1)
+                                                       onchange="this.form.submit()">
+                                                <label class="custom-control-label"
+                                                       for="removed_sub_{{$subcategory->id}}"></label>
+                                            </div>
+                                        </form>
                                     </td>
                                     <td>
                                         {{--  apply coupon modal --}}

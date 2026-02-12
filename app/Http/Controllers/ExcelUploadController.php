@@ -49,18 +49,14 @@ class ExcelUploadController extends Controller
                         $category = Category::where('name->ka', $trimmed)->first();
 
                         if (! $category) {
-                            $category = new Category;
                             $category_order = new CategoryOrder;
-                            $category_order->save();
-                            $category->category_order_id = $category_order->id;
-
+                            $category = new Category;
                             $category->setTranslation('name', 'ka', $trimmed);
-
                             $cleaned2 = preg_replace('/\s+/', ' ', $value[1]);
                             $trimmed2 = trim($cleaned2);
                             $category->setTranslation('name', 'en', $trimmed2);
-
                             $category->save();
+                            $category_order->category_id = $category->id;
                         }
                     }
                 }
@@ -80,8 +76,6 @@ class ExcelUploadController extends Controller
                         if (! $subcategory) {
                             $subcategory = new Subcategory;
                             $category_order = new CategoryOrder;
-                            $category_order->save();
-                            $subcategory->category_order_id = $category_order->id;
 
                             $cleaned = preg_replace('/\s+/', ' ', $value[1]);
                             $trimmed = trim($cleaned);
@@ -94,6 +88,9 @@ class ExcelUploadController extends Controller
                             $subcategory->category_id = $category->id;
                             $category->categoryOrder()?->delete();
                             $subcategory->save();
+                            $category_order->subcategory_id = $subcategory->id;
+                            $category_order->save();
+
                         }
                     }
                 }

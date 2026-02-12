@@ -120,11 +120,7 @@
                 <i class="bi bi-chevron-right"></i>
             </a>
 
-            <a href="#" id="nav-comps2" data-bs-toggle="offcanvas" data-bs-target="#admin_settings">
-                <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i>
-                <span>{{__('Settings')}}</span>
-                <i class="bi bi-chevron-right"></i>
-            </a>
+
 
             <a href="#" class="d-flex">
                 <i class="gradient-highlight shadow-bg shadow-bg-xs bi bi-gear-fill"></i>
@@ -139,6 +135,9 @@
                              data-bs-parent="#accordion-group-data"
                              style="">
                             <ul>
+                                <li onclick="window.location.href='{{ route('site.data') }}'">
+                                    Socials & Contacts
+                                </li>
                                 <li onclick="window.location.href='{{ route('admin.faqs') }}'">
                                     Q & A
                                 </li>

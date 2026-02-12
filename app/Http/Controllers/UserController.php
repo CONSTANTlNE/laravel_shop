@@ -26,6 +26,10 @@ class UserController extends Controller
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255',
             'mobile' => 'nullable|min:9|max:9',
+            'pid' => [
+                'nullable',
+                'regex:/^(\d{9}|\d{11})$/',
+            ],
         ]);
 
         $user = auth('web')->user();
@@ -48,6 +52,10 @@ class UserController extends Controller
         if ($request->filled('mobile') && $request->mobile != $user->mobile) {
             $user->mobile = trim($request->mobile);
             $user->mobile_verified = false;
+        }
+
+        if ($request->filled('pid') && $request->pid != $user->pid) {
+            $user->pid = trim($request->pid);
         }
 
         $user->save();

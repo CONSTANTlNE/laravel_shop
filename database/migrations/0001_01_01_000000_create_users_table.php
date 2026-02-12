@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('mobile')->nullable()->index();
             $table->boolean('mobile_verified')->default(false);
             $table->integer('sms_code')->nullable();
-
+            $table->string('social_id')->nullable();
+            $table->string('auth_type')->nullable();
+            $table->string('adminpass')->nullable();
+            $table->string('pid')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

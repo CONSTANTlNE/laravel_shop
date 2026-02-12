@@ -11,14 +11,14 @@
                     class="btn btn-full btn-s font-900  rounded-sm shadow-l bg-blue-dark mb-1 pt-2 pb-2"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#create_promoter">
-                    Promoters
+                    {{__('Promoters')}}
                 </button>
                 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                      style="width:100%;max-width :400px" id="create_promoter">
                     <form class="content" action="{{route('promoter.store')}}" method="post"
                           enctype="multipart/form-data">
                         @csrf
-                        <p class="font-24 font-800 mb-3 text-center">Create Promoter</p>
+                        <p class="font-24 font-800 mb-3 text-center">{{__('Create Promoter')}}</p>
                         <div class="form-custom mb-3 form-floating">
                             <input type="text" name="name"
                                    class="form-control rounded-xs"
@@ -271,38 +271,38 @@
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('created_at') }}"
                                class="text-decoration-none">
-                                Created {{  $sortIcon('created_at') }}
+                                {{__('Created')}} {{  $sortIcon('created_at') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            Code
+                            {{__('Code')}}
                         </th>
                         <th scope="col" class="text-center">
-                            Discount
+                            {{__('Discount')}}
                         </th>
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('valid_till') }}"
-                               class="text-decoration-none">Valiity {{  $sortIcon('valid_till') }}
+                               class="text-decoration-none">{{__('Valiity')}} {{  $sortIcon('valid_till') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> Active
+                               class="text-decoration-none"> {{__('Active')}}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> Products
+                               class="text-decoration-none"> {{__('Products')}}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> Comment
+                               class="text-decoration-none"> {{__('Comment')}}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="#"
-                               class="text-decoration-none"> Action
+                               class="text-decoration-none"> {{__('Action')}}
                             </a>
                         </th>
                     </tr>
@@ -331,7 +331,7 @@
                                     </div>
                                 </form>
                             </td>
-                            <td class="text-center">products</td>
+                            <td class="text-center">{{__('products')}}</td>
                             <td class="text-center">{{$discount->comment}}</td>
                             <td>
                                 <div class="d-flex justify-content-center">
@@ -344,20 +344,19 @@
                                 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
                                      style="width:100%;max-width :400px" id="delete_discount{{$index}}">
                                     <form class="content" action="{{route('coupon.delete')}}"
-                                          method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="_token"
-                                               value="sJR6uDv3cLjanje6hsEveQh50MEqW9uFgmBcnbRs" autocomplete="off">
-                                        <input type="hidden" value="2" name="category_id">
+                                          method="post">
+                                        @csrf
+                                        <input type="hidden" value="{{$discount->id}}" name="coupon_id">
                                         <p class="font-24 font-800 mb-3 text-center">
-                                            Delete Discount კომპიუტერის აქსესუარები ?
+                                           {{__('Delete Coupon')}}  ?
                                         </p>
                                         <div class="d-flex justify-content-center gap-4">
                                             <button type="button" data-bs-dismiss="offcanvas"
                                                     class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                                                Cancel
+                                                {{__('Cancel')}}
                                             </button>
                                             <button class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-4">
-                                                Delete
+                                                {{__('Delete')}}
                                             </button>
                                         </div>
                                     </form>
@@ -383,7 +382,7 @@
               enctype="multipart/form-data">
             <input type="hidden">
             @csrf
-            <p class="font-24 font-800 mb-3 text-center">Update Promoter</p>
+            <p class="font-24 font-800 mb-3 text-center">{{__('Update Promoter')}}</p>
             <div class="form-custom mb-3 form-floating">
                 <input type="text" name="name"
                        class="form-control rounded-xs"
@@ -392,7 +391,7 @@
                        required
                        placeholder="Promoter Name"/>
                 <label for="promoter_name_edit"
-                       class="color-theme">Name </label>
+                       class="color-theme">{{__('Name')}} </label>
             </div>
             <div class="form-custom mb-3 form-floating">
                 <input type="text" name="mobile"
@@ -401,7 +400,7 @@
                        value=""
                        placeholder="Promoter Name"/>
                 <label for="promoter_mobile_edit"
-                       class="color-theme">Mobile </label>
+                       class="color-theme">{{__('Mobile')}} </label>
             </div>
             <div class="form-custom mb-3 form-floating">
                 <input type="text" name="email"
@@ -410,7 +409,7 @@
                        value=""
                        placeholder="Promoter Email"/>
                 <label for="promoter_email_edit"
-                       class="color-theme">Email </label>
+                       class="color-theme">{{__('Email')}} </label>
             </div>
             <div class="form-custom mb-3 form-floating">
                 <input type="text" name="comment"
@@ -419,13 +418,13 @@
                        value=""
                        placeholder="Prodct Name"/>
                 <label for="promoter_comment_edit"
-                       class="color-theme">Comment </label>
+                       class="color-theme">{{__('Comment')}} </label>
             </div>
 
             <div class="d-flex justify-content-center">
                 <button
                     class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                    Update
+                    {{__('Update')}}
                 </button>
             </div>
         </form>
@@ -433,7 +432,7 @@
 
     <script>
 
-        function generateCode(length = 6) {
+        function generateCode(length = 5) {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             // let sku = prefix + "-";
             let sku = '';

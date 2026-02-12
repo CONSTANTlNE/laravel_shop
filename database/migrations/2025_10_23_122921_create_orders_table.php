@@ -26,7 +26,8 @@ return new class extends Migration
             $table->string('coupon_code')->nullable();
             $table->jsonb('products_details')->nullable();
             $table->boolean('status_canceled')->default(false);
-
+            $table->string('google_map')->nullable();
+            $table->json('presents')->nullable();
             $table->timestamps();
 
         });

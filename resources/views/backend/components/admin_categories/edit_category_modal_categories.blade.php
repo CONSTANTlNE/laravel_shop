@@ -4,6 +4,7 @@
    class="list-group-item">
     <i class="bi bi-pencil-square color-blue-dark font-30"></i>
 </a>
+
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="edit-category-modal_{{$category->id}}">
     <form class="content" action="{{route('category.update')}}" method="post"
@@ -21,7 +22,7 @@
                        placeholder="Category Name"/>
                 <label for="c1{{$locale->abbr}}"
                        class="color-theme">Name {{$locale->language}} </label>
-                <span>({{_('required')}})</span>
+                <span>({{__('required')}})</span>
             </div>
         @endforeach
         <div class="form-check form-check-custom  mb-2 justify-content-center">

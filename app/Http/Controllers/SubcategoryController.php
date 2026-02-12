@@ -106,7 +106,7 @@ class SubcategoryController extends Controller
             'files.*' => 'image|mimes:jpeg,png,jpg,gif|max:5024',
         ]);
 
-        $category = Subcategory::findOrFail($request->input('subcategory_id'));
+        $category = Subcategory::with('categoryOrder')->where('id', $request->input('subcategory_id'))->first();
 
         foreach ($this->locales as $locale) {
             $cleaned = preg_replace('/\s+/', ' ', $request->input('category_name_'.$locale->abbr));
@@ -121,17 +121,21 @@ class SubcategoryController extends Controller
 
         $category->save();
 
-        $category_order = $category->categoryOrder?->first();
-
-        if ($category_order == null && $request->has('for_main')) {
-            $newcatorder = new CategoryOrder;
-            $newcatorder->save();
-            $category->category_order_id = $newcatorder->id;
-            $category->save();
-
+        $category_order = CategoryOrder::where('subcategory_id', $category->id)->first();
+        if ($request->has('for_main')) {
+            if ($category_order == null) {
+                $newcatorder = new CategoryOrder;
+                $newcatorder->active = 1;
+                $newcatorder->subcategory_id = $category->id;
+                $newcatorder->save();
+            } else {
+                $category_order->active = 1;
+                $category_order->save();
+            }
         } else {
             if ($category_order != null) {
-                $category_order->delete();
+                $category_order->active = 0;
+                $category_order->save();
             }
         }
 

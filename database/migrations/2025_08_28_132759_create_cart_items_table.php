@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('city_id')->nullable()->constrained('cities');
             $table->float('product_price');
             $table->float('product_total')->nullable();
+            $table->text('google_maps')->nullable();
+            $table->float('shipping_price')->nullable();
             $table->timestamps();
         });
     }

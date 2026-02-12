@@ -14,9 +14,9 @@
         <div class="ms-auto"><h3>{{$grand_total}}</h3></div>
     </div>
     <div class="divider"></div>
-    @if($site_settings->use_sms_verification==1 && auth('web')->user()->mobile_verified==1)
+    @if(auth('admin')->check() || $site_settings->use_sms_verification==1 && auth('web')->user()?->mobile_verified==1)
         <form
-            @if(env('DEV_PURCHASE_TEST'))
+            @if(env('DEV_PURCHASE_TEST') || auth('admin')->check())
                 action="{{route('purchase.test')}}"
             @else
                 action="{{route('purchase')}}"

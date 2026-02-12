@@ -28,4 +28,9 @@ class Admin extends Authenticatable
     {
         return $this->hasMany(Export::class, 'admin_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(AdminComment::class);
+    }
 }

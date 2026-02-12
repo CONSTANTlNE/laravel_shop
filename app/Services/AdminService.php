@@ -52,7 +52,7 @@ class AdminService
             ->select('products.*')
             ->selectRaw("categories.name ->> '{$locale}' as category_name")
             ->selectRaw("subcategories.name ->> '{$locale}' as subcategory_name")
-            ->with(['category', 'subcategory', 'features', 'discount', 'presents']);
+            ->with(['category', 'subcategory', 'features', 'discount', 'presents', 'coupon.promoter']);
 
         // Filtering
         if ($request->filled('category_id')) {

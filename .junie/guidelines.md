@@ -1,6 +1,15 @@
 <laravel-boost-guidelines>
 === foundation rules ===
 
+# Never perform these actions without approval.
+- Changing the application's dependencies.
+- Changing the application's directory structure.
+- Changing the application's configuration files.
+- Changing the application's database schema.
+- Never run php artisan migrate:fresh without approval.
+- Never run php artisan migrate:reset without approval.
+- Never run php artisan migrate:rollback without approval.
+
 # Laravel Boost Guidelines
 
 The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.

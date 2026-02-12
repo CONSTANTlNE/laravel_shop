@@ -26,6 +26,11 @@
         <label for="phone" class="color-theme form-label-always-active font-10 opacity-50">{{__('Mobile')}}</label>
     </div>
     <div class="form-custom form-label form-icon mb-3">
+        <i class="bi bi-person-badge-fill font-16"></i>
+        <input name="pid" type="text" class="form-control rounded-xs" id="pid" value="{{auth('web')->user()->pid}}">
+        <label for="pid" class="color-theme form-label-always-active font-10 opacity-50">{{__('PID')}}</label>
+    </div>
+    <div class="form-custom form-label form-icon mb-3">
         <i class="bi bi-key font-16"></i>
         <input name="password" type="text" class="form-control rounded-xs" id="password" >
         <label for="password" class="color-theme form-label-always-active font-10 opacity-50">{{__('Password')}}</label>
@@ -35,6 +40,7 @@
         <input name="password_confirmation" type="text" class="form-control rounded-xs" id="password_confirmation">
         <label for="password_confirmation" class="color-theme form-label-always-active font-10 opacity-50">{{__('Repeat Password')}}</label>
     </div>
+
     <div class="d-flex justify-content-center mb-3 gap-2">
         <button
             data-bs-dismiss="offcanvas"

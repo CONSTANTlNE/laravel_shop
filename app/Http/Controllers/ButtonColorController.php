@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ButtonColor;
 use Illuminate\Http\Request;
+use Opcodes\LogViewer\Facades\Cache;
 
 class ButtonColorController extends Controller
 {
@@ -22,6 +23,7 @@ class ButtonColorController extends Controller
 
             return back();
         }
+        Cache::forget('active_button_color');
 
         return back()->with('alert_error', __('Color not found!'));
 

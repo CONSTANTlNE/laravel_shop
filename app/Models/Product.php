@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -48,10 +49,10 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
-    public function categories()
-    {
-        return $this->belongsToMany(Category::class);
-    }
+    //    public function categories()
+    //    {
+    //        return $this->belongsToMany(Category::class);
+    //    }
 
     public function subcategory()
     {
@@ -151,25 +152,34 @@ class Product extends Model implements HasMedia
         return $slug;
     }
 
+    public function formMainSingle(): HasOne
+    {
+        return $this->hasOne(ProductOrder::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($product) {
-
+            // 1. Generate the initial slug
             if (! $product->slug) {
                 $product->slug = self::cleanUnicodeAndSlug($product->name);
             }
 
-            // ⛔ Skip insert if slug already exists
-            if (
-                Product::where('slug', $product->slug)->exists()
-            ) {
-                return false; // cancels INSERT
+            // 2. If it exists, append a number until it is unique
+            $originalSlug = $product->slug;
+            $counter = 1;
+
+            while (Product::where('slug', $product->slug)->exists()) {
+                $product->slug = $originalSlug.'-'.$counter;
+                $counter++;
             }
 
-            // auto order
+            // 3. Auto-order logic (stays the same)
             $product->order = (Product::max('order') ?? 0) + 1;
+
+            // NO 'return false' here! The insert will now always proceed.
         });
 
         static::updating(function ($product) {

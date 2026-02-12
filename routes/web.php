@@ -5,7 +5,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SmsVerificationController;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\UserController;
@@ -61,11 +60,6 @@ Route::prefix('{locale?}')
     ->where(['locale' => '[a-zA-Z]{2}'])
     ->middleware(['localization', 'cartToken', 'auth:web'])
     ->group(function () {
-
-        Route::controller(PurchaseController::class)->group(function () {
-            Route::post('/purchase/test', 'testCallback')->name('purchase.test')
-                ->middleware('user.lock');
-        });
 
         Route::controller(OrderController::class)->group(function () {
             Route::get('/user/orders', 'index')->name('customer.orders');

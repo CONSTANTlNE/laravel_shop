@@ -35,6 +35,18 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
+        //        $exceptions->reportable(function (Throwable $e) { // Use $exceptions, not $this
+        //            $userId = auth()->id() ?? 'guest';
+        //            $fingerprint = md5($e->getMessage().$e->getFile().$e->getLine().$userId);
+        //            $cacheKey = "error_reported:{$fingerprint}";
+        //
+        //            if (cache()->has($cacheKey)) {
+        //                return false;
+        //            }
+        //
+        //            cache()->put($cacheKey, true, now()->addMinutes(60));
+        //        });
+
         $exceptions->report(function (Throwable $exception) {
 
             if (app()->runningInConsole()) {

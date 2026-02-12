@@ -1,3 +1,9 @@
+<a href="#" data-bs-toggle="offcanvas"
+   data-bs-target="#order_products_{{$order->order_token}}"
+   class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
+    {{__('Products')}}
+</a>
+
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme w-100"
      style=" max-width:800px; max-height: 78vh; overflow-y: auto; overflow-x: hidden;"
      id="order_products_{{$order->order_token}}">
@@ -74,6 +80,11 @@
                     </tbody>
                 </table>
             @endif
+        </div>
+        <div class="d-flex justify-content-center gap-2 mt-2">
+            <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full bg-highlight shadow-bg shadow-bg-s">
+                {{__('Close')}}
+            </button>
         </div>
     </div>
 </div>

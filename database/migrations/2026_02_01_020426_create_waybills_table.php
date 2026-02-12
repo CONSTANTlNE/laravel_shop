@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('waybill_id');
             $table->integer('status')->nullable();
             $table->string('type')->nullable();
+            $table->boolean('is_finished')->default(false);
             $table->timestamps();
         });
     }

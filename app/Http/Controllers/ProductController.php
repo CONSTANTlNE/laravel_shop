@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductOrder;
 use App\Services\CartService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -487,5 +488,34 @@ class ProductController extends BaseController
 
         return view('frontend.discounted_products.discounted_products', compact('banners', 'site_settings', 'products'));
 
+    }
+
+    public function forMain(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        $product = Product::find($request->input('product_id'));
+        $product_order = ProductOrder::where('product_id', $product->id)->first();
+        if ($product_order) {
+            $product->show_in_main_single = false;
+            $product_order->delete();
+        } else {
+            $newproductorder = new ProductOrder;
+            $newproductorder->product_id = $product->id;
+            $newproductorder->save();
+            $product->show_in_main_single = true;
+        }
+        $product->save();
+
+        return response()
+            ->view('backend.htmx.messages_htmx')
+            ->header('HX-Trigger', json_encode([
+                'showSuccess' => [
+                    'icon' => 'success',
+                    'message' => __('Updated successfully'),
+                ],
+            ]));
     }
 }

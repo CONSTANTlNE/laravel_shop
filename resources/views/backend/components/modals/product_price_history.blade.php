@@ -2,13 +2,13 @@
         data-bs-toggle="offcanvas"
         data-bs-target="#price_history_{{$product->id}}"
         class="btn btn-full btn-s font-900  rounded-sm shadow-l {{$product->discounted==1 ? 'bg-green-dark' : 'bg-blue-dark' }}  mb-1 pt-2 pb-2">
-    {{$product->price}}
+    {{__('Price History')}}
 </button>
 
 <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme"
      style="width:100%;max-width :400px" id="price_history_{{$product->id}}">
     <div class="content" style="overflow: hidden">
-        <p class="font-18 font-800 mb-3">Price History {{$product->name}}</p>
+        <p class="font-18 font-800 mb-3">{{__('Price History')}}: {{$product->name}}</p>
         <style>
             /* Prevent wrapping inside the price history table (scoped to this modal) */
             #price_history_{{$product->id}} table th,
@@ -19,11 +19,11 @@
         <table class="table color-theme mb-2" style="table-layout: fixed; width: 100%;">
             <thead>
             <tr>
-                <th style="width: 90px!important;" scope="col">Date</th>
-                <th scope="col">Price</th>
-                <th style="width: 75px!important;" scope="col">Discount %</th>
-                <th scope="col" style="width: min-content">Reason</th>
-                <th style="width: 90px!important;" scope="col">Updated By</th>
+                <th style="width: 90px!important;" scope="col">{{__('Date')}}</th>
+                <th scope="col">{{__('Price')}}</th>
+                <th style="width: 75px!important;" scope="col">{{__('Discount')}} %</th>
+                <th scope="col" style="width: min-content">{{__('Reason')}}</th>
+                <th style="width: 90px!important;" scope="col">{{__('Updated By')}}</th>
             </tr>
             </thead>
             <tbody>

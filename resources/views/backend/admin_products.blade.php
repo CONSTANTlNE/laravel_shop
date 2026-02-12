@@ -116,6 +116,10 @@
                                class="text-decoration-none  text-center">{{__('On Main ')}} {{  $sortIcon('show_in_main') }}</a>
                         </th>
                         <th scope="col">
+                            <a href="{{  $sortLink('show_in_main_single') }}"
+                               class="text-decoration-none  text-center">{{__('For Main ')}} {{  $sortIcon('show_in_main_single') }}</a>
+                        </th>
+                        <th scope="col">
                             <a href="{{  $sortLink('is_present') }}"
                                class="text-decoration-none  text-center">{{__('Present')}} {{  $sortIcon('is_present') }}</a>
                         </th>
@@ -241,6 +245,24 @@
                                     </div>
                                 </form>
                             </td>
+                            {{-- show for main single --}}
+                            <td class="text-center align-middle">
+                                <form action="{{route('product.formain')}}"
+                                      method="post">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{$product->id}}">
+                                    <div class="form-switch ios-switch switch-green switch-l">
+                                        <input type="checkbox" class="ios-input"
+                                               id="formain_{{$product->slug}}"
+                                               @checked($product->show_in_main_single==1)
+                                               hx-post="{{route('product.formain')}}"
+                                               hx-target="#htmx_messages"
+                                        >
+                                        <label class="custom-control-label"
+                                               for="formain_{{$product->slug}}"></label>
+                                    </div>
+                                </form>
+                            </td>
                             {{-- is_present , apply present and for_sale  --}}
                             <td class="text-center align-middle">
                                 @if($product->presents->isEmpty())
@@ -293,7 +315,7 @@
                             <td class="text-center align-middle">
                                 <a target="_blank"
                                    href="{{route('product.single',['locale'=>app()->getLocale(),'product'=>$product->slug])}}">
-                                    Page
+                                    {{__('Page')}}
                                 </a>
                             </td>
                             {{-- delete product  --}}

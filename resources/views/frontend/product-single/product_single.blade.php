@@ -311,6 +311,8 @@
             </div>
         @endif
     </div>
+
+
     {{--    similar products --}}
     <div style="margin-left: 0;margin-right: 0" class="card card-style">
         <div class="d-flex justify-content-center mb-5 mt-4">
@@ -426,10 +428,6 @@
             }).mount();
 
         });
-
-
-
-
 
     </script>
 

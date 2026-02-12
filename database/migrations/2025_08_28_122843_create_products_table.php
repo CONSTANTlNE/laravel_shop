@@ -35,6 +35,10 @@ return new class extends Migration
             $table->boolean('discounted')->default(false);
             $table->foreignId('coupon_id')->nullable()->constrained()->onDelete('set null');
             $table->float('price_before_discount')->after('price')->nullable();
+            $table->foreignId('discount_id')->nullable()->constrained('discounts');
+            $table->boolean('removed_from_store')->default(false)->index()->after('in_stock');
+            $table->boolean('is_present')->default(false);
+            $table->boolean('for_sale')->default(true);
             $table->timestamps();
         });
     }

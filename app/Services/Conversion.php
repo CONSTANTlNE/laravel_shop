@@ -12,14 +12,20 @@ class Conversion
     public function convert($file, $format = null)
     {
 
-        $manager = new ImageManager(new Driver);
+        try {
+            $manager = new ImageManager(new Driver);
 
-        return $manager->read($file)->toWebp(70);
+            return $manager->read($file)->toWebp(70);
+        } catch (\Exception $exception) {
+            return back()->with('alert_error', 'Conversion Error :'.$exception->getMessage());
+        }
 
     }
+
     //
     //    public function thumbnail($file)
-    //    {
+
+    //    {    6961558
     //
     //        $manager = new ImageManager(new Driver);
     //        $image = $manager->read($file);
@@ -30,6 +36,7 @@ class Conversion
     //    }
     //
     //    public function scaleDown($file)
+
     //    {
     //
     //        $manager = new ImageManager(new Driver);

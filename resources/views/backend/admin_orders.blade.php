@@ -119,7 +119,7 @@
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('created_at') }}"
                                class="text-decoration-none">
-                                Date {{  $sortIcon('created_at') }}
+                                {{__('Date')}} {{  $sortIcon('created_at') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
@@ -128,45 +128,51 @@
                                 {{__('Customer')}}
                             </a>
                         </th>
-                        <th scope="col" class="text-center">
+                        <th scope="col" class="text-center text-nowrap">
                             <a href="{{  $sortLink('name') }}"
-                               class="text-decoration-none">Order {{  $sortIcon('name') }}
+                               class="text-decoration-none">{{__('Order No')}} {{  $sortIcon('name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('category_name') }}"
-                               class="text-decoration-none">Amount {{  $sortIcon('category_name') }}
+                               class="text-decoration-none">{{__('Amount')}} {{  $sortIcon('category_name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
                             <a href="{{  $sortLink('category_name') }}"
-                               class="text-decoration-none">Address {{  $sortIcon('category_name') }}
+                               class="text-decoration-none">{{__('Address')}} {{  $sortIcon('category_name') }}
                             </a>
                         </th>
                         <th scope="col" class="text-center">
-                            Bank Order
+                            {{__('Details')}}
                         </th>
                         <th scope="col" class="text-center">
-                            Products
+                            {{__('Products')}}
                         </th>
                         <th scope="col" class="text-center">
-                            Presents
+                            {{__('Presents')}}
                         </th>
-                        <th scope="col" class="text-center">
+                        <th scope="col" class="text-center text-nowrap">
                             Google Map
                         </th>
                         <th scope="col" class="text-center">
-                            Waybill
+                            {{__('Waybill')}}
                         </th>
                         <th scope="col" class="text-center">
-                            Delivered
+                            {{__('Delivery')}}
+                        </th>
+                        <th scope="col" class="text-center">
+                            {{__('Refund')}}
+                        </th>
+                        <th scope="col" class="text-center">
+                            {{__('Comment')}}
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($orders as $order)
                         <tr>
-                            <td class="text-center">{{$order->created_at->format('d/m/Y')}}</td>
+                            <td class="text-center">{{$order->created_at->format('d/m/Y H:i')}}</td>
                             <td class="text-center">
                                 {{$order->owner->name}}
                                 <br>
@@ -175,13 +181,12 @@
                             <td class="text-center">{{$order->order_token}}</td>
                             <td class="text-center">{{$order->grand_total}}</td>
                             <td class="text-center">{{$order->address}}</td>
-                            <td class="text-center">{{$order->bank_order_id}}</td>
                             <td class="text-center">
-                                <a href="#" data-bs-toggle="offcanvas"
-                                   data-bs-target="#order_products_{{$order->order_token}}"
-                                   class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
-                                    {{__('Products')}}
-                                </a>
+                                @if($order->bank_order_id!='test_order_id')
+                                    @include('backend.components.modals.order_trasaction_details')
+                                @endif
+                            </td>
+                            <td class="text-center">
                                 @include('backend.components.modals.order_products')
                             </td>
                             <td class="text-center">
@@ -195,11 +200,7 @@
                                 {{--                                @endif--}}
 
                                 @if($order->presents!=null)
-                                    <a href="#" data-bs-toggle="offcanvas"
-                                       data-bs-target="#order_presents_{{$order->order_token}}"
-                                       class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
-                                        {{__('Presents')}}
-                                    </a>
+
                                     @include('backend.components.modals.order_presents')
                                 @endif
                             </td>
@@ -221,7 +222,7 @@
 
                                         <button type="submit"
                                                 class="default-link btn btn-m rounded-s gradient-highlight shadow-bg shadow-bg-s px-5 mb-0 ">
-                                            Waybill
+                                            {{__('Waybill')}}
                                         </button>
                                     </form>
                                 @endif
@@ -233,12 +234,12 @@
                                         @if(!$finished)
                                             <button type="submit"
                                                     class="default-link btn btn-m rounded-s gradient-blue shadow-bg shadow-bg-s px-5 mb-0 ">
-                                                Finish
+                                                {{__('Finish')}}
                                             </button>
                                         @else
                                             <button type="button"
                                                     class="default-link btn btn-m rounded-s gradient-green shadow-bg shadow-bg-s px-5 mb-0 ">
-                                                Finished
+                                                {{__('Finished')}}
                                             </button>
                                         @endif
                                     </form>
@@ -249,7 +250,6 @@
                                     <form action="{{route('admin.orders.delivery')}}" method="post">
                                         @csrf
                                         <input type="hidden" name="order_id" value="{{$order->id}}">
-
                                         <div class="form-switch ios-switch switch-green switch-l">
                                             <input type="checkbox" class="ios-input"
                                                    id="order_delivered_{{$order->id}}"
@@ -261,6 +261,66 @@
                                     </form>
                                 </div>
                             </td>
+                            <td class="text-center">
+                                @if($order->bank_order_id)
+                                    <button type="button"
+                                            class="btn btn-sm rounded-xs gradient-red shadow-bg shadow-bg-s"
+                                            data-bs-toggle="offcanvas"
+                                            data-bs-target="#refundModal_{{$order->id}}">
+                                        {{__('Refund')}}
+                                    </button>
+
+                                    <!-- Refund Modal -->
+                                    <div class="offcanvas offcanvas-modal rounded-m offcanvas-detached bg-theme w-100"
+                                         style=" max-width:300px; max-height: 78vh; overflow-y: auto; overflow-x: hidden;"
+                                         id="refundModal_{{$order->id}}"
+                                    >
+                                        <div class="content">
+                                            <div class="d-flex justify-content-center">
+                                                {{__('Refund Order')}} #{{$order->order_token}}
+                                            </div>
+                                            <div class="card p-2 card-style m-0">
+                                                <form action="{{route('admin.orders.refund')}}" method="post">
+                                                    @csrf
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="order_id" value="{{$order->id}}">
+
+
+                                                        <label for="refund_amount_{{$order->id}}"
+                                                               class="form-label">{{__('Refund Amount')}}</label>
+                                                        <div class="mb-3 d-flex justify-content-center">
+                                                            <input style="max-width: 100px;" type="number" step="0.01"
+                                                                   min="0.01"
+                                                                   max="{{$order->grand_total}}"
+                                                                   class="form-control rounded-xs text-center"
+                                                                   id="refund_amount_{{$order->id}}"
+                                                                   name="amount"
+                                                                   value="{{$order->grand_total}}"
+                                                                   required>
+
+                                                        </div>
+                                                        <small class="text-muted">{{__('Max')}}
+                                                            : {{$order->grand_total}} GEL</small>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center gap-4 mt-2">
+                                                        <button type="button" data-bs-dismiss="offcanvas"
+                                                                class="btn btn-full bg-highlight shadow-bg shadow-bg-s">
+                                                            {{__('Close')}}
+                                                        </button>
+                                                        <button
+                                                            class="btn btn-full gradient-green shadow-bg shadow-bg-s ">
+                                                            {{__('Refund')}}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-muted">N/A</span>
+                                @endif
+                            </td>
+                            <td></td>
                         </tr>
                     @endforeach
                     </tbody>

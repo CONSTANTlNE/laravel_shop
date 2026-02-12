@@ -32,7 +32,7 @@ class CouponController extends Controller
         $request->validate([
             'percent' => 'required|numeric|min:1|max:100',
             'valid_till' => 'required|date',
-            'promo_code' => 'required|string|min:6|max:100',
+            'promo_code' => 'required|string|min:5|max:100',
             'comment' => 'nullable|string|max:255',
             'promoter_id' => 'required|numeric|exists:promoters,id',
         ]);
@@ -61,7 +61,26 @@ class CouponController extends Controller
 
     public function update(Request $request) {}
 
-    public function delete(Request $request) {}
+    public function delete(Request $request)
+    {
+
+        $coupon = Coupon::find($request->coupon_id);
+
+        if (! $coupon) {
+            return back()->with('alert_error', 'Coupon not found!');
+        }
+
+        $products = $coupon->products;
+
+        if ($products->count() > 0) {
+            return back()->with('alert_error', 'Coupon cannot be deleted because it applied products.');
+        } else {
+            $coupon->delete();
+        }
+
+        return back()->with('alert_success', 'Coupon deleted successfully!');
+
+    }
 
     public function activate(Request $request)
     {

@@ -60,7 +60,7 @@
                            id="c2{{$coupon->id}}{{$product->id}}">
                     <label class="form-check-label"
                            for="c2{{$coupon->id}}{{$product->id}}">
-                        {{$coupon->code}} - {{$coupon->promoter->name}}
+                        {{$coupon->code}} - {{$coupon->promoter?->name ?? 'N/A'}}
                         - {{$coupon->valid_till}}
                     </label>
                     <i class="is-checked color-green-dark bi bi-check-circle"></i>

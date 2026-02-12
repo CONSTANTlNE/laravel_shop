@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('waybills', function (Blueprint $table) {
-            $table->boolean('is_finished')->default(false);
+        Schema::table('orders', function (Blueprint $table) {
+            $table->text('comment')->nullable();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('waybills', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             //
         });
     }

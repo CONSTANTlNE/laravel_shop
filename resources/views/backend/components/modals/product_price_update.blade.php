@@ -13,9 +13,10 @@
 
         <p class="font-18 font-800 mb-3">Update Price - {{$product->name}}</p>
 
-        <div class="input-style input-style-always-active has-borders has-icon validate-field mb-4">
+        <div class="input-style input-style-always-active has-borders has-icon validate-field mb-4 text-center d-flex justify-content-center ">
             <i class="fa fa-dollar-sign"></i>
             <input type="number"
+                   style="max-width: 60px"
                    class="form-control validate-text"
                    id="price_{{$product->id}}"
                    name="price"
@@ -24,22 +25,22 @@
                    step="0.01"
                    min="0"
                    required>
-            <label for="price_{{$product->id}}" class="color-highlight">Price</label>
-            <i class="fa fa-times disabled invalid color-red-dark"></i>
-            <i class="fa fa-check disabled valid color-green-dark"></i>
-            <em>(required)</em>
         </div>
+        <label for="price_{{$product->id}}" class="color-highlight">{{__('Price')}}</label>
+        <i class="fa fa-times disabled invalid color-red-dark"></i>
+        <i class="fa fa-check disabled valid color-green-dark"></i>
+        <em>({{__('required')}})</em>
+        <div class="d-flex justify-content-center gap-2 mt-2">
 
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-full gradient-green shadow-bg shadow-bg-s mt-4">
-                Update Price
+            <button type="submit" class="btn btn-full gradient-green shadow-bg shadow-bg-s">
+                {{__('Update')}}
             </button>
-        </div>
 
-        <div class="d-flex justify-content-center">
-            <button type="button" data-bs-dismiss="offcanvas" class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-2">
+            <button type="button" data-bs-dismiss="offcanvas"
+                    class="btn btn-full gradient-red shadow-bg shadow-bg-s mt-2">
                 {{__('Cancel')}}
             </button>
+
         </div>
     </form>
 </div>
